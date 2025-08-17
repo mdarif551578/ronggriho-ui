@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/mock-data';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
+import { useWishlist } from '@/hooks/use-wishlist';
+import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -18,6 +20,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = () => {
     addToCart({ ...product, quantity: 1 });
@@ -25,6 +28,22 @@ export default function ProductCard({ product }: ProductCardProps) {
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+
+  const handleWishlistToggle = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      });
+    } else {
+      addToWishlist(product);
+      toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist.`,
+      });
+    }
   };
   
   const discountPercentage = product.discountPrice
@@ -58,8 +77,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             variant="secondary"
             className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/70 hover:bg-background"
             aria-label="Add to wishlist"
+            onClick={handleWishlistToggle}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className={cn("h-4 w-4", isInWishlist(product.id) && "fill-destructive text-destructive")} />
           </Button>
         </CardContent>
         <CardFooter className="p-4 flex flex-col items-start flex-grow bg-background">
@@ -81,7 +101,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
           </div>
-          <Button className="w-full mt-4" onClick={handleAddToCart}>
+          <Button className="w-full mt-4" onClick={handleAddToCart} variant="secondary" >
             <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
           </Button>
         </CardFooter>

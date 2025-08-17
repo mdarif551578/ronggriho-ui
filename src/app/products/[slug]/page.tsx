@@ -12,6 +12,8 @@ import { Heart, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 import ProductCard from '@/components/product-card';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
+import { useWishlist } from '@/hooks/use-wishlist';
+import { cn } from '@/lib/utils';
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const product = getProductBySlug(params.slug);
@@ -21,6 +23,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(product?.colors[0].name);
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   if (!product) {
     notFound();
@@ -32,6 +35,22 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       title: "Added to cart",
       description: `${quantity} x ${product.name} has been added to your cart.`,
     });
+  };
+  
+  const handleWishlistToggle = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+       toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      });
+    } else {
+      addToWishlist(product);
+       toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist.`,
+      });
+    }
   };
 
   return (
@@ -120,7 +139,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
             <Button size="lg" className="flex-1" onClick={handleAddToCart}><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart</Button>
-            <Button size="lg" variant="outline" className="flex-1"><Heart className="mr-2 h-5 w-5" /> Wishlist</Button>
+            <Button size="lg" variant="outline" className="flex-1" onClick={handleWishlistToggle}>
+              <Heart className={cn("mr-2 h-5 w-5", isInWishlist(product.id) && "fill-destructive text-destructive")} /> 
+              Wishlist
+            </Button>
           </div>
         </div>
       </div>
