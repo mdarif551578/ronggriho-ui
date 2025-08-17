@@ -10,9 +10,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { getProducts } from '@/lib/mock-data';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 const allProducts = getProducts();
 const allCategories = [...new Set(allProducts.map(p => p.category))];
@@ -23,6 +24,36 @@ export default function FilterSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const selectedCategories = searchParams.getAll('category');
+  const selectedSizes = searchParams.getAll('size');
+  const selectedColors = searchParams.getAll('color');
+  const priceParam = searchParams.get('price');
+
+  const { minProductPrice, maxProductPrice } = useMemo(() => {
+    const prices = allProducts.map(p => p.discountPrice || p.price);
+    return {
+      minProductPrice: Math.floor(Math.min(...prices)),
+      maxProductPrice: Math.ceil(Math.max(...prices)),
+    };
+  }, []);
+
+  const [minPrice, setMinPrice] = useState<string | number>('');
+  const [maxPrice, setMaxPrice] = useState<string | number>('');
+
+  useEffect(() => {
+    if (priceParam) {
+      const parts = priceParam.split('-').map(Number);
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        setMinPrice(parts[0]);
+        setMaxPrice(parts[1]);
+      }
+    } else {
+        setMinPrice('');
+        setMaxPrice('');
+    }
+  }, [priceParam]);
+
 
   const handleFilterChange = (type: string, value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
@@ -40,35 +71,18 @@ export default function FilterSidebar() {
     router.push(`${pathname}${query}`);
   };
 
-  const handlePriceChange = (value: number[]) => {
+  const handlePriceSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const current = new URLSearchParams(Array.from(searchParams.entries()));
-    current.set('price', `${value[0]}-${value[1]}`);
+    const finalMinPrice = minPrice === '' || Number(minPrice) < minProductPrice ? minProductPrice : Number(minPrice);
+    const finalMaxPrice = maxPrice === '' || Number(maxPrice) > maxProductPrice ? maxProductPrice : Number(maxPrice);
+
+    current.set('price', `${finalMinPrice}-${finalMaxPrice}`);
     const search = current.toString();
     const query = search ? `?${search}` : '';
     router.push(`${pathname}${query}`);
   }
 
-  const { minProductPrice, maxProductPrice } = useMemo(() => {
-    const prices = allProducts.map(p => p.discountPrice || p.price);
-    return {
-      minProductPrice: Math.floor(Math.min(...prices)),
-      maxProductPrice: Math.ceil(Math.max(...prices)),
-    };
-  }, []);
-
-  const selectedCategories = searchParams.getAll('category');
-  const selectedSizes = searchParams.getAll('size');
-  const selectedColors = searchParams.getAll('color');
-  const priceParam = searchParams.get('price');
-  const [minPrice, maxPrice] = useMemo(() => {
-    if (priceParam) {
-      const parts = priceParam.split('-').map(Number);
-      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-        return parts;
-      }
-    }
-    return [minProductPrice, maxProductPrice];
-  }, [priceParam, minProductPrice, maxProductPrice]);
 
   return (
     <Card>
@@ -131,18 +145,26 @@ export default function FilterSidebar() {
           <AccordionItem value="price">
             <AccordionTrigger>Price</AccordionTrigger>
             <AccordionContent className="px-1 pt-4">
-                <Slider
-                    min={minProductPrice}
-                    max={maxProductPrice}
-                    step={100}
-                    value={[minPrice, maxPrice]}
-                    onValueCommit={handlePriceChange}
-                    className="w-full"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                    <span>৳{minPrice}</span>
-                    <span>৳{maxPrice}</span>
-                </div>
+                <form onSubmit={handlePriceSubmit} className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      placeholder={`Min (৳${minProductPrice})`}
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      className="w-full"
+                    />
+                    <span>-</span>
+                    <Input
+                      type="number"
+                      placeholder={`Max (৳${maxProductPrice})`}
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full">Apply Price</Button>
+                </form>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
