@@ -7,10 +7,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, FormEvent } from 'react';
-import { auth } from '@/lib/firebase';
+import { auth, firestore } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -27,11 +28,34 @@ export default function RegisterPage() {
     setError(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: fullName });
+      const user = userCredential.user;
+      
+      // Update profile in Firebase Auth
+      await updateProfile(user, { displayName: fullName });
+
+      // Create a document in the 'users' collection
+      await setDoc(doc(firestore, "users", user.uid), {
+        uid: user.uid,
+        displayName: fullName,
+        email: user.email,
+        createdAt: new Date(),
+      });
+
       toast({ title: "Account Created", description: "Welcome to Rong Griho!" });
       router.push('/account');
     } catch (err: any) {
-      setError(err.message);
+       switch (err.code) {
+        case 'auth/email-already-in-use':
+          setError('This email address is already in use.');
+          break;
+        case 'auth/weak-password':
+          setError('The password is too weak. It should be at least 6 characters.');
+          break;
+        default:
+          setError('An unexpected error occurred. Please try again.');
+          console.error(err);
+          break;
+      }
     } finally {
       setLoading(false);
     }

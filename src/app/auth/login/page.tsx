@@ -31,7 +31,17 @@ export default function LoginPage() {
       toast({ title: "Login Successful", description: "Welcome back!" });
       router.push('/account');
     } catch (err: any) {
-      setError(err.message);
+       switch (err.code) {
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          setError('Invalid email or password. Please try again.');
+          break;
+        default:
+          setError('An unexpected error occurred. Please try again.');
+          console.error(err);
+          break;
+      }
     } finally {
       setLoading(false);
     }
