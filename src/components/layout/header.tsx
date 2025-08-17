@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,6 +9,17 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/hooks/use-auth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useRouter } from 'next/navigation';
+
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -26,10 +38,18 @@ const mobileNavLinks = [
 
 export default function Header() {
   const { cart } = useCart();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  };
+
 
   return (
     <>
@@ -63,19 +83,19 @@ export default function Header() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-1 md:gap-4">
+            <div className="flex items-center gap-1 md:gap-2">
               <div className="hidden sm:block relative w-36 md:w-48">
                 <Input type="search" placeholder="Search..." className="pr-10 h-9" />
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
               <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
                 <Link href="/wishlist">
-                  <Heart className="h-6 w-6" />
+                  <Heart className="h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="ghost" size="icon" asChild className="relative" aria-label="Shopping Cart">
                 <Link href="/cart">
-                  <ShoppingBag className="h-6 w-6" />
+                  <ShoppingBag className="h-5 w-5" />
                   {cartItemCount > 0 && (
                     <Badge
                       variant="destructive"
@@ -86,11 +106,31 @@ export default function Header() {
                   )}
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" asChild aria-label="User Account">
-                <Link href="/auth/login">
-                  <User className="h-6 w-6" />
-                </Link>
-              </Button>
+              
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                     <Button variant="ghost" size="icon" aria-label="User Account">
+                       <User className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild><Link href="/account">Profile</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link href="/account/orders">Orders</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link href="/wishlist">Wishlist</Link></DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button variant="ghost" size="icon" asChild aria-label="Login">
+                  <Link href="/auth/login">
+                    <User className="h-5 w-5" />
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

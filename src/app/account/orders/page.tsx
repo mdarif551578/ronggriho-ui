@@ -1,10 +1,16 @@
 
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { ShoppingBag } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const orders = [
     { id: "DT12345", date: "2023-10-26", status: "Delivered", total: 3499.98 },
@@ -13,6 +19,28 @@ const orders = [
 ]
 
 export default function OrdersPage() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/auth/login');
+        }
+    }, [user, loading, router]);
+
+    if (loading || !user) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <Skeleton className="h-10 w-1/4 mb-8" />
+                <Card>
+                    <CardContent className="p-6">
+                        <Skeleton className="h-40 w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-4xl font-bold font-headline mb-8">My Orders</h1>
@@ -29,12 +57,12 @@ export default function OrdersPage() {
                 </Card>
              ) : (
                 <Card>
-                    <CardContent>
+                    <CardContent className="p-0 md:p-6">
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Order ID</TableHead>
-                                    <TableHead>Date</TableHead>
+                                    <TableHead className="hidden md:table-cell">Date</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Total</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
@@ -44,7 +72,7 @@ export default function OrdersPage() {
                                 {orders.map((order) => (
                                     <TableRow key={order.id}>
                                         <TableCell className="font-medium">{order.id}</TableCell>
-                                        <TableCell>{order.date}</TableCell>
+                                        <TableCell className="hidden md:table-cell">{order.date}</TableCell>
                                         <TableCell>
                                             <Badge variant={order.status === 'Delivered' ? 'default' : order.status === 'Cancelled' ? 'destructive' : 'secondary'}>
                                                 {order.status}
@@ -53,7 +81,7 @@ export default function OrdersPage() {
                                         <TableCell className="text-right">৳{order.total.toFixed(2)}</TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/tracking?orderId=${order.id}`}>View Details</Link>
+                                                <Link href={`/tracking?orderId=${order.id}`}>View</Link>
                                             </Button>
                                         </TableCell>
                                     </TableRow>
