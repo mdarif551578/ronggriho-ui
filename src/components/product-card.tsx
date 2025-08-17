@@ -81,7 +81,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
           </div>
-          <Button variant="outline" className="w-full mt-4" onClick={handleAddToCart}>
+          <Button className="w-full mt-4" onClick={handleAddToCart}>
             <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
           </Button>
         </CardFooter>
