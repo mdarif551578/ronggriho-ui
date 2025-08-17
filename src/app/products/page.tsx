@@ -25,7 +25,7 @@ export default function ProductsPage({
       filtered = filtered.filter(product => product.sizes.some(s => sizes.includes(s)));
     }
     
-    const colors = searchParams.color ? (Array.isArray(searchParams.color) ? searchParams.color : [searchParams.color]) : [];
+    const colors = searchParams.color ? (Array.isArray(searchParams.color) ? searchParams.color : [search_params.color]) : [];
     if (colors.length > 0) {
       filtered = filtered.filter(product => product.colors.some(c => colors.includes(c.name.toLowerCase())));
     }

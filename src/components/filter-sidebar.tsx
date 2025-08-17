@@ -59,7 +59,16 @@ export default function FilterSidebar() {
   const selectedCategories = searchParams.getAll('category');
   const selectedSizes = searchParams.getAll('size');
   const selectedColors = searchParams.getAll('color');
-  const [minPrice, maxPrice] = searchParams.get('price')?.split('-').map(Number) || [minProductPrice, maxProductPrice];
+  const priceParam = searchParams.get('price');
+  const [minPrice, maxPrice] = useMemo(() => {
+    if (priceParam) {
+      const parts = priceParam.split('-').map(Number);
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        return parts;
+      }
+    }
+    return [minProductPrice, maxProductPrice];
+  }, [priceParam, minProductPrice, maxProductPrice]);
 
   return (
     <Card>
@@ -128,6 +137,7 @@ export default function FilterSidebar() {
                     step={100}
                     value={[minPrice, maxPrice]}
                     onValueCommit={handlePriceChange}
+                    className="w-full"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground mt-2">
                     <span>৳{minPrice}</span>
