@@ -11,6 +11,7 @@ import { useCart } from '@/hooks/use-cart';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import ClientOnly from '../client-only';
+import { useAuth } from '@/hooks/use-auth';
 
 
 const navLinks = [
@@ -31,6 +32,7 @@ const mobileNavLinks = [
 
 export default function Header() {
   const { cart } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -90,32 +92,31 @@ export default function Header() {
                   </Link>
                 </Button>
               )}
-              <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
-                <Link href="/wishlist">
-                  <Heart className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild className="relative" aria-label="Shopping Cart">
-                <Link href="/cart">
-                  <ShoppingBag className="h-5 w-5" />
-                  <ClientOnly>
+              <ClientOnly>
+                <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
+                    <Link href="/wishlist">
+                    <Heart className="h-5 w-5" />
+                    </Link>
+                </Button>
+                <Button variant="ghost" size="icon" asChild className="relative" aria-label="Shopping Cart">
+                    <Link href="/cart">
+                    <ShoppingBag className="h-5 w-5" />
                     {cartItemCount > 0 && (
-                      <Badge
+                        <Badge
                         variant="destructive"
                         className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                      >
+                        >
                         {cartItemCount}
-                      </Badge>
+                        </Badge>
                     )}
-                  </ClientOnly>
-                </Link>
-              </Button>
-              
-              <Button variant="ghost" size="icon" asChild aria-label="Login">
-                <Link href="/auth/login">
-                  <User className="h-5 w-5" />
-                </Link>
-              </Button>
+                    </Link>
+                </Button>
+                <Button variant="ghost" size="icon" asChild aria-label={user ? "Account" : "Login"}>
+                    <Link href={user ? "/account" : "/auth/login"}>
+                    <User className="h-5 w-5" />
+                    </Link>
+                </Button>
+              </ClientOnly>
             </div>
           </div>
         </div>
