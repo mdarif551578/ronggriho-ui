@@ -10,6 +10,7 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 export default function AccountPage() {
     const { user, loading } = useAuth();
@@ -17,20 +18,30 @@ export default function AccountPage() {
     const { toast } = useToast();
 
     const handleLogout = async () => {
-        await signOut(auth);
-        toast({ title: "Logged Out", description: "You have been successfully logged out." });
-        router.push('/');
+        try {
+            await signOut(auth);
+            toast({ title: "Logged Out", description: "You have been successfully logged out." });
+            router.push('/');
+        } catch (error) {
+            toast({ title: "Logout Failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+        }
     };
+
+    useEffect(() => {
+        // Redirect to login page only when loading is finished and there's no user.
+        if (!loading && !user) {
+            router.push('/auth/login');
+        }
+    }, [user, loading, router]);
 
     if (loading) {
         return <div className="container mx-auto px-4 py-8 text-center">Loading account details...</div>;
     }
 
     if (!user) {
-         router.push('/auth/login');
-         return null;
+        // Render nothing while the redirect is happening
+        return null;
     }
-
 
     return (
         <div className="container mx-auto px-4 py-8">
