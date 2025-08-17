@@ -13,31 +13,38 @@ export default function ProductsPage({
   const filterProducts = (products: Product[]): Product[] => {
     if (!searchParams) return products;
 
-    return products.filter(product => {
-      if (searchParams.category && product.category.toLowerCase() !== searchParams.category) {
-        return false;
-      }
-      if (searchParams.size && !product.sizes.includes(searchParams.size as string)) {
-        return false;
-      }
-      if (searchParams.color) {
-        const colors = Array.isArray(searchParams.color) ? searchParams.color : [searchParams.color];
-        if (!product.colors.some(c => colors.includes(c.name.toLowerCase()))) {
-            return false;
+    let filtered = products;
+    
+    const categories = searchParams.category ? (Array.isArray(searchParams.category) ? searchParams.category : [searchParams.category]) : [];
+    if (categories.length > 0) {
+      filtered = filtered.filter(product => categories.includes(product.category.toLowerCase()));
+    }
+
+    const sizes = searchParams.size ? (Array.isArray(searchParams.size) ? searchParams.size : [searchParams.size]) : [];
+    if (sizes.length > 0) {
+      filtered = filtered.filter(product => product.sizes.some(s => sizes.includes(s)));
+    }
+    
+    const colors = searchParams.color ? (Array.isArray(searchParams.color) ? searchParams.color : [searchParams.color]) : [];
+    if (colors.length > 0) {
+      filtered = filtered.filter(product => product.colors.some(c => colors.includes(c.name.toLowerCase())));
+    }
+
+    if (searchParams.price && typeof searchParams.price === 'string') {
+        const [min, max] = searchParams.price.split('-').map(Number);
+        if (!isNaN(min) && !isNaN(max)) {
+            filtered = filtered.filter(product => {
+                const price = product.discountPrice || product.price;
+                return price >= min && price <= max;
+            });
         }
-      }
-      if (searchParams.price) {
-        const [min, max] = (searchParams.price as string).split('-').map(Number);
-        const price = product.discountPrice || product.price;
-        if (price < min || price > max) {
-            return false;
-        }
-      }
-      if (searchParams.q && !product.name.toLowerCase().includes((searchParams.q as string).toLowerCase())) {
-          return false;
-      }
-      return true;
-    });
+    }
+
+    if (searchParams.q && typeof searchParams.q === 'string') {
+        filtered = filtered.filter(product => product.name.toLowerCase().includes(searchParams.q!.toLowerCase()));
+    }
+
+    return filtered;
   };
 
   const filteredProducts = filterProducts(allProducts);
@@ -47,8 +54,13 @@ export default function ProductsPage({
       return `Search results for "${searchParams.q}"`;
     }
     if (searchParams?.category) {
-        const categoryName = (searchParams.category as string).replace('-', ' ');
-        return categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+        const categoryParam = searchParams.category;
+        const categories = Array.isArray(categoryParam) ? categoryParam : [categoryParam];
+        if (categories.length === 1) {
+            const categoryName = categories[0].replace('-', ' ');
+            return categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+        }
+        return 'Filtered Products';
     }
     return 'All Products';
   };
