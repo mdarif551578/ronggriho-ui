@@ -1,13 +1,15 @@
 
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Truck, PackageCheck, Package, CircleCheck, CircleX } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { firestore } from '@/lib/firebase';
+import { doc, getDoc, Timestamp } from 'firebase/firestore';
 
 type TrackingStatus = 'idle' | 'loading' | 'found' | 'not_found';
 type TrackingEvent = {
@@ -17,38 +19,70 @@ type TrackingEvent = {
     icon: React.ElementType;
 };
 
-const mockTrackingData: { [key: string]: TrackingEvent[] } = {
-    'DT12345': [
-        { status: 'Delivered', location: 'Dhaka, BD', date: '2023-10-26', icon: PackageCheck },
-        { status: 'Out for delivery', location: 'Dhaka Hub', date: '2023-10-26', icon: Truck },
-        { status: 'Package processed', location: 'Dhaka Hub', date: '2023-10-25', icon: Package },
-        { status: 'Order created', location: 'Warehouse', date: '2023-10-24', icon: CircleCheck },
-    ],
-    'DT12343': [
-        { status: 'Cancelled', location: 'Warehouse', date: '2023-08-01', icon: CircleX },
-        { status: 'Order created', location: 'Warehouse', date: '2023-08-01', icon: CircleCheck },
-    ]
-};
-
 export default function TrackingPage() {
   const searchParams = useSearchParams();
-  const [orderId, setOrderId] = useState(searchParams.get('orderId') || '');
+  const [orderId, setOrderId] = useState('');
   const [status, setStatus] = useState<TrackingStatus>('idle');
   const [trackingInfo, setTrackingInfo] = useState<TrackingEvent[]>([]);
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!orderId) return;
+  const fetchOrder = async (id: string) => {
+    if (!id) return;
     setStatus('loading');
-    setTimeout(() => {
-        const data = mockTrackingData[orderId.toUpperCase()];
-        if (data) {
-            setTrackingInfo(data);
+    try {
+        const orderRef = doc(firestore, 'orders', id);
+        const orderSnap = await getDoc(orderRef);
+
+        if (orderSnap.exists()) {
+            const orderData = orderSnap.data();
+            const createdAt = (orderData.createdAt as Timestamp).toDate();
+
+            const events: TrackingEvent[] = [
+                {
+                    status: 'Order created',
+                    location: 'Warehouse',
+                    date: createdAt.toLocaleDateString(),
+                    icon: CircleCheck
+                }
+            ];
+
+            // This is a simplified status mapping. A real app might have more detailed events.
+            switch (orderData.status) {
+                case 'Processing':
+                    events.unshift({ status: 'Processing', location: 'Warehouse', date: createdAt.toLocaleDateString(), icon: Package });
+                    break;
+                case 'Shipped':
+                     events.unshift({ status: 'Shipped', location: 'In Transit', date: new Date().toLocaleDateString(), icon: Truck });
+                     break;
+                case 'Delivered':
+                     events.unshift({ status: 'Delivered', location: 'Delivered', date: new Date().toLocaleDateString(), icon: PackageCheck });
+                     break;
+                case 'Cancelled':
+                     events.unshift({ status: 'Cancelled', location: 'Warehouse', date: new Date().toLocaleDateString(), icon: CircleX });
+                     break;
+            }
+
+            setTrackingInfo(events.reverse());
             setStatus('found');
         } else {
             setStatus('not_found');
         }
-    }, 1000);
+    } catch (error) {
+        console.error("Error fetching tracking info:", error);
+        setStatus('not_found');
+    }
+  }
+
+  useEffect(() => {
+    const paramOrderId = searchParams.get('orderId');
+    if (paramOrderId) {
+        setOrderId(paramOrderId);
+        fetchOrder(paramOrderId);
+    }
+  }, [searchParams]);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    fetchOrder(orderId);
   };
 
   return (
@@ -65,12 +99,13 @@ export default function TrackingPage() {
                         <Label htmlFor="order-id" className="sr-only">Order ID</Label>
                         <Input 
                             id="order-id" 
-                            placeholder="e.g., DT12345" 
+                            placeholder="Enter your Order ID" 
                             value={orderId}
                             onChange={(e) => setOrderId(e.target.value)}
+                            required
                         />
                     </div>
-                    <Button type="submit" className="w-full sm:w-auto" disabled={status === 'loading'}>
+                    <Button type="submit" className="w-full sm:w-auto" disabled={status === 'loading' || !orderId}>
                         {status === 'loading' ? 'Tracking...' : 'Track Order'}
                     </Button>
                 </form>
@@ -89,7 +124,7 @@ export default function TrackingPage() {
         {status === 'found' && (
             <Card className="w-full max-w-2xl mx-auto mt-8">
                 <CardHeader>
-                    <CardTitle>Tracking Details for #{orderId.toUpperCase()}</CardTitle>
+                    <CardTitle>Tracking Details for #{orderId.toUpperCase().slice(0, 7)}</CardTitle>
                     <CardDescription>
                         Current status: <span className="font-semibold text-primary">{trackingInfo[0]?.status}</span>
                     </CardDescription>
