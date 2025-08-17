@@ -28,6 +28,7 @@ const statusIconMap: { [key: string]: React.ElementType } = {
     'processing': Warehouse,
     'shipped': Truck,
     'delivered': PackageCheck,
+    'completed': PackageCheck,
     'cancelled': CircleX,
 };
 
