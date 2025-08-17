@@ -3,10 +3,14 @@
 import 'server-only';
 import type { Product } from './types';
 import { firestore } from './firebase-admin'; // Switch to admin SDK for server-side
-import { collection, getDocs, writeBatch, doc } from 'firebase-admin/firestore';
+import { DocumentData } from 'firebase-admin/firestore';
 
-const docDataToProduct = (doc: FirebaseFirestore.DocumentData): Product => {
-  return doc as Product;
+const docDataToProduct = (doc: DocumentData): Product => {
+  const data = doc.data();
+  return {
+    id: doc.id,
+    ...data
+  } as Product;
 };
 
 const mockProducts: Product[] = [
@@ -215,10 +219,11 @@ const mockProducts: Product[] = [
 ];
 
 const seedProducts = async () => {
-  const productsCollection = collection(firestore, 'products');
-  const batch = writeBatch(firestore);
+  const productsCollection = firestore.collection('products');
+  const batch = firestore.batch();
   mockProducts.forEach((product) => {
-    const docRef = doc(productsCollection, product.id);
+    // The document ID will be the product's `id` field
+    const docRef = productsCollection.doc(product.id);
     batch.set(docRef, product);
   });
   await batch.commit();
@@ -227,21 +232,19 @@ const seedProducts = async () => {
 
 export async function getProducts(): Promise<Product[]> {
   try {
-    const productsCollection = collection(firestore, 'products');
-    const querySnapshot = await getDocs(productsCollection);
+    const productsCollection = firestore.collection('products');
+    const querySnapshot = await productsCollection.get();
     
     if (querySnapshot.empty) {
       console.log("No products found, seeding database...");
       await seedProducts();
-      const seededSnapshot = await getDocs(productsCollection);
-      return seededSnapshot.docs.map(doc => docDataToProduct(doc.data()));
+      const seededSnapshot = await productsCollection.get();
+      return seededSnapshot.docs.map(doc => docDataToProduct(doc));
     }
 
-    return querySnapshot.docs.map(doc => docDataToProduct(doc.data()));
+    return querySnapshot.docs.map(doc => docDataToProduct(doc));
   } catch (error) {
     console.error("Error getting products: ", error);
-    // In a real app, you might want to throw the error or return a specific error state.
-    // For this prototype, returning the mock data as a fallback.
     return mockProducts;
   }
 }
@@ -255,4 +258,3 @@ export async function getRelatedProducts(product: Product): Promise<Product[]> {
   const allProducts = await getProducts();
   return allProducts.filter(p => product.relatedProductIds.includes(p.id) && p.id !== product.id);
 }
-
