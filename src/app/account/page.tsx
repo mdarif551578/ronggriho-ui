@@ -6,16 +6,29 @@ import { Button } from "@/components/ui/button";
 import { User, ShoppingBag, Heart, LogOut } from "lucide-react";
 import Link from 'next/link';
 import { useAuth } from "@/hooks/use-auth";
-import { auth } from "@/lib/firebase";
+import { auth, firestore } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface Order {
+    id: string;
+    createdAt: Timestamp;
+    status: string;
+    total: number;
+}
 
 export default function AccountPage() {
-    const { user, loading } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const handleLogout = async () => {
         try {
@@ -28,19 +41,76 @@ export default function AccountPage() {
     };
 
     useEffect(() => {
-        // Redirect to login page only when loading is finished and there's no user.
-        if (!loading && !user) {
+        if (!authLoading && !user) {
             router.push('/auth/login');
         }
-    }, [user, loading, router]);
+    }, [user, authLoading, router]);
 
-    if (loading) {
-        return <div className="container mx-auto px-4 py-8 text-center">Loading account details...</div>;
-    }
+     useEffect(() => {
+        const fetchOrders = async () => {
+            if (user) {
+                try {
+                    const q = query(
+                        collection(firestore, 'orders'), 
+                        where('userId', '==', user.uid),
+                        orderBy('createdAt', 'desc')
+                    );
+                    const querySnapshot = await getDocs(q);
+                    const userOrders = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    } as Order));
+                    setOrders(userOrders);
+                } catch (error) {
+                    console.error("Error fetching orders: ", error);
+                    // This is where you might see the index error in the console
+                }
+            }
+            setLoading(false);
+        };
 
-    if (!user) {
-        // Render nothing while the redirect is happening
-        return null;
+        if (!authLoading) {
+            fetchOrders();
+        }
+    }, [user, authLoading]);
+
+    if (authLoading || !user) {
+        return (
+             <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold font-headline mb-8">My Account</h1>
+                 <div className="grid md:grid-cols-3 gap-8">
+                    <div className="md:col-span-1">
+                        <Card>
+                            <CardHeader className="text-center">
+                                <Skeleton className="h-16 w-16 mx-auto rounded-full" />
+                                <Skeleton className="h-6 w-3/4 mx-auto mt-4" />
+                                <Skeleton className="h-4 w-1/2 mx-auto mt-2" />
+                            </CardHeader>
+                            <CardContent className="flex flex-col gap-2">
+                               <Skeleton className="h-10 w-full" />
+                               <Skeleton className="h-10 w-full" />
+                               <Skeleton className="h-10 w-full" />
+                               <Skeleton className="h-10 w-full mt-4" />
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className="md:col-span-2">
+                         <Card>
+                            <CardHeader>
+                                <CardTitle>My Orders</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-6">
+                                <div className="space-y-4">
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -65,14 +135,56 @@ export default function AccountPage() {
                 <div className="md:col-span-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Recent Orders</CardTitle>
+                            <CardTitle>My Orders</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                           <div className="text-center py-10 text-muted-foreground">
-                             <ShoppingBag className="h-12 w-12 mx-auto mb-4" />
-                             <p>You haven't placed any orders yet.</p>
-                             <Button asChild className="mt-4"><Link href="/account/orders">View All Orders</Link></Button>
-                           </div>
+                         <CardContent className="p-0 md:p-6">
+                            {loading ? (
+                                <div className="space-y-4 p-6 md:p-0">
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                </div>
+                            ) : orders.length === 0 ? (
+                               <div className="text-center py-10 text-muted-foreground">
+                                 <ShoppingBag className="h-12 w-12 mx-auto mb-4" />
+                                 <p>You haven't placed any orders yet.</p>
+                                 <Button asChild className="mt-4"><Link href="/products">Start Shopping</Link></Button>
+                               </div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Order ID</TableHead>
+                                            <TableHead className="hidden md:table-cell">Date</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Total</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {orders.slice(0, 5).map((order) => ( // Show recent 5 orders
+                                            <TableRow key={order.id}>
+                                                <TableCell className="font-medium">
+                                                    <Link href={`/tracking?orderId=${order.id}`} className="hover:underline">
+                                                        #{order.id.slice(0, 7).toUpperCase()}
+                                                    </Link>
+                                                </TableCell>
+                                                <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={order.status === 'Delivered' ? 'default' : order.status === 'Cancelled' ? 'destructive' : 'secondary'}>
+                                                        {order.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right">৳{order.total.toFixed(2)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
+                             {orders.length > 5 && (
+                                <div className="text-center mt-4 p-6 md:p-0">
+                                    <Button asChild variant="outline"><Link href="/account/orders">View All Orders</Link></Button>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
