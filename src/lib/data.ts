@@ -1,3 +1,4 @@
+
 import 'server-only';
 import { Product } from './types';
 
@@ -14,7 +15,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png'],
     sizes: ['S', 'M', 'L', 'XL'],
     colors: [{ name: 'Blue', hex: '#3b82f6' }],
-    relatedProducts: ['3', '4'],
+    relatedProductIds: ['3', '4', '7'],
   },
   {
     id: '2',
@@ -27,7 +28,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png'],
     sizes: ['One Size'],
     colors: [{ name: 'Cream', hex: '#f5f5dc' }, { name: 'Red', hex: '#dc2626' }],
-    relatedProducts: ['5', '6'],
+    relatedProductIds: ['5', '6', '8'],
   },
   {
     id: '3',
@@ -40,7 +41,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png'],
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     colors: [{ name: 'Black', hex: '#000000' }, { name: 'White', hex: '#ffffff' }],
-    relatedProducts: ['1', '4'],
+    relatedProductIds: ['1', '4', '7'],
   },
   {
     id: '4',
@@ -54,7 +55,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png'],
     sizes: ['One Size'],
     colors: [{ name: 'Tan', hex: '#d2b48c' }],
-    relatedProducts: ['2', '5'],
+    relatedProductIds: ['2', '5', '6'],
   },
   {
     id: '5',
@@ -67,7 +68,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png'],
     sizes: ['M', 'L', 'XL'],
     colors: [{ name: 'Teal', hex: '#008080' }],
-    relatedProducts: ['2', '6'],
+    relatedProductIds: ['2', '6', '8'],
   },
   {
     id: '6',
@@ -80,7 +81,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png'],
     sizes: ['One Size'],
     colors: [{ name: 'Silver', hex: '#c0c0c0' }],
-    relatedProducts: ['2', '5'],
+    relatedProductIds: ['2', '5', '8'],
   },
   {
     id: '7',
@@ -93,7 +94,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png'],
     sizes: ['30', '32', '34', '36'],
     colors: [{ name: 'Khaki', hex: '#f0e68c' }, { name: 'Navy', hex: '#000080' }],
-    relatedProducts: ['1', '3'],
+    relatedProductIds: ['1', '3', '8'],
   },
   {
     id: '8',
@@ -107,7 +108,7 @@ const products: Product[] = [
     images: ['https://placehold.co/800x1000.png'],
     sizes: ['S', 'M', 'L'],
     colors: [{ name: 'Pink', hex: '#ffc0cb' }],
-    relatedProducts: ['2', '4'],
+    relatedProductIds: ['2', '4', '5'],
   },
 ];
 
@@ -115,19 +116,19 @@ const products: Product[] = [
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function getProducts(): Promise<Product[]> {
-  await delay(500); // Simulate network latency
-  return products;
+  // In a real app, you'd fetch this from a database
+  await delay(100); 
+  return JSON.parse(JSON.stringify(products));
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
-  await delay(500);
-  return products.find(p => p.slug === slug);
+  await delay(100);
+  const allProducts = await getProducts();
+  return allProducts.find(p => p.slug === slug);
 }
 
-export async function getRelatedProducts(slug: string): Promise<Product[]> {
-  await delay(500);
-  const product = await getProductBySlug(slug);
-  if (!product) return [];
+export async function getRelatedProducts(product: Product): Promise<Product[]> {
+  await delay(100);
   const allProducts = await getProducts();
-  return allProducts.filter(p => product.relatedProducts.includes(p.id));
+  return allProducts.filter(p => product.relatedProductIds.includes(p.id) && p.id !== product.id);
 }

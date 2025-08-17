@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   slug: string;
@@ -10,5 +11,5 @@ export interface Product {
   images: string[];
   sizes: string[];
   colors: { name: string; hex: string }[];
-  relatedProducts: string[];
+  relatedProductIds: string[];
 }
