@@ -4,6 +4,7 @@ import { Product } from '@/lib/types';
 import ProductFilters from '@/components/product-filters';
 import ActiveFilters from '@/components/active-filters';
 import SortDropdown from '@/components/sort-dropdown';
+import ProductSearch from '@/components/product-search';
 
 export default async function ProductsPage({
   searchParams,
@@ -91,9 +92,17 @@ export default async function ProductsPage({
     <div className="container mx-auto px-4 py-8">
       <div className="grid lg:grid-cols-4 gap-8">
         
-        <ProductFilters allProducts={allProducts} />
+        <div className="lg:col-span-1">
+          <div className="lg:hidden mb-4">
+            <ProductSearch />
+          </div>
+          <ProductFilters allProducts={allProducts} />
+        </div>
         
         <div className="lg:col-span-3">
+          <div className="hidden lg:block mb-4">
+             <ProductSearch />
+          </div>
           <div className="flex flex-col sm:flex-row justify-between items-baseline mb-4">
             <h1 className="text-3xl md:text-4xl font-bold font-headline">{getTitle()}</h1>
              <div className="flex items-center gap-4 mt-4 sm:mt-0">

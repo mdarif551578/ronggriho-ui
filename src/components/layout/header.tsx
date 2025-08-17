@@ -9,15 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import ClientOnly from '../client-only';
 
 
@@ -39,14 +31,18 @@ const mobileNavLinks = [
 export default function Header() {
   const { cart } = useCart();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const handleSearch = (e: FormEvent) => {
+  // We don't need a separate search handler here as the search is now on the products page
+  // but we keep the mobile menu search functionality.
+  const handleMobileSearch = (e: FormEvent) => {
     e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const searchQuery = formData.get('q') as string;
     if (searchQuery.trim()) {
       router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
       setIsMenuOpen(false);
@@ -88,12 +84,13 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center gap-1 md:gap-2">
-              <form onSubmit={handleSearch} className="hidden sm:block relative w-36 md:w-48">
-                <Input type="search" placeholder="Search..." className="pr-10 h-9" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-9 w-9 text-muted-foreground">
-                  <Search className="h-4 w-4" />
+              {pathname !== '/products' && (
+                <Button variant="ghost" size="icon" asChild aria-label="Search">
+                  <Link href="/products">
+                    <Search className="h-5 w-5" />
+                  </Link>
                 </Button>
-              </form>
+              )}
               <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
                 <Link href="/wishlist">
                   <Heart className="h-5 w-5" />
@@ -142,8 +139,8 @@ export default function Header() {
                   </Button>
                 </div>
                 <div className="mb-6 border-b pb-6">
-                  <form onSubmit={handleSearch} className="relative w-full">
-                      <Input type="search" placeholder="Search products..." className="pr-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                  <form onSubmit={handleMobileSearch} className="relative w-full">
+                      <Input name="q" type="search" placeholder="Search products..." className="pr-10" />
                       <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-full w-10 text-muted-foreground">
                         <Search className="h-4 w-4" />
                       </Button>

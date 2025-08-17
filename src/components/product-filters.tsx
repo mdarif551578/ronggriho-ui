@@ -18,7 +18,7 @@ export default function ProductFilters({ allProducts }: ProductFiltersProps) {
     return (
         <>
             {/* Mobile Filter Collapsible */}
-            <div className="lg:hidden mb-4">
+            <div className="lg:hidden">
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                     <CollapsibleTrigger asChild>
                         <Button variant="outline" className="w-full">
@@ -33,7 +33,7 @@ export default function ProductFilters({ allProducts }: ProductFiltersProps) {
             </div>
 
             {/* Desktop Filter Sidebar */}
-            <div className="hidden lg:block lg:col-span-1">
+            <div className="hidden lg:block">
                 <FilterSidebar allProducts={allProducts} />
             </div>
         </>
