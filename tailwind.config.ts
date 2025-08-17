@@ -15,6 +15,11 @@ export default {
         code: ['monospace'],
       },
       colors: {
+        yinmn_blue: { DEFAULT: '#3d5a80', 100: '#0c1219', 200: '#192433', 300: '#25364c', 400: '#314866', 500: '#3d5a80', 600: '#5279ab', 700: '#7d9ac0', 800: '#a8bcd5', 900: '#d4ddea' },
+        powder_blue: { DEFAULT: '#98c1d9', 100: '#142936', 200: '#28526b', 300: '#3b7ca1', 400: '#61a0c5', 500: '#98c1d9', 600: '#accde0', 700: '#c0d9e8', 800: '#d5e6f0', 900: '#eaf2f7' },
+        light_cyan: { DEFAULT: '#e0fbfc', 100: '#095456', 200: '#11a7ad', 300: '#32e5eb', 400: '#88f0f3', 500: '#e0fbfc', 600: '#e5fcfc', 700: '#ecfcfd', 800: '#f2fdfe', 900: '#f9fefe' },
+        burnt_sienna: { DEFAULT: '#ee6c4d', 100: '#3a1005', 200: '#74200b', 300: '#ae3010', 400: '#e73f16', 500: '#ee6c4d', 600: '#f28b71', 700: '#f5a895', 800: '#f8c5b8', 900: '#fce2dc' },
+        gunmetal: { DEFAULT: '#293241', 100: '#080a0d', 200: '#10141a', 300: '#191e28', 400: '#212835', 500: '#293241', 600: '#485873', 700: '#6a7fa2', 800: '#9ca9c1', 900: '#cdd4e0' },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
