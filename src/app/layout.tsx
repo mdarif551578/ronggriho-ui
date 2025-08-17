@@ -41,6 +41,7 @@ export default function RootLayout({
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>
+        <div id="recaptcha-container"></div>
       </body>
     </html>
   );
