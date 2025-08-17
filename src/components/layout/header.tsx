@@ -141,6 +141,14 @@ export default function Header() {
                     <X className="h-6 w-6" />
                   </Button>
                 </div>
+                <div className="mb-6 border-b pb-6">
+                  <form onSubmit={handleSearch} className="relative w-full">
+                      <Input type="search" placeholder="Search products..." className="pr-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                      <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-full w-10 text-muted-foreground">
+                        <Search className="h-4 w-4" />
+                      </Button>
+                  </form>
+                </div>
                 <nav className="flex flex-col gap-4">
                   {navLinks.map((link) => (
                     <Link
@@ -153,14 +161,6 @@ export default function Header() {
                     </Link>
                   ))}
                 </nav>
-                <div className="mt-6 border-t pt-6">
-                  <form onSubmit={handleSearch} className="relative w-full">
-                      <Input type="search" placeholder="Search..." className="pr-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                      <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-full w-10 text-muted-foreground">
-                        <Search className="h-4 w-4" />
-                      </Button>
-                  </form>
-                </div>
               </div>
             </motion.div>
           )}
