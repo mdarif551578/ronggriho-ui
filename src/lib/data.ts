@@ -1,134 +1,50 @@
 
 import 'server-only';
 import { Product } from './types';
+import { app } from './firebase';
+import { getFirestore, collection, getDocs, doc, getDoc, query, where } from 'firebase/firestore';
 
-const products: Product[] = [
-  {
-    id: '1',
-    slug: 'classic-blue-denim-shirt',
-    name: 'Classic Blue Denim Shirt',
-    description: 'A timeless denim shirt made from 100% premium cotton. Perfect for a casual look, it features a classic collar, button-front closure, and two chest pockets. Versatile and durable for everyday wear.',
-    price: 2499.99,
-    discountPrice: 1999.99,
-    category: 'Western',
-    tags: ['shirt', 'denim', 'men', 'featured'],
-    images: ['https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png'],
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: [{ name: 'Blue', hex: '#3b82f6' }],
-    relatedProductIds: ['3', '4', '7'],
-  },
-  {
-    id: '2',
-    slug: 'handwoven-jamdani-saree',
-    name: 'Handwoven Jamdani Saree',
-    description: 'Experience elegance with this exquisite handwoven Jamdani saree. Crafted by skilled artisans in Bangladesh, this saree features intricate floral motifs on a lightweight, airy fabric. A true piece of heritage.',
-    price: 7999.99,
-    category: 'Ethnic Wear',
-    tags: ['saree', 'ethnic', 'women', 'featured', 'handwoven'],
-    images: ['https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png'],
-    sizes: ['One Size'],
-    colors: [{ name: 'Cream', hex: '#f5f5dc' }, { name: 'Red', hex: '#dc2626' }],
-    relatedProductIds: ['5', '6', '8'],
-  },
-  {
-    id: '3',
-    slug: 'urban-graphic-tee',
-    name: 'Urban Graphic Tee',
-    description: 'Make a statement with this soft cotton graphic t-shirt. Featuring a bold, modern design inspired by city life, this tee offers both comfort and style. Ideal for pairing with jeans or shorts.',
-    price: 999.99,
-    category: 'T-Shirts',
-    tags: ['t-shirt', 'men', 'women'],
-    images: ['https://placehold.co/800x1000.png', 'https://placehold.co/800x1000.png'],
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: [{ name: 'Black', hex: '#000000' }, { name: 'White', hex: '#ffffff' }],
-    relatedProductIds: ['1', '4', '7'],
-  },
-  {
-    id: '4',
-    slug: 'leather-crossbody-bag',
-    name: 'Leather Crossbody Bag',
-    description: 'A chic and practical accessory, this crossbody bag is crafted from high-quality faux leather. It features multiple compartments to keep your essentials organized and an adjustable strap for comfort.',
-    price: 3299.99,
-    discountPrice: 2799.99,
-    category: 'Accessories',
-    tags: ['bag', 'accessories', 'women'],
-    images: ['https://placehold.co/800x1000.png'],
-    sizes: ['One Size'],
-    colors: [{ name: 'Tan', hex: '#d2b48c' }],
-    relatedProductIds: ['2', '5', '6'],
-  },
-  {
-    id: '5',
-    slug: 'embroidered-salwar-kameez',
-    name: 'Embroidered Salwar Kameez',
-    description: 'This elegant salwar kameez set is perfect for festive occasions. It showcases delicate embroidery on the neckline and sleeves, paired with a matching dupatta for a complete, graceful look.',
-    price: 4599.99,
-    category: 'Ethnic Wear',
-    tags: ['salwar-kameez', 'ethnic', 'women', 'featured'],
-    images: ['https://placehold.co/800x1000.png'],
-    sizes: ['M', 'L', 'XL'],
-    colors: [{ name: 'Teal', hex: '#008080' }],
-    relatedProductIds: ['2', '6', '8'],
-  },
-  {
-    id: '6',
-    slug: 'silver-jhumka-earrings',
-    name: 'Silver Jhumka Earrings',
-    description: 'Complete your ethnic ensemble with these stunning silver-plated jhumka earrings. They feature intricate detailing and a classic design that adds a touch of traditional charm to any outfit.',
-    price: 1299.99,
-    category: 'Accessories',
-    tags: ['earrings', 'jewelry', 'women', 'ethnic'],
-    images: ['https://placehold.co/800x1000.png'],
-    sizes: ['One Size'],
-    colors: [{ name: 'Silver', hex: '#c0c0c0' }],
-    relatedProductIds: ['2', '5', '8'],
-  },
-  {
-    id: '7',
-    slug: 'mens-slim-fit-chinos',
-    name: 'Men\'s Slim-Fit Chinos',
-    description: 'Versatile and stylish, these slim-fit chinos are a wardrobe staple. Made from a comfortable stretch-cotton blend, they can be dressed up or down for any occasion. Available in multiple classic colors.',
-    price: 2199.99,
-    category: 'Western',
-    tags: ['pants', 'chinos', 'men', 'featured'],
-    images: ['https://placehold.co/800x1000.png'],
-    sizes: ['30', '32', '34', '36'],
-    colors: [{ name: 'Khaki', hex: '#f0e68c' }, { name: 'Navy', hex: '#000080' }],
-    relatedProductIds: ['1', '3', '8'],
-  },
-  {
-    id: '8',
-    slug: 'floral-print-midi-dress',
-    name: 'Floral Print Midi Dress',
-    description: 'A beautiful midi dress with a vibrant floral print, perfect for spring and summer. It features a flattering V-neck, cinched waist, and a flowy skirt that moves gracefully with you.',
-    price: 3499.99,
-    discountPrice: 2999.99,
-    category: 'Western',
-    tags: ['dress', 'women', 'floral'],
-    images: ['https://placehold.co/800x1000.png'],
-    sizes: ['S', 'M', 'L'],
-    colors: [{ name: 'Pink', hex: '#ffc0cb' }],
-    relatedProductIds: ['2', '4', '5'],
-  },
-];
+const db = getFirestore(app);
 
-// Simulate network delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// In a real app, you would implement caching for these requests.
+async function fetchProductsFromFirestore(): Promise<Product[]> {
+    const productsCol = collection(db, 'products');
+    const productsSnapshot = await getDocs(productsCol);
+    const productsList = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    return productsList;
+}
+
+async function fetchProductFromFirestore(slug: string): Promise<Product | undefined> {
+    const q = query(collection(db, "products"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return undefined;
+    }
+    const productDoc = querySnapshot.docs[0];
+    return { id: productDoc.id, ...productDoc.data() } as Product;
+}
+
+
+// Simulate network delay - This can be removed if you don't need to simulate latency
+// const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function getProducts(): Promise<Product[]> {
-  // In a real app, you'd fetch this from a database
-  await delay(100); 
-  return JSON.parse(JSON.stringify(products));
+  // Now fetches from Firestore
+  const products = await fetchProductsFromFirestore();
+  return products;
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
-  await delay(100);
-  const allProducts = await getProducts();
-  return allProducts.find(p => p.slug === slug);
+  const product = await fetchProductFromFirestore(slug);
+  return product;
 }
 
 export async function getRelatedProducts(product: Product): Promise<Product[]> {
-  await delay(100);
-  const allProducts = await getProducts();
+    if (!product.relatedProductIds || product.relatedProductIds.length === 0) {
+        return [];
+    }
+  const allProducts = await fetchProductsFromFirestore();
+  // Firestore doesn't have a direct `IN` query that's easy to use with slugs/ids without fetching all,
+  // so we filter locally for simplicity. For large catalogs, this should be optimized.
   return allProducts.filter(p => product.relatedProductIds.includes(p.id) && p.id !== product.id);
 }
