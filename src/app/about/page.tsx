@@ -31,7 +31,7 @@ export default function AboutPage() {
       <div className="container mx-auto px-4 py-16">
         {/* Our Story */}
         <section className="max-w-4xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-center font-headline mb-8">Our Story</h2>
+          <h2 className="text-3xl font-bold text-center font-headline mb-8 text-primary">Our Story</h2>
           <Card>
             <CardContent className="p-8 text-center text-lg text-muted-foreground">
               <p>

@@ -2,15 +2,18 @@
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Github, Twitter, Instagram } from 'lucide-react';
+import { Github, Twitter, Instagram, AppWindow } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-background border-t">
+    <footer className="bg-secondary/50 border-t">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold font-headline text-primary mb-4">Rong Griho</h3>
+             <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline text-primary mb-4">
+                <AppWindow className="h-6 w-6" />
+                <span>Rong Griho</span>
+              </Link>
             <p className="text-muted-foreground text-sm">
               Your one-stop shop for modern and traditional Bangladeshi fashion.
             </p>
