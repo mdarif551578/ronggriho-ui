@@ -76,7 +76,7 @@ export default function Header() {
                 <Menu className="h-6 w-6" />
               </Button>
               <Link href="/" className="text-xl md:text-2xl font-bold font-headline text-primary">
-                Dhakai Threads
+                Rong Griho
               </Link>
             </div>
 
@@ -156,7 +156,7 @@ export default function Header() {
               <div className="container mx-auto px-4 pt-4 pb-6">
                 <div className="flex justify-between items-center mb-6">
                   <Link href="/" className="text-2xl font-bold font-headline text-primary" onClick={toggleMenu}>
-                    Dhakai Threads
+                    Rong Griho
                   </Link>
                   <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Close menu">
                     <X className="h-6 w-6" />

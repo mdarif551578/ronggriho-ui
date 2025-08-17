@@ -10,7 +10,7 @@ export default function AboutPage() {
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white">
         <Image
           src="https://placehold.co/1600x600.png"
-          alt="Dhakai Threads Team"
+          alt="Rong Griho Team"
           layout="fill"
           objectFit="cover"
           className="z-0"
@@ -19,7 +19,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="z-20 p-4">
           <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight">
-            About Dhakai Threads
+            About Rong Griho
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg">
             Weaving tradition with contemporary style.
@@ -35,7 +35,7 @@ export default function AboutPage() {
           <Card>
             <CardContent className="p-8 text-center text-lg text-muted-foreground">
               <p>
-                Founded in the heart of Dhaka, Dhakai Threads was born from a passion for Bangladesh's rich textile heritage and a vision to bring it to the modern wardrobe. We believe that fashion is a form of storytelling, and our collections are a testament to the intricate artistry of local craftsmen, reimagined for the global citizen. We partner with skilled artisans to create pieces that are not only beautiful but also sustainable and ethical.
+                Founded in the heart of Dhaka, Rong Griho was born from a passion for Bangladesh's rich textile heritage and a vision to bring it to the modern wardrobe. We believe that fashion is a form of storytelling, and our collections are a testament to the intricate artistry of local craftsmen, reimagined for the global citizen. We partner with skilled artisans to create pieces that are not only beautiful but also sustainable and ethical.
               </p>
             </CardContent>
           </Card>

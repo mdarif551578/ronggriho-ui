@@ -30,7 +30,7 @@ export default function TermsOfServicePage() {
                     <CardTitle>3. Intellectual Property</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground space-y-4">
-                    <p>The Service and its original content, features, and functionality are and will remain the exclusive property of Dhakai Threads and its licensors. The Service is protected by copyright, trademark, and other laws of both Bangladesh and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of Dhakai Threads.</p>
+                    <p>The Service and its original content, features, and functionality are and will remain the exclusive property of Rong Griho and its licensors. The Service is protected by copyright, trademark, and other laws of both Bangladesh and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of Rong Griho.</p>
                 </CardContent>
 
                 <CardHeader>
@@ -51,7 +51,7 @@ export default function TermsOfServicePage() {
                     <CardTitle>6. Limitation of Liability</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground space-y-4">
-                     <p>In no event shall Dhakai Threads, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
+                     <p>In no event shall Rong Griho, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
                 </CardContent>
                 
                 <CardHeader>
@@ -72,7 +72,7 @@ export default function TermsOfServicePage() {
                     <CardTitle>9. Contact Us</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground space-y-4">
-                     <p>If you have any questions about these Terms, please contact us at support@dhakaithreads.com.</p>
+                     <p>If you have any questions about these Terms, please contact us at support@ronggriho.com.</p>
                 </CardContent>
             </Card>
         </div>

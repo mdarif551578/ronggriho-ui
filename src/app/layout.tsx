@@ -9,8 +9,8 @@ import { WishlistProvider } from '@/context/wishlist-context';
 import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
-  title: 'Dhakai Threads',
-  description: 'Modern, sleek e-commerce for Bangladeshi fashion.',
+  title: 'Rong Griho - Modern Bangladeshi Fashion',
+  description: 'Discover contemporary and traditional Bangladeshi fashion at Rong Griho. Shop for unique, high-quality apparel and accessories.',
 };
 
 export default function RootLayout({

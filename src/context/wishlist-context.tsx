@@ -20,14 +20,14 @@ export const WishlistProvider = ({ children }: WishlistProviderProps) => {
   const [wishlist, setWishlist] = useState<Product[]>([]);
 
   useEffect(() => {
-    const storedWishlist = localStorage.getItem('dhakai_threads_wishlist');
+    const storedWishlist = localStorage.getItem('rong_griho_wishlist');
     if (storedWishlist) {
       setWishlist(JSON.parse(storedWishlist));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('dhakai_threads_wishlist', JSON.stringify(wishlist));
+    localStorage.setItem('rong_griho_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
   
   const addToWishlist = (product: Product) => {

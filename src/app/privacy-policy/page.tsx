@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
                     <CardTitle>1. Introduction</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground space-y-4">
-                    <p>Welcome to Dhakai Threads. We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you visit our website.</p>
+                    <p>Welcome to Rong Griho. We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you visit our website.</p>
                 </CardContent>
 
                 <CardHeader>
@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
                     <CardTitle>7. Changes to This Privacy Policy</CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground space-y-4">
-                    <p>Dhakai Threads has the discretion to update this privacy policy at any time. When we do, we will revise the updated date at the top of this page. We encourage Users to frequently check this page for any changes to stay informed about how we are helping to protect the personal information we collect.</p>
+                    <p>Rong Griho has the discretion to update this privacy policy at any time. When we do, we will revise the updated date at the top of this page. We encourage Users to frequently check this page for any changes to stay informed about how we are helping to protect the personal information we collect.</p>
                 </CardContent>
 
                 <CardHeader>
@@ -76,9 +76,9 @@ export default function PrivacyPolicyPage() {
                 <CardContent className="text-muted-foreground space-y-4">
                     <p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please contact us at:</p>
                     <p>
-                        Dhakai Threads<br/>
+                        Rong Griho<br/>
                         123 Gulshan Avenue, Dhaka, Bangladesh<br/>
-                        support@dhakaithreads.com
+                        support@ronggriho.com
                     </p>
                 </CardContent>
             </Card>

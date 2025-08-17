@@ -25,7 +25,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    const storedCart = localStorage.getItem('dhakai_threads_cart');
+    const storedCart = localStorage.getItem('rong_griho_cart');
     if (storedCart) {
       setCart(JSON.parse(storedCart));
     }
@@ -33,9 +33,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
 
   useEffect(() => {
     if (cart.length > 0) {
-      localStorage.setItem('dhakai_threads_cart', JSON.stringify(cart));
+      localStorage.setItem('rong_griho_cart', JSON.stringify(cart));
     } else {
-      localStorage.removeItem('dhakai_threads_cart');
+      localStorage.removeItem('rong_griho_cart');
     }
   }, [cart]);
   
