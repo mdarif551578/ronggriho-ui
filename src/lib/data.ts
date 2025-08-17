@@ -1,6 +1,8 @@
 
 import 'server-only';
 import type { Product } from './types';
+import { firestore } from './firebase';
+import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
 
 const mockProducts: Product[] = [
   {
@@ -207,20 +209,35 @@ const mockProducts: Product[] = [
   }
 ];
 
-// Simulate network delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const seedProducts = async () => {
+  const productsCollection = collection(firestore, 'products');
+  const batch = writeBatch(firestore);
+  mockProducts.forEach((product) => {
+    const docRef = doc(productsCollection, product.id);
+    batch.set(docRef, product);
+  });
+  await batch.commit();
+};
 
 export async function getProducts(): Promise<Product[]> {
-  // await delay(500); // Simulate API latency
-  return mockProducts;
+  const productsCollection = collection(firestore, 'products');
+  const querySnapshot = await getDocs(productsCollection);
+  
+  if (querySnapshot.empty) {
+    await seedProducts();
+    const seededSnapshot = await getDocs(productsCollection);
+    return seededSnapshot.docs.map(doc => doc.data() as Product);
+  }
+
+  return querySnapshot.docs.map(doc => doc.data() as Product);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
-  // await delay(500); // Simulate API latency
-  return mockProducts.find(p => p.slug === slug);
+   const products = await getProducts();
+   return products.find(p => p.slug === slug);
 }
 
 export async function getRelatedProducts(product: Product): Promise<Product[]> {
-  // await delay(500);
-  return mockProducts.filter(p => product.relatedProductIds.includes(p.id) && p.id !== product.id);
+  const allProducts = await getProducts();
+  return allProducts.filter(p => product.relatedProductIds.includes(p.id) && p.id !== product.id);
 }
