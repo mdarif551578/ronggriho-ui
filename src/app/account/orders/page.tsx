@@ -7,10 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { ShoppingBag } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const orders = [
     { id: "DT12345", date: "2023-10-26", status: "Delivered", total: 3499.98 },
@@ -19,27 +15,6 @@ const orders = [
 ]
 
 export default function OrdersPage() {
-    const { user, loading } = useAuth();
-    const router = useRouter();
-
-    useEffect(() => {
-        if (!loading && !user) {
-            router.push('/auth/login');
-        }
-    }, [user, loading, router]);
-
-    if (loading || !user) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <Skeleton className="h-10 w-1/4 mb-8" />
-                <Card>
-                    <CardContent className="p-6">
-                        <Skeleton className="h-40 w-full" />
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
 
     return (
         <div className="container mx-auto px-4 py-8">

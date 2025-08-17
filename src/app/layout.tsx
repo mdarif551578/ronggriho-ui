@@ -6,7 +6,6 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { CartProvider } from '@/context/cart-context';
 import { WishlistProvider } from '@/context/wishlist-context';
-import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
   title: 'Rong Griho - Modern Bangladeshi Fashion',
@@ -29,7 +28,6 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
           <CartProvider>
             <WishlistProvider>
               <div className="flex min-h-screen flex-col">
@@ -40,8 +38,6 @@ export default function RootLayout({
               <Toaster />
             </WishlistProvider>
           </CartProvider>
-        </AuthProvider>
-        <div id="recaptcha-container"></div>
       </body>
     </html>
   );

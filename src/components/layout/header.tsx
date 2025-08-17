@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '@/hooks/use-auth';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +38,6 @@ const mobileNavLinks = [
 
 export default function Header() {
   const { cart } = useCart();
-  const { user, logout } = useAuth();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,16 +45,11 @@ export default function Header() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/');
-  };
-
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
-      setIsMenuOpe(false);
+      setIsMenuOpen(false);
     }
   };
 
@@ -122,32 +115,11 @@ export default function Header() {
                 </Link>
               </Button>
               
-              <ClientOnly>
-                {user ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                       <Button variant="ghost" size="icon" aria-label="User Account">
-                         <User className="h-5 w-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild><Link href="/account">Profile</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/account/orders">Orders</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/wishlist">Wishlist</Link></DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button variant="ghost" size="icon" asChild aria-label="Login">
-                    <Link href="/auth/login">
-                      <User className="h-5 w-5" />
-                    </Link>
-                  </Button>
-                )}
-              </ClientOnly>
+              <Button variant="ghost" size="icon" asChild aria-label="Login">
+                <Link href="/auth/login">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -161,8 +133,9 @@ export default function Header() {
             >
               <div className="container mx-auto px-4 pt-4 pb-6">
                 <div className="flex justify-between items-center mb-6">
-                  <Link href="/" className="text-2xl font-bold font-headline text-primary" onClick={toggleMenu}>
-                    Rong Griho
+                   <Link href="/" className="flex items-center gap-2 text-xl md:text-2xl font-bold font-headline text-primary" onClick={toggleMenu}>
+                    <AppWindow className="h-6 w-6" />
+                    <span>Rong Griho</span>
                   </Link>
                   <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Close menu">
                     <X className="h-6 w-6" />
