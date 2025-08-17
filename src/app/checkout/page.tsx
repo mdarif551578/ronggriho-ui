@@ -13,7 +13,6 @@ import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const districts = [
     "Bagerhat", "Bandarban", "Barguna", "Barisal", "Bhola", "Bogra", "Brahmanbaria", "Chandpur",
@@ -220,26 +219,17 @@ export default function CheckoutPage() {
 
         {/* Right Column: Order Summary */}
         <div className="lg:w-1/3">
-            {/* Mobile Order Summary */}
             <div className="lg:hidden mb-8">
-                <Accordion type="single" collapsible>
-                    <AccordionItem value="order-summary">
-                        <AccordionTrigger>
-                           <div className="flex items-center gap-2 text-lg font-semibold">
-                             <ShoppingCart className="h-5 w-5" /> Show order summary
-                           </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                           <div className="mt-4 p-4 border rounded-lg">
-                                <h2 className="text-xl font-semibold mb-4">Your Order</h2>
-                                <OrderSummary />
-                           </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Your Order</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <OrderSummary />
+                    </CardContent>
+                </Card>
             </div>
-
-            {/* Desktop Order Summary */}
+            
             <Card className="sticky top-24 hidden lg:block">
               <CardHeader>
                 <CardTitle>Your Order</CardTitle>
