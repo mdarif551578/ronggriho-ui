@@ -5,8 +5,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { User, ShoppingBag, Heart, LogOut } from "lucide-react";
 import Link from 'next/link';
+import { useAuth } from "@/hooks/use-auth";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AccountPage() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        toast({ title: "Logged Out", description: "You have been successfully logged out." });
+        router.push('/');
+    };
+
+    if (loading) {
+        return <div className="container mx-auto px-4 py-8 text-center">Loading account details...</div>;
+    }
+
+    if (!user) {
+         router.push('/auth/login');
+         return null;
+    }
+
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -16,14 +40,14 @@ export default function AccountPage() {
                     <Card>
                         <CardHeader className="text-center">
                             <User className="h-16 w-16 mx-auto rounded-full bg-primary/10 text-primary p-3" />
-                            <CardTitle>Rong Griho User</CardTitle>
-                            <CardDescription>user@example.com</CardDescription>
+                            <CardTitle>{user.displayName || 'Rong Griho User'}</CardTitle>
+                            <CardDescription>{user.email}</CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-2">
                            <Button asChild variant="ghost" className="justify-start gap-2"><Link href="/account/profile"><User className="h-5 w-5" /> Profile Settings</Link></Button>
                            <Button asChild variant="ghost" className="justify-start gap-2"><Link href="/account/orders"><ShoppingBag className="h-5 w-5" /> My Orders</Link></Button>
                            <Button asChild variant="ghost" className="justify-start gap-2"><Link href="/wishlist"><Heart className="h-5 w-5" /> My Wishlist</Link></Button>
-                           <Button variant="destructive" className="justify-start gap-2 mt-4"><LogOut className="h-5 w-5" /> Logout</Button>
+                           <Button variant="destructive" className="justify-start gap-2 mt-4" onClick={handleLogout}><LogOut className="h-5 w-5" /> Logout</Button>
                         </CardContent>
                     </Card>
                 </div>

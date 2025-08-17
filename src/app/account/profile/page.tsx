@@ -5,8 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    if (loading) {
+        return <div className="container mx-auto px-4 py-8 text-center">Loading profile...</div>;
+    }
+
+    if (!user) {
+        router.push('/auth/login');
+        return null;
+    }
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -22,11 +35,11 @@ export default function ProfilePage() {
                         <div className="grid md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>
-                                <Input id="name" defaultValue="Rong Griho User" />
+                                <Input id="name" defaultValue={user.displayName || ""} />
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" defaultValue="user@example.com" disabled />
+                                <Input id="email" type="email" defaultValue={user.email || ""} disabled />
                             </div>
                         </div>
                          <div className="space-y-2">
