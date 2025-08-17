@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, FormEvent, useEffect, FC } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -142,7 +142,7 @@ export default function TrackingPage() {
                                 </div>
                                 <p className="font-semibold">{event.status}</p>
                                 <p className="text-sm text-muted-foreground">{event.location}</p>
-                                <p className="text-xs text-muted-foreground">{event.date.toDate().toLocaleDateString()}</p>
+                                <p className="text-xs text-muted-foreground">{new Date(event.date.seconds * 1000).toLocaleString()}</p>
                             </li>
                         ))}
                     </ul>
