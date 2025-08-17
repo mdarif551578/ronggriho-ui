@@ -5,15 +5,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCS_RLSBK07PWx2PQ4dEPauiZTgSPnqcKU",
-  authDomain: "ronggriho.firebaseapp.com",
-  projectId: "ronggriho",
-  storageBucket: "ronggriho.appspot.com",
-  messagingSenderId: "1032337393466",
-  appId: "1:1032337393466:web:ebe8198d5c559d617e7203",
-  measurementId: "G-H2GR4LN9V5",
+  apiKey: "AIzaSyAYxNV1soev0QJ5m8_gz_qykG5a4qBdrLo",
+  authDomain: "dhakai-threads.firebaseapp.com",
+  projectId: "dhakai-threads",
+  storageBucket: "dhakai-threads.appspot.com",
+  messagingSenderId: "932531070870",
+  appId: "1:932531070870:web:87bae6648e3b7bee909fb7"
 };
 
 
