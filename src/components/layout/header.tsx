@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useState, FormEvent } from 'react';
-import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info, AppWindow } from 'lucide-react';
+import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -70,7 +70,7 @@ export default function Header() {
                 <Menu className="h-6 w-6" />
               </Button>
               <Link href="/" className="flex items-center gap-2 text-xl md:text-2xl font-bold font-headline text-primary">
-                <AppWindow className="h-6 w-6" />
+                <Shirt className="h-6 w-6" />
                 <span>Rong Griho</span>
               </Link>
             </div>
@@ -134,7 +134,7 @@ export default function Header() {
               <div className="container mx-auto px-4 pt-4 pb-6">
                 <div className="flex justify-between items-center mb-6">
                    <Link href="/" className="flex items-center gap-2 text-xl md:text-2xl font-bold font-headline text-primary" onClick={toggleMenu}>
-                    <AppWindow className="h-6 w-6" />
+                    <Shirt className="h-6 w-6" />
                     <span>Rong Griho</span>
                   </Link>
                   <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Close menu">
