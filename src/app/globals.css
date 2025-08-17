@@ -8,14 +8,14 @@ body {
 
 @layer base {
   :root {
-    --background: 210 100% 98%; /* light_cyan at 98% lightness for a near-white */
+    --background: 180 88% 98%; /* light_cyan at 98% lightness */
     --foreground: 215 28% 21%; /* gunmetal */
-    --card: 210 100% 100%; /* white */
+    --card: 180 88% 100%; /* white */
     --card-foreground: 215 28% 21%; /* gunmetal */
-    --popover: 210 100% 100%;
+    --popover: 180 88% 100%;
     --popover-foreground: 215 28% 21%;
     --primary: 215 35% 37%; /* yinmn_blue */
-    --primary-foreground: 210 100% 98%;
+    --primary-foreground: 180 88% 98%;
     --secondary: 202 52% 72%; /* powder_blue */
     --secondary-foreground: 215 28% 21%;
     --muted: 210 40% 96.1%;
