@@ -5,22 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Chrome, Smartphone } from 'lucide-react';
 
-function GoogleIcon() {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/><path d="M12 22c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6z"/><path d="M12 16a4 4 0 100-8 4 4 0 000 8z"/><path d="M12 12h.01"/>
-        </svg>
-    )
-}
-
-function PhoneIcon() {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
-    )
-}
 
 export default function LoginPage() {
   return (
@@ -57,11 +43,11 @@ export default function LoginPage() {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Button variant="outline">
-              <GoogleIcon className="mr-2 h-4 w-4" />
+              <Chrome className="mr-2 h-4 w-4" />
               Google
             </Button>
             <Button variant="outline">
-              <PhoneIcon className="mr-2 h-4 w-4" />
+              <Smartphone className="mr-2 h-4 w-4" />
               Phone
             </Button>
           </div>

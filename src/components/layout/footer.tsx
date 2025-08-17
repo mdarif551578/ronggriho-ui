@@ -32,6 +32,7 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
+              <li><Link href="/about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
               <li><Link href="/contact" className="text-muted-foreground hover:text-primary">Contact Us</Link></li>
               <li><Link href="/faq" className="text-muted-foreground hover:text-primary">FAQ</Link></li>
               <li><Link href="/returns" className="text-muted-foreground hover:text-primary">Return Policy</Link></li>
