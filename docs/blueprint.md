@@ -1,4 +1,4 @@
-# **App Name**: Dhakai Threads
+# **App Name**: Rong Griho
 
 ## Core Features:
 
