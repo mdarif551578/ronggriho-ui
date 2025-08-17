@@ -3,7 +3,11 @@
 import 'server-only';
 import type { Product } from './types';
 import { firestore } from './firebase-admin'; // Switch to admin SDK for server-side
-import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { collection, getDocs, writeBatch, doc } from 'firebase-admin/firestore';
+
+const docDataToProduct = (doc: FirebaseFirestore.DocumentData): Product => {
+  return doc as Product;
+};
 
 const mockProducts: Product[] = [
   {
@@ -230,10 +234,10 @@ export async function getProducts(): Promise<Product[]> {
       console.log("No products found, seeding database...");
       await seedProducts();
       const seededSnapshot = await getDocs(productsCollection);
-      return seededSnapshot.docs.map(doc => doc.data() as Product);
+      return seededSnapshot.docs.map(doc => docDataToProduct(doc.data()));
     }
 
-    return querySnapshot.docs.map(doc => doc.data() as Product);
+    return querySnapshot.docs.map(doc => docDataToProduct(doc.data()));
   } catch (error) {
     console.error("Error getting products: ", error);
     // In a real app, you might want to throw the error or return a specific error state.
@@ -251,3 +255,4 @@ export async function getRelatedProducts(product: Product): Promise<Product[]> {
   const allProducts = await getProducts();
   return allProducts.filter(p => product.relatedProductIds.includes(p.id) && p.id !== product.id);
 }
+
