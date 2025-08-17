@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Truck, PackageCheck, Package, CircleCheck, CircleX } from 'lucide-react';
+import { Truck, PackageCheck, Package, CircleCheck, CircleX, Warehouse } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { firestore } from '@/lib/firebase';
 import { doc, getDoc, Timestamp } from 'firebase/firestore';
@@ -36,30 +36,40 @@ export default function TrackingPage() {
             const orderData = orderSnap.data();
             const createdAt = (orderData.createdAt as Timestamp).toDate();
 
-            const events: TrackingEvent[] = [
-                {
-                    status: 'Order created',
-                    location: 'Warehouse',
-                    date: createdAt.toLocaleDateString(),
-                    icon: CircleCheck
-                }
-            ];
+            const allPossibleStages: { [key: string]: Omit<TrackingEvent, 'date'> } = {
+                created: { status: 'Order Created', location: 'Dhaka, Bangladesh', icon: CircleCheck },
+                processing: { status: 'Processing', location: 'Warehouse', icon: Warehouse },
+                shipped: { status: 'Shipped', location: 'In Transit', icon: Truck },
+                delivered: { status: 'Delivered', location: 'Delivered to customer', icon: PackageCheck },
+                cancelled: { status: 'Cancelled', location: 'Warehouse', icon: CircleX },
+            };
+            
+            const events: TrackingEvent[] = [];
+            const currentStatus = orderData.status.toLowerCase();
 
-            // This is a simplified status mapping. A real app might have more detailed events.
-            switch (orderData.status) {
-                case 'Processing':
-                    events.unshift({ status: 'Processing', location: 'Warehouse', date: createdAt.toLocaleDateString(), icon: Package });
-                    break;
-                case 'Shipped':
-                     events.unshift({ status: 'Shipped', location: 'In Transit', date: new Date().toLocaleDateString(), icon: Truck });
-                     break;
-                case 'Delivered':
-                     events.unshift({ status: 'Delivered', location: 'Delivered', date: new Date().toLocaleDateString(), icon: PackageCheck });
-                     break;
-                case 'Cancelled':
-                     events.unshift({ status: 'Cancelled', location: 'Warehouse', date: new Date().toLocaleDateString(), icon: CircleX });
-                     break;
+            // Add a slightly later date for subsequent stages for realism
+            const addDays = (date: Date, days: number) => {
+                const result = new Date(date);
+                result.setDate(result.getDate() + days);
+                return result;
             }
+
+            events.push({ ...allPossibleStages.created, date: createdAt.toLocaleDateString() });
+
+            if (currentStatus === 'cancelled') {
+                events.push({ ...allPossibleStages.cancelled, date: addDays(createdAt, 1).toLocaleDateString() });
+            } else {
+                 if (['processing', 'shipped', 'delivered'].includes(currentStatus)) {
+                    events.push({ ...allPossibleStages.processing, date: createdAt.toLocaleDateString() });
+                }
+                if (['shipped', 'delivered'].includes(currentStatus)) {
+                    events.push({ ...allPossibleStages.shipped, date: addDays(createdAt, 1).toLocaleDateString() });
+                }
+                if (['delivered'].includes(currentStatus)) {
+                    events.push({ ...allPossibleStages.delivered, date: addDays(createdAt, 2).toLocaleDateString() });
+                }
+            }
+
 
             setTrackingInfo(events.reverse());
             setStatus('found');
