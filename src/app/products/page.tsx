@@ -1,21 +1,26 @@
-
 import ProductCard from '@/components/product-card';
-import { getProducts } from '@/lib/mock-data';
-import { Product } from '@/lib/mock-data';
+import { getProducts } from '@/lib/data';
+import { Product } from '@/lib/types';
 import FilterSidebar from '@/components/filter-sidebar';
 
-export default function ProductsPage({
+export default async function ProductsPage({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const allProducts = getProducts();
+  const allProducts = await getProducts();
 
   const sortProducts = (products: Product[]): Product[] => {
     const sort = searchParams?.sort;
     if (sort === 'newest') {
       // Assuming higher ID means newer product.
       return [...products].sort((a, b) => parseInt(b.id) - parseInt(a.id));
+    }
+     if (sort === 'price-asc') {
+      return [...products].sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
+    }
+    if (sort === 'price-desc') {
+      return [...products].sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price));
     }
     if (sort === 'discount') {
       return [...products].sort((a, b) => (b.discountPrice ? 1 : -1) - (a.discountPrice ? 1 : -1) || (b.discountPrice || 0) - (a.discountPrice || 0));
@@ -30,7 +35,7 @@ export default function ProductsPage({
     
     const categories = searchParams.category ? (Array.isArray(searchParams.category) ? searchParams.category : [searchParams.category]) : [];
     if (categories.length > 0) {
-      filtered = filtered.filter(product => categories.map(c => c.toLowerCase()).includes(product.category.toLowerCase()));
+      filtered = filtered.filter(product => categories.map(c => c.toLowerCase()).includes(product.category.toLowerCase().replace(' ', '-')));
     }
 
     const sizes = searchParams.size ? (Array.isArray(searchParams.size) ? searchParams.size : [searchParams.size]) : [];
@@ -84,7 +89,7 @@ export default function ProductsPage({
     <div className="container mx-auto px-4 py-8">
       <div className="grid lg:grid-cols-4 gap-8">
         <div className="lg:col-span-1">
-          <FilterSidebar />
+          <FilterSidebar allProducts={allProducts} />
         </div>
         <div className="lg:col-span-3">
           <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8">

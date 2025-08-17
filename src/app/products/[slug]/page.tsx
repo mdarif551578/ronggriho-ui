@@ -2,8 +2,9 @@
 
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { useState } from 'react';
-import { getProductBySlug, getRelatedProducts } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
+import { getProductBySlug, getRelatedProducts } from '@/lib/data';
+import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,16 +15,40 @@ import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = getProductBySlug(params.slug);
-  const relatedProducts = getRelatedProducts(params.slug);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState<string | undefined>(product?.sizes[0]);
-  const [selectedColor, setSelectedColor] = useState<string | undefined>(product?.colors[0].name);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>();
+  const [selectedColor, setSelectedColor] = useState<string | undefined>();
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      const fetchedProduct = await getProductBySlug(params.slug);
+      if (fetchedProduct) {
+        setProduct(fetchedProduct);
+        setSelectedSize(fetchedProduct.sizes[0]);
+        setSelectedColor(fetchedProduct.colors[0].name);
+        const fetchedRelated = await getRelatedProducts(params.slug);
+        setRelatedProducts(fetchedRelated);
+      }
+      setLoading(false);
+    };
+    fetchProduct();
+  }, [params.slug]);
+
+
+  if (loading) {
+    return <ProductPageSkeleton />;
+  }
 
   if (!product) {
     notFound();
@@ -58,25 +83,26 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
         {/* Product Images */}
         <div>
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            width={800}
-            height={1000}
-            className="w-full rounded-lg shadow-lg object-cover aspect-[4/5]"
-            data-ai-hint="fashion product closeup"
-          />
+          <div className="aspect-[4/5] relative">
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              className="w-full rounded-lg shadow-lg object-cover"
+              data-ai-hint="fashion product closeup"
+            />
+          </div>
           <div className="grid grid-cols-4 gap-2 mt-2">
             {product.images.map((img, index) => (
-              <Image
-                key={index}
-                src={img}
-                alt={`${product.name} thumbnail ${index + 1}`}
-                width={200}
-                height={250}
-                className="w-full rounded-md cursor-pointer border-2 border-transparent hover:border-primary"
-                data-ai-hint="fashion product thumbnail"
-              />
+              <div key={index} className="aspect-square relative">
+                <Image
+                  src={img}
+                  alt={`${product.name} thumbnail ${index + 1}`}
+                  fill
+                  className="w-full rounded-md cursor-pointer border-2 border-transparent hover:border-primary object-cover"
+                  data-ai-hint="fashion product thumbnail"
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -173,6 +199,41 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         <h2 className="text-3xl font-bold font-headline mb-6">Complete the Look</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function ProductPageSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <div>
+          <Skeleton className="w-full aspect-[4/5] rounded-lg" />
+          <div className="grid grid-cols-4 gap-2 mt-2">
+            <Skeleton className="w-full aspect-square rounded-md" />
+            <Skeleton className="w-full aspect-square rounded-md" />
+            <Skeleton className="w-full aspect-square rounded-md" />
+            <Skeleton className="w-full aspect-square rounded-md" />
+          </div>
+        </div>
+        <div className="py-4 space-y-4">
+          <Skeleton className="h-4 w-1/4" />
+          <Skeleton className="h-10 w-3/4" />
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="h-8 w-1/3" />
+          <Separator className="my-6" />
+          <div className="grid grid-cols-2 gap-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <Skeleton className="h-10 w-1/4" />
+          <div className="flex gap-4 mt-6">
+            <Skeleton className="h-12 flex-1" />
+            <Skeleton className="h-12 flex-1" />
+          </div>
         </div>
       </div>
     </div>

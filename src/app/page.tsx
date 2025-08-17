@@ -5,10 +5,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/product-card';
-import { getProducts } from '@/lib/mock-data';
+import { getProducts } from '@/lib/data';
+import type { Product } from '@/lib/types';
 
-export default function Home() {
-  const allProducts = getProducts();
+
+export default async function Home() {
+  const allProducts: Product[] = await getProducts();
   const flashDeals = allProducts.filter(p => p.discountPrice).slice(0, 4);
   const featuredProducts = allProducts.filter(p => p.tags.includes('featured')).slice(0, 4);
 
@@ -26,14 +28,13 @@ export default function Home() {
         <Image
           src="https://placehold.co/1600x900.png"
           alt="Fashion model"
-          layout="fill"
-          objectFit="cover"
-          className="z-0"
+          fill
+          className="z-0 object-cover"
           data-ai-hint="fashion banner"
         />
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="z-20 p-4">
-          <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight text-shadow-lg">
+          <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight">
             Style Redefined, Locally Inspired
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl">
@@ -65,7 +66,7 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center font-headline mb-8">Shop by Category</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {categories.map(category => (
-            <Link key={category.name} href={`/products?category=${category.name.toLowerCase()}`} className="group block">
+            <Link key={category.name} href={`/products?category=${category.name.toLowerCase().replace(' ', '-')}`} className="group block">
               <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                 <CardContent className="p-0">
                   <Image

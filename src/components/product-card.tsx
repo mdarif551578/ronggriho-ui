@@ -7,7 +7,7 @@ import { Heart, ShoppingCart } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import type { Product } from '@/lib/mock-data';
+import type { Product } from '@/lib/types';
 import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/hooks/use-wishlist';
@@ -51,17 +51,19 @@ export default function ProductCard({ product }: ProductCardProps) {
     : 0;
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden group border-0 shadow-none hover:shadow-lg transition-shadow duration-300">
+    <Card className="h-full flex flex-col overflow-hidden group border-0 shadow-none hover:shadow-lg transition-shadow duration-300 bg-card">
       <CardContent className="p-0 relative">
         <Link href={`/products/${product.slug}`}>
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            width={400}
-            height={400}
-            className="w-full h-auto aspect-[4/5] object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint="fashion product"
-          />
+          <div className="aspect-[4/5] overflow-hidden">
+             <Image
+              src={product.images[0]}
+              alt={product.name}
+              width={400}
+              height={500}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              data-ai-hint="fashion product"
+            />
+          </div>
         </Link>
         {discountPercentage > 0 && (
           <Badge variant="destructive" className="absolute top-2 left-2">
@@ -78,7 +80,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Heart className={cn("h-4 w-4", isInWishlist(product.id) && "fill-destructive text-destructive")} />
         </Button>
       </CardContent>
-      <CardFooter className="p-4 flex flex-col items-start flex-grow bg-background">
+      <CardFooter className="p-4 flex flex-col items-start flex-grow">
         <div className="flex-grow">
           <p className="text-xs text-muted-foreground">{product.category}</p>
           <h3 className="font-semibold text-sm leading-tight mt-1">

@@ -12,32 +12,37 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { getProducts } from '@/lib/mock-data';
+import { Product } from '@/lib/types';
 import { useMemo, useState, useEffect } from 'react';
 
-const allProducts = getProducts();
-const allCategories = [...new Set(allProducts.map(p => p.category))];
-const allColors = [...new Set(allProducts.flatMap(p => p.colors.map(c => c.name)))].sort();
-const allSizes = [...new Set(allProducts.flatMap(p => p.sizes))].sort();
+interface FilterSidebarProps {
+  allProducts: Product[];
+}
 
-export default function FilterSidebar() {
+export default function FilterSidebar({ allProducts }: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const { allCategories, allColors, allSizes, minProductPrice, maxProductPrice } = useMemo(() => {
+    const categories = [...new Set(allProducts.map(p => p.category))];
+    const colors = [...new Set(allProducts.flatMap(p => p.colors.map(c => c.name)))].sort();
+    const sizes = [...new Set(allProducts.flatMap(p => p.sizes))].sort();
+    const prices = allProducts.map(p => p.discountPrice || p.price);
+    return {
+      allCategories: categories,
+      allColors: colors,
+      allSizes: sizes,
+      minProductPrice: Math.floor(Math.min(...prices)),
+      maxProductPrice: Math.ceil(Math.max(...prices)),
+    };
+  }, [allProducts]);
 
   const selectedCategories = searchParams.getAll('category');
   const selectedSizes = searchParams.getAll('size');
   const selectedColors = searchParams.getAll('color');
   const priceParam = searchParams.get('price');
-
-  const { minProductPrice, maxProductPrice } = useMemo(() => {
-    const prices = allProducts.map(p => p.discountPrice || p.price);
-    return {
-      minProductPrice: Math.floor(Math.min(...prices)),
-      maxProductPrice: Math.ceil(Math.max(...prices)),
-    };
-  }, []);
-
+  
   const [minPrice, setMinPrice] = useState<string | number>('');
   const [maxPrice, setMaxPrice] = useState<string | number>('');
 
@@ -99,8 +104,8 @@ export default function FilterSidebar() {
                         <div key={category} className="flex items-center space-x-2">
                             <Checkbox 
                                 id={`cat-${category}`} 
-                                checked={selectedCategories.includes(category.toLowerCase())}
-                                onCheckedChange={() => handleFilterChange('category', category.toLowerCase())}
+                                checked={selectedCategories.includes(category.toLowerCase().replace(' ', '-'))}
+                                onCheckedChange={() => handleFilterChange('category', category.toLowerCase().replace(' ', '-'))}
                             />
                             <Label htmlFor={`cat-${category}`} className="font-normal">{category}</Label>
                         </div>

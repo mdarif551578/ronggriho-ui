@@ -1,17 +1,5 @@
-export interface Product {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  price: number;
-  discountPrice?: number;
-  category: string;
-  tags: string[];
-  images: string[];
-  sizes: string[];
-  colors: { name: string; hex: string }[];
-  relatedProducts: string[];
-}
+import 'server-only';
+import { Product } from './types';
 
 const products: Product[] = [
   {
@@ -123,16 +111,23 @@ const products: Product[] = [
   },
 ];
 
-export function getProducts() {
+// Simulate network delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export async function getProducts(): Promise<Product[]> {
+  await delay(500); // Simulate network latency
   return products;
 }
 
-export function getProductBySlug(slug: string) {
+export async function getProductBySlug(slug: string): Promise<Product | undefined> {
+  await delay(500);
   return products.find(p => p.slug === slug);
 }
 
-export function getRelatedProducts(slug: string) {
-  const product = getProductBySlug(slug);
+export async function getRelatedProducts(slug: string): Promise<Product[]> {
+  await delay(500);
+  const product = await getProductBySlug(slug);
   if (!product) return [];
-  return products.filter(p => product.relatedProducts.includes(p.id));
+  const allProducts = await getProducts();
+  return allProducts.filter(p => product.relatedProducts.includes(p.id));
 }

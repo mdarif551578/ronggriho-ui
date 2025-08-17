@@ -2,8 +2,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart, Info } from 'lucide-react';
+import { useState, FormEvent } from 'react';
+import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +32,7 @@ const navLinks = [
 const mobileNavLinks = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Shop', href: '/products', icon: Shirt },
-    { name: 'Cart', href: '/cart', icon: ShoppingCart },
+    { name: 'Cart', href: '/cart', icon: ShoppingCartIcon },
     { name: 'Account', href: '/account', icon: User },
 ]
 
@@ -41,6 +41,7 @@ export default function Header() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -48,6 +49,14 @@ export default function Header() {
   const handleLogout = async () => {
     await logout();
     router.push('/');
+  };
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsMenuOpen(false);
+    }
   };
 
 
@@ -84,10 +93,12 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center gap-1 md:gap-2">
-              <div className="hidden sm:block relative w-36 md:w-48">
-                <Input type="search" placeholder="Search..." className="pr-10 h-9" />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
+              <form onSubmit={handleSearch} className="hidden sm:block relative w-36 md:w-48">
+                <Input type="search" placeholder="Search..." className="pr-10 h-9" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-9 w-9 text-muted-foreground">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </form>
               <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
                 <Link href="/wishlist">
                   <Heart className="h-5 w-5" />
@@ -164,10 +175,12 @@ export default function Header() {
                   ))}
                 </nav>
                 <div className="mt-6 border-t pt-6">
-                  <div className="relative w-full">
-                      <Input type="search" placeholder="Search..." className="pr-10" />
-                      <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    </div>
+                  <form onSubmit={handleSearch} className="relative w-full">
+                      <Input type="search" placeholder="Search..." className="pr-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                      <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-full w-10 text-muted-foreground">
+                        <Search className="h-4 w-4" />
+                      </Button>
+                  </form>
                 </div>
               </div>
             </motion.div>
