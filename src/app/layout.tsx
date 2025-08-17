@@ -1,14 +1,7 @@
 
-'use client';
-
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import Header from '@/components/layout/header';
-import Footer from '@/components/layout/footer';
-import { CartProvider } from '@/context/cart-context';
-import { WishlistProvider } from '@/context/wishlist-context';
-import { AuthProvider } from '@/hooks/use-auth';
-import { usePathname } from 'next/navigation';
+import { Providers } from '@/components/providers';
 
 
 export default function RootLayout({
@@ -16,9 +9,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const isAdminRoute = pathname.startsWith('/admin');
-
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -32,18 +23,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <div className="flex min-h-screen flex-col">
-                {!isAdminRoute && <Header />}
-                <main className="flex-grow">{children}</main>
-                {!isAdminRoute && <Footer />}
-              </div>
-              <Toaster />
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
