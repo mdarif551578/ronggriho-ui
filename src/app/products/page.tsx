@@ -25,7 +25,7 @@ export default function ProductsPage({
       filtered = filtered.filter(product => product.sizes.some(s => sizes.includes(s)));
     }
     
-    const colors = searchParams.color ? (Array.isArray(searchParams.color) ? searchParams.color : [search_params.color]) : [];
+    const colors = searchParams.color ? (Array.isArray(searchParams.color) ? searchParams.color : [searchParams.color]) : [];
     if (colors.length > 0) {
       filtered = filtered.filter(product => product.colors.some(c => colors.includes(c.name.toLowerCase())));
     }
@@ -72,9 +72,12 @@ export default function ProductsPage({
           <FilterSidebar />
         </div>
         <div className="lg:col-span-3">
-          <h1 className="text-4xl font-bold font-headline mb-8">{getTitle()}</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold font-headline">{getTitle()}</h1>
+            <p className="text-sm text-muted-foreground mt-2 sm:mt-0">{filteredProducts.length} products found</p>
+          </div>
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {filteredProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}

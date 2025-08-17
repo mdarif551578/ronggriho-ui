@@ -19,7 +19,7 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold font-headline mb-8">Your Cart</h1>
+      <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">Your Cart</h1>
       {cart.length === 0 ? (
         <Card className="text-center py-20">
             <CardContent>
@@ -46,7 +46,7 @@ export default function CartPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="flex items-start gap-4 p-4"
+                        className="flex flex-col sm:flex-row items-start gap-4 p-4"
                       >
                         <Image
                           src={item.images[0]}
@@ -71,7 +71,7 @@ export default function CartPage() {
                             </Button>
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right self-center sm:self-auto mt-4 sm:mt-0">
                            <p className="font-semibold">৳{((item.discountPrice || item.price) * item.quantity).toFixed(2)}</p>
                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive mt-4" onClick={() => removeFromCart(item.id)}>
                             <Trash2 className="h-4 w-4" />

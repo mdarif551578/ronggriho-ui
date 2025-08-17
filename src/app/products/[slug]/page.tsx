@@ -65,7 +65,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         {/* Product Details */}
         <div className="py-4">
           <p className="text-sm font-medium text-primary uppercase tracking-wide">{product.category}</p>
-          <h1 className="text-4xl font-bold font-headline mt-2">{product.name}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold font-headline mt-2">{product.name}</h1>
           <div className="flex items-center gap-2 mt-4">
               <div className="flex text-accent">
                   {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
@@ -85,10 +85,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <Separator className="my-6" />
 
           {/* Options */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-semibold mb-2">Color</p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {product.colors.map(color => (
                   <Button key={color.name} variant={selectedColor === color.name ? 'default' : 'outline'} size="icon" className="h-8 w-8 rounded-full" onClick={() => setSelectedColor(color.name)}>
                     <span className="h-5 w-5 rounded-full" style={{ backgroundColor: color.hex }} />
@@ -118,9 +118,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             </div>
           </div>
           
-          <div className="flex gap-4 mt-6">
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
             <Button size="lg" className="flex-1" onClick={handleAddToCart}><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart</Button>
-            <Button size="lg" variant="outline"><Heart className="mr-2 h-5 w-5" /> Wishlist</Button>
+            <Button size="lg" variant="outline" className="flex-1"><Heart className="mr-2 h-5 w-5" /> Wishlist</Button>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       {/* Product Info Tabs */}
       <div className="mt-12">
         <Tabs defaultValue="description">
-          <TabsList>
+          <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="description">Description</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="shipping">Shipping & Returns</TabsTrigger>

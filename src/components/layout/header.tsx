@@ -46,7 +46,7 @@ export default function Header() {
               >
                 <Menu className="h-6 w-6" />
               </Button>
-              <Link href="/" className="text-2xl font-bold font-headline text-primary">
+              <Link href="/" className="text-xl md:text-2xl font-bold font-headline text-primary">
                 Dhakai Threads
               </Link>
             </div>
@@ -63,9 +63,9 @@ export default function Header() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-2 md:gap-4">
-              <div className="hidden md:block relative w-48">
-                <Input type="search" placeholder="Search..." className="pr-10" />
+            <div className="flex items-center gap-1 md:gap-4">
+              <div className="hidden sm:block relative w-36 md:w-48">
+                <Input type="search" placeholder="Search..." className="pr-10 h-9" />
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
               <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
@@ -140,9 +140,9 @@ export default function Header() {
         <div className="container mx-auto px-4">
             <div className="flex justify-around h-16">
                 {mobileNavLinks.map(link => (
-                    <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors">
+                    <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/4">
                         <link.icon className="h-6 w-6 mb-1" />
-                        <span className="text-xs font-medium">{link.name}</span>
+                        <span className="text-xs font-medium text-center">{link.name}</span>
                     </Link>
                 ))}
             </div>

@@ -18,7 +18,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold font-headline mb-8">Checkout</h1>
+      <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">Checkout</h1>
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           <Card>
@@ -54,7 +54,7 @@ export default function CheckoutPage() {
             </CardHeader>
             <CardContent>
               <RadioGroup defaultValue="cod" className="space-y-4">
-                <Label className="flex items-center gap-4 border rounded-md p-4 cursor-pointer hover:bg-muted">
+                <Label className="flex items-center gap-4 border rounded-md p-4 cursor-pointer hover:bg-muted has-[:checked]:bg-muted has-[:checked]:border-primary">
                     <RadioGroupItem value="cod" id="cod" />
                     <Truck className="h-6 w-6 text-primary" />
                     <div>
@@ -62,7 +62,7 @@ export default function CheckoutPage() {
                         <p className="text-sm text-muted-foreground">Pay when your order arrives.</p>
                     </div>
                 </Label>
-                 <Label className="flex items-center gap-4 border rounded-md p-4 cursor-pointer hover:bg-muted">
+                 <Label className="flex items-center gap-4 border rounded-md p-4 cursor-pointer hover:bg-muted has-[:checked]:bg-muted has-[:checked]:border-primary">
                     <RadioGroupItem value="card" id="card" />
                     <CreditCard className="h-6 w-6 text-primary" />
                     <div>
@@ -70,7 +70,7 @@ export default function CheckoutPage() {
                         <p className="text-sm text-muted-foreground">Pay with Visa, Mastercard.</p>
                     </div>
                 </Label>
-                 <Label className="flex items-center gap-4 border rounded-md p-4 cursor-pointer hover:bg-muted">
+                 <Label className="flex items-center gap-4 border rounded-md p-4 cursor-pointer hover:bg-muted has-[:checked]:bg-muted has-[:checked]:border-primary">
                     <RadioGroupItem value="mobile" id="mobile" />
                     <Landmark className="h-6 w-6 text-primary" />
                     <div>
