@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useState, FormEvent } from 'react';
-import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info } from 'lucide-react';
+import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ import ClientOnly from '../client-only';
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'All Products', href: '/products' },
+  { name: 'Style Quiz', href: '/style-quiz' },
   { name: 'Ethnic Wear', href: '/products?category=ethnic-wear' },
   { name: 'T-Shirts', href: '/products?category=t-shirts' },
   { name: 'Accessories', href: '/products?category=accessories' },
@@ -37,8 +38,6 @@ export default function Header() {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // We don't need a separate search handler here as the search is now on the products page
-  // but we keep the mobile menu search functionality.
   const handleMobileSearch = (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -168,12 +167,16 @@ export default function Header() {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50">
         <div className="container mx-auto px-4">
             <div className="flex justify-around h-16">
-                {mobileNavLinks.map(link => (
-                    <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/4">
+                 {mobileNavLinks.map(link => (
+                    <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center">
                         <link.icon className="h-6 w-6 mb-1" />
-                        <span className="text-xs font-medium text-center">{link.name}</span>
+                        <span className="text-xs font-medium">{link.name}</span>
                     </Link>
                 ))}
+                 <Link href="/style-quiz" className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center">
+                    <Wand2 className="h-6 w-6 mb-1" />
+                    <span className="text-xs font-medium">Style Quiz</span>
+                </Link>
             </div>
         </div>
       </nav>

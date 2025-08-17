@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/product-card';
 import { getProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
+import StyleFinder from '@/components/style-finder';
 
 
 export default async function Home() {
@@ -44,6 +45,11 @@ export default async function Home() {
             <Link href="/products">Shop Now <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>
+      </section>
+
+      {/* Style Finder Section */}
+      <section className="container mx-auto px-4">
+        <StyleFinder />
       </section>
 
       {/* Flash Deals */}
