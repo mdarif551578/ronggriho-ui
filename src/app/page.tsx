@@ -39,7 +39,7 @@ export default function Home() {
           <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl">
             Discover the best of Bangladeshi craftsmanship and contemporary trends.
           </p>
-          <Button asChild size="lg" className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button asChild size="lg" className="mt-8">
             <Link href="/products">Shop Now <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>
@@ -49,7 +49,7 @@ export default function Home() {
       <section className="container mx-auto px-4">
         <div className="flex justify-between items-baseline mb-6">
           <h2 className="text-3xl font-bold font-headline">Flash Deals</h2>
-          <Button variant="link" asChild className="text-primary">
+          <Button variant="link" asChild>
             <Link href="/products?sort=discount">View All <ArrowRight className="ml-1 h-4 w-4" /></Link>
           </Button>
         </div>
@@ -77,7 +77,7 @@ export default function Home() {
                     data-ai-hint={category.dataAiHint}
                   />
                 </CardContent>
-                <CardFooter className="p-4 bg-background">
+                <CardFooter className="p-4">
                   <h3 className="text-lg font-semibold w-full text-center">{category.name}</h3>
                 </CardFooter>
               </Card>
@@ -87,7 +87,7 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section className="bg-card py-12">
+      <section className="bg-secondary/50 py-12">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center font-headline mb-8">Featured Products</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">

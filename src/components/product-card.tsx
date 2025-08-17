@@ -36,7 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       whileHover={{ y: -5 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="h-full flex flex-col overflow-hidden group">
+      <Card className="h-full flex flex-col overflow-hidden group border-0 shadow-none hover:shadow-lg transition-shadow duration-300">
         <CardContent className="p-0 relative">
           <Link href={`/products/${product.slug}`}>
             <Image
@@ -49,7 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           </Link>
           {discountPercentage > 0 && (
-            <Badge variant="destructive" className="absolute top-2 left-2 bg-accent text-accent-foreground">
+            <Badge variant="destructive" className="absolute top-2 left-2">
               -{discountPercentage}%
             </Badge>
           )}
@@ -62,18 +62,18 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Heart className="h-4 w-4" />
           </Button>
         </CardContent>
-        <CardFooter className="p-4 flex flex-col items-start flex-grow bg-card">
+        <CardFooter className="p-4 flex flex-col items-start flex-grow bg-background">
           <div className="flex-grow">
             <p className="text-xs text-muted-foreground">{product.category}</p>
             <h3 className="font-semibold text-sm leading-tight mt-1">
-              <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
+              <Link href={`/products/${product.slug}`} className="hover:underline transition-colors">
                 {product.name}
               </Link>
             </h3>
             <div className="flex items-baseline gap-2 mt-2">
               {product.discountPrice ? (
                 <>
-                  <p className="text-base font-bold text-primary">৳{product.discountPrice.toFixed(2)}</p>
+                  <p className="text-base font-bold text-destructive">৳{product.discountPrice.toFixed(2)}</p>
                   <p className="text-sm text-muted-foreground line-through">৳{product.price.toFixed(2)}</p>
                 </>
               ) : (
@@ -81,7 +81,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
           </div>
-          <Button className="w-full mt-4" onClick={handleAddToCart}>
+          <Button variant="outline" className="w-full mt-4" onClick={handleAddToCart}>
             <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
           </Button>
         </CardFooter>

@@ -67,7 +67,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <p className="text-sm font-medium text-primary uppercase tracking-wide">{product.category}</p>
           <h1 className="text-3xl md:text-4xl font-bold font-headline mt-2">{product.name}</h1>
           <div className="flex items-center gap-2 mt-4">
-              <div className="flex text-accent">
+              <div className="flex text-yellow-500">
                   {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
               </div>
               <p className="text-sm text-muted-foreground">(123 reviews)</p>
@@ -75,7 +75,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <div className="flex items-baseline gap-4 mt-4">
             {product.discountPrice ? (
               <>
-                <p className="text-3xl font-bold text-accent">৳{product.discountPrice.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-destructive">৳{product.discountPrice.toFixed(2)}</p>
                 <p className="text-xl text-muted-foreground line-through">৳{product.price.toFixed(2)}</p>
               </>
             ) : (

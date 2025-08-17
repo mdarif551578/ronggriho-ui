@@ -21,10 +21,6 @@ export default {
         headline: ['Inter', 'sans-serif'],
       },
       colors: {
-        'brand-light-grey': '#F2F2F2',
-        'brand-light-beige': '#EAE4D5',
-        'brand-grey-beige': '#B6B09F',
-        'brand-black': '#000000',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
