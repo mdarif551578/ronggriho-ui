@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect, FC } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,18 +12,36 @@ import { firestore } from '@/lib/firebase';
 import { doc, getDoc, Timestamp } from 'firebase/firestore';
 
 type TrackingStatus = 'idle' | 'loading' | 'found' | 'not_found';
-type TrackingEvent = {
+
+interface TrackingEventData {
     status: string;
     location: string;
-    date: string;
+    date: Timestamp;
+}
+
+interface TrackingEvent extends TrackingEventData {
     icon: React.ElementType;
+}
+
+const statusIconMap: { [key: string]: React.ElementType } = {
+    'order created': CircleCheck,
+    'processing': Warehouse,
+    'shipped': Truck,
+    'delivered': PackageCheck,
+    'cancelled': CircleX,
 };
+
+const getIconForStatus = (status: string): React.ElementType => {
+    return statusIconMap[status.toLowerCase()] || Package;
+};
+
 
 export default function TrackingPage() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState('');
   const [status, setStatus] = useState<TrackingStatus>('idle');
   const [trackingInfo, setTrackingInfo] = useState<TrackingEvent[]>([]);
+  const [currentStatus, setCurrentStatus] = useState('');
 
   const fetchOrder = async (id: string) => {
     if (!id) return;
@@ -34,44 +52,20 @@ export default function TrackingPage() {
 
         if (orderSnap.exists()) {
             const orderData = orderSnap.data();
-            const createdAt = (orderData.createdAt as Timestamp).toDate();
-
-            const allPossibleStages: { [key: string]: Omit<TrackingEvent, 'date'> } = {
-                created: { status: 'Order Created', location: 'Dhaka, Bangladesh', icon: CircleCheck },
-                processing: { status: 'Processing', location: 'Warehouse', icon: Warehouse },
-                shipped: { status: 'Shipped', location: 'In Transit', icon: Truck },
-                delivered: { status: 'Delivered', location: 'Delivered to customer', icon: PackageCheck },
-                cancelled: { status: 'Cancelled', location: 'Warehouse', icon: CircleX },
-            };
             
-            const events: TrackingEvent[] = [];
-            const currentStatus = orderData.status.toLowerCase();
+            const history: TrackingEventData[] = orderData.trackingHistory || [
+                { status: orderData.status, location: 'Dhaka, Bangladesh', date: orderData.createdAt }
+            ];
 
-            // Add a slightly later date for subsequent stages for realism
-            const addDays = (date: Date, days: number) => {
-                const result = new Date(date);
-                result.setDate(result.getDate() + days);
-                return result;
-            }
+            const processedHistory: TrackingEvent[] = history
+                .sort((a, b) => b.date.seconds - a.date.seconds)
+                .map(event => ({
+                    ...event,
+                    icon: getIconForStatus(event.status),
+                }));
 
-            events.push({ ...allPossibleStages.created, date: createdAt.toLocaleDateString() });
-
-            if (currentStatus === 'cancelled') {
-                events.push({ ...allPossibleStages.cancelled, date: addDays(createdAt, 1).toLocaleDateString() });
-            } else {
-                 if (['processing', 'shipped', 'delivered'].includes(currentStatus)) {
-                    events.push({ ...allPossibleStages.processing, date: createdAt.toLocaleDateString() });
-                }
-                if (['shipped', 'delivered'].includes(currentStatus)) {
-                    events.push({ ...allPossibleStages.shipped, date: addDays(createdAt, 1).toLocaleDateString() });
-                }
-                if (['delivered'].includes(currentStatus)) {
-                    events.push({ ...allPossibleStages.delivered, date: addDays(createdAt, 2).toLocaleDateString() });
-                }
-            }
-
-
-            setTrackingInfo(events.reverse());
+            setTrackingInfo(processedHistory);
+            setCurrentStatus(orderData.status);
             setStatus('found');
         } else {
             setStatus('not_found');
@@ -136,7 +130,7 @@ export default function TrackingPage() {
                 <CardHeader>
                     <CardTitle>Tracking Details for #{orderId.toUpperCase().slice(0, 7)}</CardTitle>
                     <CardDescription>
-                        Current status: <span className="font-semibold text-primary">{trackingInfo[0]?.status}</span>
+                        Current status: <span className="font-semibold text-primary">{currentStatus}</span>
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -148,7 +142,7 @@ export default function TrackingPage() {
                                 </div>
                                 <p className="font-semibold">{event.status}</p>
                                 <p className="text-sm text-muted-foreground">{event.location}</p>
-                                <p className="text-xs text-muted-foreground">{event.date}</p>
+                                <p className="text-xs text-muted-foreground">{event.date.toDate().toLocaleDateString()}</p>
                             </li>
                         ))}
                     </ul>

@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase';
 
 const districts = [
@@ -115,6 +115,18 @@ export default function CheckoutPage() {
             }
         },
         orderNotes,
+        trackingHistory: [
+          {
+            status: 'Order Created',
+            location: 'Dhaka, Bangladesh',
+            date: Timestamp.now(),
+          },
+          {
+            status: 'Processing',
+            location: 'Warehouse',
+            date: Timestamp.now(),
+          }
+        ]
     };
 
     try {
@@ -329,5 +341,3 @@ export default function CheckoutPage() {
     </form>
   );
 }
-
-    
