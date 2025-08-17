@@ -4,6 +4,9 @@ export interface Product {
   slug: string;
   name: string;
   description: string;
+  longDescription: string;
+  reviewsInfo: string;
+  shippingReturnsInfo: string;
   price: number;
   discountPrice?: number;
   category: string;
