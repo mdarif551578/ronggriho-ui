@@ -1,11 +1,15 @@
+
+'use client';
 import { Heart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import ProductCard from '@/components/product-card';
+import { getProducts } from '@/lib/mock-data';
 
 export default function WishlistPage() {
-  // This is a placeholder. In a real app, you'd fetch wishlist items.
-  const wishlistItems: any[] = [];
+  const allProducts = getProducts();
+  const wishlistItems = allProducts.slice(0, 2);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -22,8 +26,10 @@ export default function WishlistPage() {
             </CardContent>
         </Card>
       ) : (
-        <div>
-          {/* Placeholder for wishlist items */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {wishlistItems.map(product => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,8 +23,8 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Shop</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/products?category=men" className="text-muted-foreground hover:text-primary">Men</Link></li>
-              <li><Link href="/products?category=women" className="text-muted-foreground hover:text-primary">Women</Link></li>
+              <li><Link href="/products?category=ethnic-wear" className="text-muted-foreground hover:text-primary">Ethnic Wear</Link></li>
+              <li><Link href="/products?category=western" className="text-muted-foreground hover:text-primary">Western</Link></li>
               <li><Link href="/products?category=accessories" className="text-muted-foreground hover:text-primary">Accessories</Link></li>
               <li><Link href="/products?sort=newest" className="text-muted-foreground hover:text-primary">New Arrivals</Link></li>
             </ul>
@@ -38,12 +39,11 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Stay Updated</h4>
-            <p className="text-muted-foreground text-sm mb-2">Subscribe to our newsletter for the latest deals.</p>
-            <form className="flex gap-2">
-              <Input type="email" placeholder="Your email" className="flex-grow"/>
-              <Button type="submit">Subscribe</Button>
-            </form>
+            <h4 className="font-semibold mb-4">Legal</h4>
+             <ul className="space-y-2 text-sm">
+                <li><Link href="/privacy-policy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
+                <li><Link href="/terms-of-service" className="text-muted-foreground hover:text-primary">Terms of Service</Link></li>
+            </ul>
           </div>
         </div>
         <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
