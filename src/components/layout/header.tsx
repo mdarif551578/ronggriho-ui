@@ -33,7 +33,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b">
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-4">
@@ -100,7 +100,7 @@ export default function Header() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="lg:hidden absolute top-0 left-0 w-full bg-card shadow-lg z-50"
+              className="lg:hidden absolute top-0 left-0 w-full bg-background shadow-lg z-50"
             >
               <div className="container mx-auto px-4 pt-4 pb-6">
                 <div className="flex justify-between items-center mb-6">
@@ -136,7 +136,7 @@ export default function Header() {
       </header>
       
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50">
         <div className="container mx-auto px-4">
             <div className="flex justify-around h-16">
                 {mobileNavLinks.map(link => (

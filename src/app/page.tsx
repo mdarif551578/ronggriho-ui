@@ -77,7 +77,7 @@ export default function Home() {
                     data-ai-hint={category.dataAiHint}
                   />
                 </CardContent>
-                <CardFooter className="p-4 bg-card">
+                <CardFooter className="p-4 bg-background">
                   <h3 className="text-lg font-semibold w-full text-center">{category.name}</h3>
                 </CardFooter>
               </Card>

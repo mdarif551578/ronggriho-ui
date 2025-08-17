@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Button
             size="icon"
             variant="secondary"
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-card/70 hover:bg-card"
+            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/70 hover:bg-background"
             aria-label="Add to wishlist"
           >
             <Heart className="h-4 w-4" />
