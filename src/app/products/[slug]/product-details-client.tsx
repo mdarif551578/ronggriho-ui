@@ -15,7 +15,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 
 interface ProductDetailsClientProps {
     product: Product;
@@ -169,9 +168,15 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="shipping">Shipping & Returns</TabsTrigger>
           </TabsList>
-          <TabsContent value="description" className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
-          <TabsContent value="reviews" className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.reviewsInfo }} />
-          <TabsContent value="shipping" className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.shippingReturnsInfo }} />
+          <TabsContent value="description">
+            <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
+          </TabsContent>
+          <TabsContent value="reviews">
+            <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.reviewsInfo }} />
+          </TabsContent>
+          <TabsContent value="shipping">
+            <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.shippingReturnsInfo }} />
+          </TabsContent>
         </Tabs>
       </div>
 
