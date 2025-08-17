@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 
 interface ProductDetailsClientProps {
     product: Product;
@@ -161,24 +162,79 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
       </div>
       
       {/* Product Info Tabs */}
-      <div className="mt-16">
+       <div className="mt-16">
         <Tabs defaultValue="description" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews (123)</TabsTrigger>
             <TabsTrigger value="shipping">Shipping & Returns</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="mt-6 text-muted-foreground prose prose-sm max-w-none">
             <p>{product.description}</p>
+            <div className="grid md:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <h4 className="font-semibold text-foreground mb-2">Product Details</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                        <li>Material: 100% Premium Cotton</li>
+                        <li>Fit: Regular</li>
+                        <li>Neck: Round Neck</li>
+                        <li>Sleeves: Half Sleeves</li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 className="font-semibold text-foreground mb-2">Care Instructions</h4>
+                     <ul className="list-disc list-inside space-y-1">
+                        <li>Machine wash cold, inside-out, gentle cycle</li>
+                        <li>Tumble dry low, or hang-dry in shade</li>
+                        <li>Do not bleach</li>
+                        <li>Do not dry clean</li>
+                    </ul>
+                </div>
+            </div>
           </TabsContent>
-          <TabsContent value="reviews" className="mt-6 text-muted-foreground">
-            No reviews yet. Be the first to review this product!
+          <TabsContent value="reviews" className="mt-6">
+            <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 className="text-xl font-semibold mb-4">Customer Reviews</h3>
+                    <div className="space-y-4">
+                        {[...Array(3)].map((_, i) => (
+                           <div key={i} className="border-b pb-4">
+                                <div className="flex items-center mb-2">
+                                    <div className="flex text-yellow-500">
+                                        {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
+                                    </div>
+                                    <p className="ml-auto text-sm text-muted-foreground">October 26, 2023</p>
+                                </div>
+                                <p className="font-semibold">Jane Doe</p>
+                                <p className="text-muted-foreground text-sm mt-1">Absolutely love this! The quality is amazing and it fits perfectly. Highly recommend.</p>
+                           </div>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <h3 className="text-xl font-semibold mb-4">Rating Breakdown</h3>
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2"><span className="w-12">5 star</span> <Progress value={80} className="flex-1" /> <span className="w-10 text-right">80%</span></div>
+                        <div className="flex items-center gap-2"><span className="w-12">4 star</span> <Progress value={15} className="flex-1" /> <span className="w-10 text-right">15%</span></div>
+                        <div className="flex items-center gap-2"><span className="w-12">3 star</span> <Progress value={5} className="flex-1" /> <span className="w-10 text-right">5%</span></div>
+                        <div className="flex items-center gap-2"><span className="w-12">2 star</span> <Progress value={0} className="flex-1" /> <span className="w-10 text-right">0%</span></div>
+                        <div className="flex items-center gap-2"><span className="w-12">1 star</span> <Progress value={0} className="flex-1" /> <span className="w-10 text-right">0%</span></div>
+                    </div>
+                    <Button className="mt-6 w-full">Write a Review</Button>
+                </div>
+            </div>
           </TabsContent>
           <TabsContent value="shipping" className="mt-6 text-muted-foreground prose prose-sm max-w-none">
-            <h4>Standard Shipping</h4>
-            <p>Standard delivery within 3-5 business days. Express delivery available.</p>
-            <h4>Returns</h4>
-            <p>Easy 7-day return policy. Please check our returns page for more info.</p>
+            <h4 className="font-semibold text-foreground">Standard Shipping</h4>
+            <p>We offer standard shipping across Bangladesh. Delivery times are as follows:</p>
+            <ul className="list-disc list-inside">
+                <li>Inside Dhaka: 2-3 business days</li>
+                <li>Outside Dhaka: 3-5 business days</li>
+            </ul>
+            <p>You can track your order status from your <a href="/account/orders">account page</a>.</p>
+
+            <h4 className="font-semibold text-foreground mt-6">Returns Policy</h4>
+            <p>We have a 7-day return policy for items that are unused, in their original condition, and with all original tags attached. To initiate a return, please visit our <a href="/returns">Return Policy</a> page for detailed instructions.</p>
           </TabsContent>
         </Tabs>
       </div>
