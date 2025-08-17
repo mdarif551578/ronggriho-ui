@@ -1,4 +1,9 @@
 
+'use client';
+
+import { useEffect, useState } from 'react';
+import { collection, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { firestore } from '@/lib/firebase';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,15 +11,57 @@ import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Skeleton } from '@/components/ui/skeleton';
 
-const orders = [
-    { id: "ORD001", customer: "Liam Johnson", email: "liam@example.com", date: "2023-07-15", total: "250.00", status: "Delivered" },
-    { id: "ORD002", customer: "Olivia Smith", email: "olivia@example.com", date: "2023-07-16", total: "150.75", status: "Processing" },
-    { id: "ORD003", customer: "Noah Williams", email: "noah@example.com", date: "2023-07-17", total: "350.00", status: "Shipped" },
-    { id: "ORD004", customer: "Emma Brown", email: "emma@example.com", date: "2023-07-18", total: "450.50", status: "Cancelled" },
-];
+interface OrderStatus {
+    date: Timestamp;
+    text: string;
+}
+
+interface Order {
+    id: string;
+    createdAt: Timestamp;
+    status: OrderStatus[] | string;
+    total: number;
+    shippingAddress: {
+        fullName: string;
+    }
+}
+
+const getLatestStatus = (statusHistory: OrderStatus[] | string): string => {
+    if (typeof statusHistory === 'string') {
+        return statusHistory;
+    }
+    if (Array.isArray(statusHistory) && statusHistory.length > 0) {
+        const sortedHistory = [...statusHistory].sort((a, b) => b.date.seconds - a.date.seconds);
+        return sortedHistory[0].text;
+    }
+    return 'Processing';
+};
 
 export default function AdminOrdersPage() {
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const q = query(collection(firestore, 'orders'), orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                const fetchedOrders = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                } as Order));
+                setOrders(fetchedOrders);
+            } catch (error) {
+                console.error("Error fetching orders: ", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrders();
+    }, []);
+
     return (
         <div>
             <h1 className="text-3xl font-bold mb-8">Orders</h1>
@@ -32,32 +79,56 @@ export default function AdminOrdersPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {orders.map((order) => (
-                                <TableRow key={order.id}>
-                                    <TableCell className="font-medium">{order.id}</TableCell>
-                                    <TableCell>{order.customer}</TableCell>
-                                    <TableCell className="hidden md:table-cell">{order.date}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={order.status === 'Cancelled' ? 'destructive' : 'default'}>{order.status}</Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">৳{order.total}</TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button aria-haspopup="true" size="icon" variant="ghost">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                    <span className="sr-only">Toggle menu</span>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem>View Order</DropdownMenuItem>
-                                                <DropdownMenuItem>Update Status</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                                        <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-24" /></TableCell>
+                                        <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+                                        <TableCell className="text-right"><Skeleton className="h-5 w-16 ml-auto" /></TableCell>
+                                        <TableCell className="text-right"><Skeleton className="h-8 w-8" /></TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                orders.map((order) => {
+                                    const latestStatus = getLatestStatus(order.status);
+                                    return (
+                                        <TableRow key={order.id}>
+                                            <TableCell className="font-medium">
+                                                <Link href={`/tracking?orderId=${order.id}`} className="hover:underline">
+                                                    #{order.id.slice(0, 7).toUpperCase()}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell>{order.shippingAddress.fullName}</TableCell>
+                                            <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={latestStatus === 'Delivered' || latestStatus === 'Completed' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
+                                                    {latestStatus}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">৳{order.total.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">Toggle menu</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={`/tracking?orderId=${order.id}`}>View Order</Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem>Update Status</DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>

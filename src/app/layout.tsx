@@ -1,4 +1,6 @@
 
+'use client';
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -7,20 +9,22 @@ import Footer from '@/components/layout/footer';
 import { CartProvider } from '@/context/cart-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { AuthProvider } from '@/hooks/use-auth';
+import { usePathname } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Dhakai Threads - Modern Bangladeshi Fashion',
-  description: 'Discover contemporary and traditional Bangladeshi fashion at Dhakai Threads. Shop for unique, high-quality apparel and accessories.',
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isAdminRoute = pathname.startsWith('/admin');
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <title>Dhakai Threads - Modern Bangladeshi Fashion</title>
+        <meta name="description" content="Discover contemporary and traditional Bangladeshi fashion at Dhakai Threads. Shop for unique, high-quality apparel and accessories." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -33,9 +37,9 @@ export default function RootLayout({
           <CartProvider>
             <WishlistProvider>
               <div className="flex min-h-screen flex-col">
-                <Header />
+                {!isAdminRoute && <Header />}
                 <main className="flex-grow">{children}</main>
-                <Footer />
+                {!isAdminRoute && <Footer />}
               </div>
               <Toaster />
             </WishlistProvider>

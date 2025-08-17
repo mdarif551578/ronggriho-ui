@@ -1,7 +1,8 @@
 
+
 import 'server-only';
 import type { Product } from './types';
-import { firestore } from './firebase';
+import { firestore } from './firebase-admin'; // Switch to admin SDK for server-side
 import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
 
 const mockProducts: Product[] = [
@@ -217,19 +218,28 @@ const seedProducts = async () => {
     batch.set(docRef, product);
   });
   await batch.commit();
+  console.log('Seeded mock products to Firestore.');
 };
 
 export async function getProducts(): Promise<Product[]> {
-  const productsCollection = collection(firestore, 'products');
-  const querySnapshot = await getDocs(productsCollection);
-  
-  if (querySnapshot.empty) {
-    await seedProducts();
-    const seededSnapshot = await getDocs(productsCollection);
-    return seededSnapshot.docs.map(doc => doc.data() as Product);
-  }
+  try {
+    const productsCollection = collection(firestore, 'products');
+    const querySnapshot = await getDocs(productsCollection);
+    
+    if (querySnapshot.empty) {
+      console.log("No products found, seeding database...");
+      await seedProducts();
+      const seededSnapshot = await getDocs(productsCollection);
+      return seededSnapshot.docs.map(doc => doc.data() as Product);
+    }
 
-  return querySnapshot.docs.map(doc => doc.data() as Product);
+    return querySnapshot.docs.map(doc => doc.data() as Product);
+  } catch (error) {
+    console.error("Error getting products: ", error);
+    // In a real app, you might want to throw the error or return a specific error state.
+    // For this prototype, returning the mock data as a fallback.
+    return mockProducts;
+  }
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
