@@ -14,18 +14,21 @@ import { doc, getDoc, Timestamp } from 'firebase/firestore';
 type TrackingStatus = 'idle' | 'loading' | 'found' | 'not_found';
 
 interface TrackingEventData {
-    status: string;
-    location: string;
+    text: string;
     date: Timestamp;
 }
 
-interface TrackingEvent extends TrackingEventData {
+interface TrackingEvent {
+    status: string;
+    location: string;
+    date: Timestamp;
     icon: React.ElementType;
 }
 
 const statusIconMap: { [key: string]: React.ElementType } = {
-    'order created': CircleCheck,
+    'created': CircleCheck,
     'processing': Warehouse,
+    'on the way': Truck,
     'shipped': Truck,
     'delivered': PackageCheck,
     'completed': PackageCheck,
@@ -54,19 +57,21 @@ export default function TrackingPage() {
         if (orderSnap.exists()) {
             const orderData = orderSnap.data();
             
-            const history: TrackingEventData[] = orderData.trackingHistory || [
-                { status: orderData.status, location: 'Dhaka, Bangladesh', date: orderData.createdAt }
-            ];
+            const history: TrackingEventData[] = orderData.status || [];
 
             const processedHistory: TrackingEvent[] = history
                 .sort((a, b) => b.date.seconds - a.date.seconds)
                 .map(event => ({
-                    ...event,
-                    icon: getIconForStatus(event.status),
+                    status: event.text,
+                    location: 'Warehouse', // Placeholder location
+                    date: event.date,
+                    icon: getIconForStatus(event.text),
                 }));
+            
+            const latestStatus = processedHistory[0]?.status || 'Status Unavailable';
 
             setTrackingInfo(processedHistory);
-            setCurrentStatus(orderData.status);
+            setCurrentStatus(latestStatus);
             setStatus('found');
         } else {
             setStatus('not_found');
