@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useState, FormEvent } from 'react';
-import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info, Wand2 } from 'lucide-react';
+import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -11,13 +11,12 @@ import { useCart } from '@/hooks/use-cart';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import ClientOnly from '../client-only';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth.tsx';
 
 
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'All Products', href: '/products' },
-  { name: 'Style Quiz', href: '/style-quiz' },
   { name: 'Ethnic Wear', href: '/products?category=ethnic-wear' },
   { name: 'T-Shirts', href: '/products?category=t-shirts' },
   { name: 'Accessories', href: '/products?category=accessories' },
@@ -28,6 +27,7 @@ const mobileNavLinks = [
     { name: 'Shop', href: '/products', icon: Shirt },
     { name: 'Cart', href: '/cart', icon: ShoppingCartIcon },
     { name: 'Account', href: '/account', icon: User },
+    { name: 'Wishlist', href: '/wishlist', icon: Heart },
 ]
 
 export default function Header() {
@@ -174,10 +174,6 @@ export default function Header() {
                         <span className="text-xs font-medium">{link.name}</span>
                     </Link>
                 ))}
-                 <Link href="/style-quiz" className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center">
-                    <Wand2 className="h-6 w-6 mb-1" />
-                    <span className="text-xs font-medium">Style Quiz</span>
-                </Link>
             </div>
         </div>
       </nav>
