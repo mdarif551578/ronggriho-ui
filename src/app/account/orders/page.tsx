@@ -13,12 +13,28 @@ import { firestore } from "@/lib/firebase";
 import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface OrderStatus {
+    date: Timestamp;
+    text: string;
+}
+
 interface Order {
     id: string;
     createdAt: Timestamp;
-    status: string;
+    status: OrderStatus[] | string; // Can be old string or new array
     total: number;
 }
+
+const getLatestStatus = (statusHistory: OrderStatus[] | string): string => {
+    if (typeof statusHistory === 'string') {
+        return statusHistory;
+    }
+    if (Array.isArray(statusHistory) && statusHistory.length > 0) {
+        const sortedHistory = [...statusHistory].sort((a, b) => b.date.seconds - a.date.seconds);
+        return sortedHistory[0].text;
+    }
+    return 'Processing';
+};
 
 export default function OrdersPage() {
     const { user, loading: authLoading } = useAuth();
@@ -100,23 +116,26 @@ export default function OrdersPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {orders.map((order) => (
-                                    <TableRow key={order.id}>
-                                        <TableCell className="font-medium">#{order.id.slice(0, 7).toUpperCase()}</TableCell>
-                                        <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={order.status === 'Delivered' ? 'default' : order.status === 'Cancelled' ? 'destructive' : 'secondary'}>
-                                                {order.status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">৳{order.total.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Button variant="outline" size="sm" asChild>
-                                                <Link href={`/tracking?orderId=${order.id}`}>View</Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {orders.map((order) => {
+                                    const latestStatus = getLatestStatus(order.status);
+                                    return (
+                                        <TableRow key={order.id}>
+                                            <TableCell className="font-medium">#{order.id.slice(0, 7).toUpperCase()}</TableCell>
+                                            <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={latestStatus === 'Delivered' || latestStatus === 'Completed' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
+                                                    {latestStatus}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">৳{order.total.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="outline" size="sm" asChild>
+                                                    <Link href={`/tracking?orderId=${order.id}`}>View</Link>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                })}
                             </TableBody>
                         </Table>
                     </CardContent>

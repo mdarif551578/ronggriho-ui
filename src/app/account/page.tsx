@@ -16,12 +16,30 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface OrderStatus {
+    date: Timestamp;
+    text: string;
+}
+
 interface Order {
     id: string;
     createdAt: Timestamp;
-    status: string;
+    status: OrderStatus[];
     total: number;
 }
+
+const getLatestStatus = (statusHistory: OrderStatus[] | string): string => {
+    if (typeof statusHistory === 'string') {
+        return statusHistory;
+    }
+    if (Array.isArray(statusHistory) && statusHistory.length > 0) {
+        // Sort by date descending to get the latest status first
+        const sortedHistory = [...statusHistory].sort((a, b) => b.date.seconds - a.date.seconds);
+        return sortedHistory[0].text;
+    }
+    return 'Processing'; // Default status
+};
+
 
 export default function AccountPage() {
     const { user, loading: authLoading } = useAuth();
@@ -161,7 +179,9 @@ export default function AccountPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {orders.slice(0, 5).map((order) => ( // Show recent 5 orders
+                                        {orders.slice(0, 5).map((order) => {
+                                            const latestStatus = getLatestStatus(order.status);
+                                            return (
                                             <TableRow key={order.id}>
                                                 <TableCell className="font-medium">
                                                     <Link href={`/tracking?orderId=${order.id}`} className="hover:underline">
@@ -170,13 +190,13 @@ export default function AccountPage() {
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant={order.status === 'Delivered' ? 'default' : order.status === 'Cancelled' ? 'destructive' : 'secondary'}>
-                                                        {order.status}
+                                                    <Badge variant={latestStatus === 'Delivered' || latestStatus === 'Completed' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
+                                                        {latestStatus}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right">৳{order.total.toFixed(2)}</TableCell>
                                             </TableRow>
-                                        ))}
+                                        )})}
                                     </TableBody>
                                 </Table>
                             )}
