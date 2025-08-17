@@ -1,6 +1,6 @@
-# Dhakai Threads
+# Rong Griho
 
-Dhakai Threads is a modern e-commerce platform built with Next.js, designed to showcase the rich textile heritage of Bangladesh with a contemporary twist. This application provides a seamless and engaging shopping experience for users interested in high-quality, culturally rich fashion.
+Rong Griho is a modern e-commerce platform built with Next.js, designed to showcase the rich textile heritage of Bangladesh with a contemporary twist. This application provides a seamless and engaging shopping experience for users interested in high-quality, culturally rich fashion.
 
 ## Core Features
 
@@ -14,7 +14,7 @@ Dhakai Threads is a modern e-commerce platform built with Next.js, designed to s
 
 ## Style Guidelines
 
-The visual identity of Dhakai Threads is designed to be clean, modern, and trustworthy.
+The visual identity of Rong Griho is designed to be clean, modern, and trustworthy.
 
 -   **Primary Color**: `#1D4ED8` (A modern blue for trust and reliability).
 -   **Background Color**: `#E5E7EB` (A light-blue for a clean browsing experience).

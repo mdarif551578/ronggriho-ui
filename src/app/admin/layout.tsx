@@ -1,10 +1,16 @@
 
+'use client';
+
 import AdminSidebar from '@/components/admin/admin-sidebar';
 import AdminAuthProvider from '@/context/admin-auth-context';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Link from 'next/link';
 import { Home, Menu, Package, ShoppingBag, Shirt, Users } from 'lucide-react';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
+import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function MobileNav() {
     return (
@@ -26,7 +32,7 @@ function MobileNav() {
                         className="flex items-center gap-2 text-lg font-semibold mb-4"
                     >
                         <Shirt className="h-6 w-6" />
-                        <span>Dhakai Threads</span>
+                        <span>Rong Griho</span>
                     </Link>
                     <Link href="/admin" className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground">
                         <Home className="h-5 w-5" />
@@ -50,13 +56,45 @@ function MobileNav() {
     );
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <AdminAuthProvider>
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
+    const { isAdmin, loading } = useAdminAuth();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (!loading && !isAdmin && pathname !== '/admin/login') {
+            router.push('/admin/login');
+        }
+    }, [isAdmin, loading, pathname, router]);
+
+    if (loading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+                    <div className="hidden border-r bg-muted/40 md:block p-4 space-y-4">
+                        <Skeleton className="h-10 w-3/4" />
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                    </div>
+                    <div className="flex flex-col p-8">
+                        <Skeleton className="h-14 w-full mb-8" />
+                        <Skeleton className="h-32 w-full" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    
+    if (!isAdmin && pathname !== '/admin/login') {
+        return null;
+    }
+
+    if (pathname === '/admin/login') {
+        return <>{children}</>;
+    }
+
+    return (
         <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
             <AdminSidebar />
             <div className="flex flex-col">
@@ -71,6 +109,17 @@ export default function AdminLayout({
                 </main>
             </div>
         </div>
+    );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <AdminAuthProvider>
+        <AdminLayoutContent>{children}</AdminLayoutContent>
     </AdminAuthProvider>
   )
 }

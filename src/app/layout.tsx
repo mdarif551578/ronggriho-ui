@@ -13,8 +13,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>Dhakai Threads - Modern Bangladeshi Fashion</title>
-        <meta name="description" content="Discover contemporary and traditional Bangladeshi fashion at Dhakai Threads. Shop for unique, high-quality apparel and accessories." />
+        <title>Rong Griho - Modern Bangladeshi Fashion</title>
+        <meta name="description" content="Discover contemporary and traditional Bangladeshi fashion at Rong Griho. Shop for unique, high-quality apparel and accessories." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
