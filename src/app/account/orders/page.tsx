@@ -7,14 +7,67 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { ShoppingBag } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect, useState } from "react";
+import { firestore } from "@/lib/firebase";
+import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const orders = [
-    { id: "DT12345", date: "2023-10-26", status: "Delivered", total: 3499.98 },
-    { id: "DT12344", date: "2023-09-15", status: "Delivered", total: 1299.99 },
-    { id: "DT12343", date: "2023-08-01", status: "Cancelled", total: 2499.99 },
-]
+interface Order {
+    id: string;
+    createdAt: Timestamp;
+    status: string;
+    total: number;
+}
 
 export default function OrdersPage() {
+    const { user, loading: authLoading } = useAuth();
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            if (user) {
+                try {
+                    const q = query(
+                        collection(firestore, 'orders'), 
+                        where('userId', '==', user.uid),
+                        orderBy('createdAt', 'desc')
+                    );
+                    const querySnapshot = await getDocs(q);
+                    const userOrders = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    } as Order));
+                    setOrders(userOrders);
+                } catch (error) {
+                    console.error("Error fetching orders: ", error);
+                }
+            }
+            setLoading(false);
+        };
+
+        if (!authLoading) {
+            fetchOrders();
+        }
+    }, [user, authLoading]);
+
+    if (authLoading || loading) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold font-headline mb-8">My Orders</h1>
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="space-y-4">
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-8 w-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -46,8 +99,8 @@ export default function OrdersPage() {
                             <TableBody>
                                 {orders.map((order) => (
                                     <TableRow key={order.id}>
-                                        <TableCell className="font-medium">{order.id}</TableCell>
-                                        <TableCell className="hidden md:table-cell">{order.date}</TableCell>
+                                        <TableCell className="font-medium">#{order.id.slice(0, 7).toUpperCase()}</TableCell>
+                                        <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                                         <TableCell>
                                             <Badge variant={order.status === 'Delivered' ? 'default' : order.status === 'Cancelled' ? 'destructive' : 'secondary'}>
                                                 {order.status}
@@ -69,3 +122,5 @@ export default function OrdersPage() {
         </div>
     );
 }
+
+    
