@@ -1,3 +1,4 @@
+
 import ProductCard from '@/components/product-card';
 import { getProducts } from '@/lib/data';
 import { Product } from '@/lib/types';

@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { Product } from '@/lib/types';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
@@ -19,10 +19,7 @@ interface AdminProductsClientPageProps {
 
 export default function AdminProductsClientPage({ products: initialProducts }: AdminProductsClientPageProps) {
     const [products, setProducts] = useState<Product[]>(initialProducts);
-    const [loading, setLoading] = useState(false);
-
-    // If you want to re-fetch or have dynamic updates, you'd implement that here.
-    // For now, we'll just use the server-fetched initial data.
+    const [loading, setLoading] = useState(!initialProducts);
 
     return (
         <div>
@@ -77,7 +74,6 @@ export default function AdminProductsClientPage({ products: initialProducts }: A
                                         </TableCell>
                                         <TableCell className="font-medium">{product.name}</TableCell>
                                         <TableCell>
-                                            {/* This needs a real status field on product in the future */}
                                             <Badge variant={"default"}>Published</Badge>
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell">৳{product.price.toFixed(2)}</TableCell>
@@ -95,7 +91,7 @@ export default function AdminProductsClientPage({ products: initialProducts }: A
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                    <DropdownMenuItem asChild><Link href={`/admin/products/${product.id}/edit`}>Edit</Link></DropdownMenuItem>
                                                     <DropdownMenuItem>Delete</DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -110,3 +106,4 @@ export default function AdminProductsClientPage({ products: initialProducts }: A
         </div>
     );
 }
+
