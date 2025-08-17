@@ -1,7 +1,7 @@
 import ProductCard from '@/components/product-card';
 import { getProducts } from '@/lib/data';
 import { Product } from '@/lib/types';
-import FilterSidebar from '@/components/filter-sidebar';
+import ProductFilters from '@/components/product-filters';
 
 export default async function ProductsPage({
   searchParams,
@@ -88,16 +88,16 @@ export default async function ProductsPage({
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-1">
-          <FilterSidebar allProducts={allProducts} />
-        </div>
+        
+        <ProductFilters allProducts={allProducts} />
+        
         <div className="lg:col-span-3">
           <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8">
             <h1 className="text-3xl md:text-4xl font-bold font-headline">{getTitle()}</h1>
             <p className="text-sm text-muted-foreground mt-2 sm:mt-0">{sortedAndFilteredProducts.length} products found</p>
           </div>
           {sortedAndFilteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {sortedAndFilteredProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}

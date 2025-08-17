@@ -17,9 +17,10 @@ import { useMemo, useState, useEffect } from 'react';
 
 interface FilterSidebarProps {
   allProducts: Product[];
+  onFilterChange?: () => void;
 }
 
-export default function FilterSidebar({ allProducts }: FilterSidebarProps) {
+export default function FilterSidebar({ allProducts, onFilterChange }: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -73,7 +74,8 @@ export default function FilterSidebar({ allProducts }: FilterSidebarProps) {
 
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`${pathname}${query}`);
+    router.push(`${pathname}${query}`, { scroll: false });
+    onFilterChange?.();
   };
 
   const handlePriceSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,95 +87,105 @@ export default function FilterSidebar({ allProducts }: FilterSidebarProps) {
     current.set('price', `${finalMinPrice}-${finalMaxPrice}`);
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`${pathname}${query}`);
+    router.push(`${pathname}${query}`, { scroll: false });
+    onFilterChange?.();
   }
+
+  const FilterContainer = ({ isMobile, children }: { isMobile: boolean, children: React.ReactNode }) => {
+    if (isMobile) {
+      return <div className="h-full overflow-y-auto">{children}</div>;
+    }
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Filters</CardTitle>
+        </CardHeader>
+        <CardContent>{children}</CardContent>
+      </Card>
+    );
+  };
 
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Filters</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Accordion type="multiple" defaultValue={['category', 'size', 'color', 'price']} className="space-y-4">
-          <AccordionItem value="category">
-            <AccordionTrigger>Category</AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-2">
-                    {allCategories.map(category => (
-                        <div key={category} className="flex items-center space-x-2">
-                            <Checkbox 
-                                id={`cat-${category}`} 
-                                checked={selectedCategories.includes(category.toLowerCase().replace(' ', '-'))}
-                                onCheckedChange={() => handleFilterChange('category', category.toLowerCase().replace(' ', '-'))}
-                            />
-                            <Label htmlFor={`cat-${category}`} className="font-normal">{category}</Label>
-                        </div>
-                    ))}
-                </div>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="size">
-            <AccordionTrigger>Size</AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-2">
-                    {allSizes.map(size => (
-                    <div key={size} className="flex items-center space-x-2">
-                        <Checkbox 
-                            id={`size-${size}`}
-                            checked={selectedSizes.includes(size)}
-                            onCheckedChange={() => handleFilterChange('size', size)}
-                        />
-                        <Label htmlFor={`size-${size}`} className="font-normal">{size}</Label>
-                    </div>
-                    ))}
-                </div>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="color">
-            <AccordionTrigger>Color</AccordionTrigger>
-            <AccordionContent>
+    <FilterContainer isMobile={!!onFilterChange}>
+      <Accordion type="multiple" defaultValue={['category', 'size', 'color', 'price']} className="space-y-4">
+        <AccordionItem value="category">
+          <AccordionTrigger>Category</AccordionTrigger>
+          <AccordionContent>
               <div className="space-y-2">
-                {allColors.map(color => (
-                  <div key={color} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`color-${color}`}
-                      checked={selectedColors.includes(color.toLowerCase())}
-                      onCheckedChange={() => handleFilterChange('color', color.toLowerCase())}
-                    />
-                    <Label htmlFor={`color-${color}`} className="font-normal">{color}</Label>
-                  </div>
-                ))}
+                  {allCategories.map(category => (
+                      <div key={category} className="flex items-center space-x-2">
+                          <Checkbox 
+                              id={`cat-${category}`} 
+                              checked={selectedCategories.includes(category.toLowerCase().replace(' ', '-'))}
+                              onCheckedChange={() => handleFilterChange('category', category.toLowerCase().replace(' ', '-'))}
+                          />
+                          <Label htmlFor={`cat-${category}`} className="font-normal">{category}</Label>
+                      </div>
+                  ))}
               </div>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="price">
-            <AccordionTrigger>Price</AccordionTrigger>
-            <AccordionContent className="px-1 pt-4">
-                <form onSubmit={handlePriceSubmit} className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      placeholder={`Min (৳${minProductPrice})`}
-                      value={minPrice}
-                      onChange={(e) => setMinPrice(e.target.value)}
-                      className="w-full"
-                    />
-                    <span>-</span>
-                    <Input
-                      type="number"
-                      placeholder={`Max (৳${maxProductPrice})`}
-                      value={maxPrice}
-                      onChange={(e) => setMaxPrice(e.target.value)}
-                      className="w-full"
-                    />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="size">
+          <AccordionTrigger>Size</AccordionTrigger>
+          <AccordionContent>
+              <div className="space-y-2">
+                  {allSizes.map(size => (
+                  <div key={size} className="flex items-center space-x-2">
+                      <Checkbox 
+                          id={`size-${size}`}
+                          checked={selectedSizes.includes(size)}
+                          onCheckedChange={() => handleFilterChange('size', size)}
+                      />
+                      <Label htmlFor={`size-${size}`} className="font-normal">{size}</Label>
                   </div>
-                  <Button type="submit" className="w-full">Apply Price</Button>
-                </form>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </CardContent>
-    </Card>
+                  ))}
+              </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="color">
+          <AccordionTrigger>Color</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-2">
+              {allColors.map(color => (
+                <div key={color} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`color-${color}`}
+                    checked={selectedColors.includes(color.toLowerCase())}
+                    onCheckedChange={() => handleFilterChange('color', color.toLowerCase())}
+                  />
+                  <Label htmlFor={`color-${color}`} className="font-normal">{color}</Label>
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="price">
+          <AccordionTrigger>Price</AccordionTrigger>
+          <AccordionContent className="px-1 pt-4">
+              <form onSubmit={handlePriceSubmit} className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder={`Min (৳${minProductPrice})`}
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="w-full"
+                  />
+                  <span>-</span>
+                  <Input
+                    type="number"
+                    placeholder={`Max (৳${maxProductPrice})`}
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <Button type="submit" className="w-full">Apply Price</Button>
+              </form>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </FilterContainer>
   );
 }
