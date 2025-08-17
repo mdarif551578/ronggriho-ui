@@ -14,6 +14,7 @@ import { useCart } from '@/hooks/use-cart';
 import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 interface ProductDetailsClientProps {
     product: Product;
