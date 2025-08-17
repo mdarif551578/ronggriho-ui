@@ -2,6 +2,8 @@ import ProductCard from '@/components/product-card';
 import { getProducts } from '@/lib/data';
 import { Product } from '@/lib/types';
 import ProductFilters from '@/components/product-filters';
+import ActiveFilters from '@/components/active-filters';
+import SortDropdown from '@/components/sort-dropdown';
 
 export default async function ProductsPage({
   searchParams,
@@ -35,7 +37,7 @@ export default async function ProductsPage({
     
     const categories = searchParams.category ? (Array.isArray(searchParams.category) ? searchParams.category : [searchParams.category]) : [];
     if (categories.length > 0) {
-      filtered = filtered.filter(product => categories.map(c => c.toLowerCase()).includes(product.category.toLowerCase().replace(' ', '-')));
+      filtered = filtered.filter(product => categories.map(c => c.toLowerCase()).includes(product.category.toLowerCase().replace(/ /g, '-')));
     }
 
     const sizes = searchParams.size ? (Array.isArray(searchParams.size) ? searchParams.size : [searchParams.size]) : [];
@@ -92,18 +94,24 @@ export default async function ProductsPage({
         <ProductFilters allProducts={allProducts} />
         
         <div className="lg:col-span-3">
-          <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-baseline mb-4">
             <h1 className="text-3xl md:text-4xl font-bold font-headline">{getTitle()}</h1>
-            <p className="text-sm text-muted-foreground mt-2 sm:mt-0">{sortedAndFilteredProducts.length} products found</p>
+             <div className="flex items-center gap-4 mt-4 sm:mt-0">
+                <p className="text-sm text-muted-foreground whitespace-nowrap">{sortedAndFilteredProducts.length} products found</p>
+                <SortDropdown />
+             </div>
           </div>
+
+          <ActiveFilters allProducts={allProducts} />
+          
           {sortedAndFilteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
               {sortedAndFilteredProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
            ) : (
-            <div className="text-center py-20">
+            <div className="text-center py-20 mt-8">
                 <p className="text-lg text-muted-foreground">No products found matching your criteria.</p>
             </div>
            )}
