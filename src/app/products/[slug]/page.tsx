@@ -75,7 +75,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <div className="flex items-baseline gap-4 mt-4">
             {product.discountPrice ? (
               <>
-                <p className="text-3xl font-bold text-primary">৳{product.discountPrice.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-accent">৳{product.discountPrice.toFixed(2)}</p>
                 <p className="text-xl text-muted-foreground line-through">৳{product.price.toFixed(2)}</p>
               </>
             ) : (

@@ -49,7 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           </Link>
           {discountPercentage > 0 && (
-            <Badge variant="destructive" className="absolute top-2 left-2">
+            <Badge variant="destructive" className="absolute top-2 left-2 bg-accent text-accent-foreground">
               -{discountPercentage}%
             </Badge>
           )}
