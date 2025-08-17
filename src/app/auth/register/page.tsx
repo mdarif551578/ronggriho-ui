@@ -38,6 +38,7 @@ export default function RegisterPage() {
         uid: user.uid,
         displayName: fullName,
         email: user.email,
+        phone: '', // Add phone number field
         createdAt: new Date(),
       });
 
