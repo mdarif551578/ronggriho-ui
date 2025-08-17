@@ -1,17 +1,7 @@
 
 
-import 'server-only';
 import type { Product } from './types';
-import { firestore } from './firebase-admin'; // Switch to admin SDK for server-side
-import { DocumentData } from 'firebase-admin/firestore';
 
-const docDataToProduct = (doc: DocumentData): Product => {
-  const data = doc.data();
-  return {
-    id: doc.id,
-    ...data
-  } as Product;
-};
 
 const mockProducts: Product[] = [
   {
@@ -218,35 +208,8 @@ const mockProducts: Product[] = [
   }
 ];
 
-const seedProducts = async () => {
-  const productsCollection = firestore.collection('products');
-  const batch = firestore.batch();
-  mockProducts.forEach((product) => {
-    // The document ID will be the product's `id` field
-    const docRef = productsCollection.doc(product.id);
-    batch.set(docRef, product);
-  });
-  await batch.commit();
-  console.log('Seeded mock products to Firestore.');
-};
-
 export async function getProducts(): Promise<Product[]> {
-  try {
-    const productsCollection = firestore.collection('products');
-    const querySnapshot = await productsCollection.get();
-    
-    if (querySnapshot.empty) {
-      console.log("No products found, seeding database...");
-      await seedProducts();
-      const seededSnapshot = await productsCollection.get();
-      return seededSnapshot.docs.map(doc => docDataToProduct(doc));
-    }
-
-    return querySnapshot.docs.map(doc => docDataToProduct(doc));
-  } catch (error) {
-    console.error("Error getting products: ", error);
-    return mockProducts;
-  }
+    return Promise.resolve(mockProducts);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
