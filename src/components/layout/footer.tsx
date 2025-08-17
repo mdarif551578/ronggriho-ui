@@ -7,9 +7,9 @@ import { Github, Twitter, Instagram, Shirt } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="bg-secondary/50 border-t">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
+          <div className="md:col-span-2 lg:col-span-1">
              <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline text-primary mb-4">
                 <Shirt className="h-6 w-6" />
                 <span>Rong Griho</span>

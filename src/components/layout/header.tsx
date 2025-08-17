@@ -11,7 +11,7 @@ import { useCart } from '@/hooks/use-cart';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import ClientOnly from '../client-only';
-import { useAuth } from '@/hooks/use-auth.tsx';
+import { useAuth } from '@/hooks/use-auth';
 
 
 const navLinks = [
@@ -55,8 +55,8 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-16 md:h-20">
+            <div className="flex items-center gap-2 md:gap-4">
               <Button
                 variant="ghost"
                 size="icon"
@@ -68,7 +68,7 @@ export default function Header() {
               </Button>
               <Link href="/" className="flex items-center gap-2 text-xl md:text-2xl font-bold font-headline text-primary">
                 <Shirt className="h-6 w-6" />
-                <span>Rong Griho</span>
+                <span className="hidden sm:inline-block">Rong Griho</span>
               </Link>
             </div>
 
@@ -86,11 +86,14 @@ export default function Header() {
 
             <div className="flex items-center gap-1 md:gap-2">
               {pathname !== '/products' && (
-                <Button variant="ghost" size="icon" asChild aria-label="Search">
-                  <Link href="/products">
-                    <Search className="h-5 w-5" />
-                  </Link>
-                </Button>
+                 <div className="hidden md:block">
+                    <form onSubmit={handleMobileSearch} className="relative">
+                        <Input name="q" type="search" placeholder="Search..." className="h-9 pr-9" />
+                        <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-full w-9 text-muted-foreground">
+                            <Search className="h-4 w-4" />
+                        </Button>
+                    </form>
+                </div>
               )}
               <ClientOnly>
                 <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
@@ -165,11 +168,15 @@ export default function Header() {
       </header>
       
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50">
-        <div className="container mx-auto px-4">
+      <div className="pb-16 md:hidden">
+        {/* This div creates space for the bottom nav */}
+      </div>
+
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50">
+        <div className="container mx-auto px-2">
             <div className="flex justify-around h-16">
                  {mobileNavLinks.map(link => (
-                    <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center">
+                    <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center p-1">
                         <link.icon className="h-6 w-6 mb-1" />
                         <span className="text-xs font-medium">{link.name}</span>
                     </Link>
