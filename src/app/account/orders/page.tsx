@@ -57,11 +57,14 @@ export default function OrdersPage() {
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold font-headline mb-8">My Orders</h1>
                 <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-1/4" />
+                    </CardHeader>
                     <CardContent className="p-6">
                         <div className="space-y-4">
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
-                            <Skeleton className="h-8 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                            <Skeleton className="h-12 w-full" />
                         </div>
                     </CardContent>
                 </Card>
@@ -122,5 +125,3 @@ export default function OrdersPage() {
         </div>
     );
 }
-
-    
