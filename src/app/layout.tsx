@@ -6,11 +6,11 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { CartProvider } from '@/context/cart-context';
 import { WishlistProvider } from '@/context/wishlist-context';
-import { AuthProvider } from '@/hooks/use-auth.tsx';
+import { AuthProvider } from '@/hooks/use-auth';
 
 export const metadata: Metadata = {
-  title: 'Rong Griho - Modern Bangladeshi Fashion',
-  description: 'Discover contemporary and traditional Bangladeshi fashion at Rong Griho. Shop for unique, high-quality apparel and accessories.',
+  title: 'Dhakai Threads - Modern Bangladeshi Fashion',
+  description: 'Discover contemporary and traditional Bangladeshi fashion at Dhakai Threads. Shop for unique, high-quality apparel and accessories.',
 };
 
 export default function RootLayout({
