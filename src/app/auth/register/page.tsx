@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, FormEvent } from 'react';
-import { auth, firestore } from '@/lib/firebase';
+import { auth, clientFirestore } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -34,7 +34,7 @@ export default function RegisterPage() {
       await updateProfile(user, { displayName: fullName });
 
       // Create a document in the 'users' collection
-      await setDoc(doc(firestore, "users", user.uid), {
+      await setDoc(doc(clientFirestore, "users", user.uid), {
         uid: user.uid,
         displayName: fullName,
         email: user.email,

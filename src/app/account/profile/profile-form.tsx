@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, FormEvent } from "react";
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
-import { auth, firestore } from "@/lib/firebase";
+import { auth, clientFirestore } from "@/lib/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,7 +38,7 @@ export default function ProfileForm() {
             setDisplayName(user.displayName || '');
             // Fetch phone number from Firestore if it exists
             const fetchUserData = async () => {
-                const userDocRef = doc(firestore, 'users', user.uid);
+                const userDocRef = doc(clientFirestore, 'users', user.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 if (userDocSnap.exists()) {
                     setPhoneNumber(userDocSnap.data().phone || '');
@@ -59,7 +59,7 @@ export default function ProfileForm() {
             await updateProfile(user, { displayName });
 
             // Update user document in Firestore
-            const userDocRef = doc(firestore, 'users', user.uid);
+            const userDocRef = doc(clientFirestore, 'users', user.uid);
             await updateDoc(userDocRef, {
                 displayName,
                 phone: phoneNumber,

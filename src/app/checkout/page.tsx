@@ -17,7 +17,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { firestore } from '@/lib/firebase';
+import { clientFirestore } from '@/lib/firebase';
 
 const districts = [
     "Bagerhat", "Bandarban", "Barguna", "Barisal", "Bhola", "Bogra", "Brahmanbaria", "Chandpur",
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
     };
 
     try {
-        await addDoc(collection(firestore, 'orders'), orderData);
+        await addDoc(collection(clientFirestore, 'orders'), orderData);
         toast({ title: "Order Placed!", description: "Thank you for your purchase." });
         clearCart();
         router.push('/account/orders');

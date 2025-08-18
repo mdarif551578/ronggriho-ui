@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { User, ShoppingBag, Heart, LogOut } from "lucide-react";
 import Link from 'next/link';
 import { useAuth } from "@/hooks/use-auth";
-import { auth, firestore } from "@/lib/firebase";
+import { auth, clientFirestore } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -69,7 +69,7 @@ export default function AccountPage() {
             if (user) {
                 try {
                     const q = query(
-                        collection(firestore, 'orders'), 
+                        collection(clientFirestore, 'orders'), 
                         where('userId', '==', user.uid),
                         orderBy('createdAt', 'desc')
                     );

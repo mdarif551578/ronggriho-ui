@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { ShoppingBag } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
-import { firestore } from "@/lib/firebase";
+import { clientFirestore } from "@/lib/firebase";
 import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -46,7 +46,7 @@ export default function OrdersPage() {
             if (user) {
                 try {
                     const q = query(
-                        collection(firestore, 'orders'), 
+                        collection(clientFirestore, 'orders'), 
                         where('userId', '==', user.uid),
                         orderBy('createdAt', 'desc')
                     );

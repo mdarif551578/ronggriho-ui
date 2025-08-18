@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Truck, PackageCheck, Package, CircleCheck, CircleX, Warehouse } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { firestore } from '@/lib/firebase';
+import { clientFirestore } from '@/lib/firebase';
 import { doc, getDoc, Timestamp } from 'firebase/firestore';
 
 type TrackingStatus = 'idle' | 'loading' | 'found' | 'not_found';
@@ -51,7 +51,7 @@ export default function TrackingPage() {
     if (!id) return;
     setStatus('loading');
     try {
-        const orderRef = doc(firestore, 'orders', id);
+        const orderRef = doc(clientFirestore, 'orders', id);
         const orderSnap = await getDoc(orderRef);
 
         if (orderSnap.exists()) {

@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { collection, getDocs, orderBy, Timestamp } from 'firebase/firestore';
-import { firestore } from '@/lib/firebase';
+import { clientFirestore } from '@/lib/firebase';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -46,7 +46,7 @@ export default function AdminOrdersPage() {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const q = query(collection(firestore, 'orders'), orderBy('createdAt', 'desc'));
+                const q = query(collection(clientFirestore, 'orders'), orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
                 const fetchedOrders = querySnapshot.docs.map(doc => ({
                     id: doc.id,
