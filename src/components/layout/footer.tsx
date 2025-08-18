@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Github, Twitter, Instagram, Shirt } from 'lucide-react';
+import Logo from '../logo';
 
 export default function Footer() {
   return (
@@ -11,8 +12,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="md:col-span-2 lg:col-span-1">
              <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline text-primary mb-4">
-                <Shirt className="h-6 w-6" />
-                <span>Rong Griho</span>
+                <Logo />
               </Link>
             <p className="text-muted-foreground text-sm">
               Your one-stop shop for modern and traditional Bangladeshi fashion.

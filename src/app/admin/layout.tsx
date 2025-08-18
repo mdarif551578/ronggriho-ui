@@ -11,6 +11,7 @@ import { useAdminAuth } from '@/hooks/use-admin-auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import Logo from '@/components/logo';
 
 function MobileNav() {
     return (
@@ -31,8 +32,7 @@ function MobileNav() {
                         href="/admin"
                         className="flex items-center gap-2 text-lg font-semibold mb-4"
                     >
-                        <Shirt className="h-6 w-6" />
-                        <span>Rong Griho</span>
+                        <Logo />
                     </Link>
                     <Link href="/admin" className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground">
                         <Home className="h-5 w-5" />

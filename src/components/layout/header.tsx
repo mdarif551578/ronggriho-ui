@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import ClientOnly from '../client-only';
 import { useAuth } from '@/hooks/use-auth';
+import Logo from '../logo';
 
 
 const navLinks = [
@@ -67,8 +68,7 @@ export default function Header() {
                 <Menu className="h-6 w-6" />
               </Button>
               <Link href="/" className="flex items-center gap-2 text-xl md:text-2xl font-bold font-headline text-primary">
-                <Shirt className="h-6 w-6" />
-                <span className="hidden sm:inline-block">Rong Griho</span>
+                <Logo />
               </Link>
             </div>
 
@@ -134,8 +134,7 @@ export default function Header() {
               <div className="container mx-auto px-4 pt-4 pb-6">
                 <div className="flex justify-between items-center mb-6">
                    <Link href="/" className="flex items-center gap-2 text-xl md:text-2xl font-bold font-headline text-primary" onClick={toggleMenu}>
-                    <Shirt className="h-6 w-6" />
-                    <span>Rong Griho</span>
+                    <Logo />
                   </Link>
                   <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Close menu">
                     <X className="h-6 w-6" />
