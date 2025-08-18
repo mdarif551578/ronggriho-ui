@@ -8,21 +8,23 @@ import type { Product } from './types';
 try {
   if (!getApps().length) {
     const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
-    if (serviceAccountJson) {
-      const serviceAccount = JSON.parse(serviceAccountJson);
-      initializeApp({
-        credential: cert(serviceAccount),
-      });
-    } else {
-      // Fallback for environments like App Hosting where GOOGLE_APPLICATION_CREDENTIALS might be set
-      initializeApp();
+    if (!serviceAccountJson) {
+      throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is not set.');
     }
+    const serviceAccount = JSON.parse(serviceAccountJson);
+    initializeApp({
+      credential: cert(serviceAccount),
+    });
   }
 } catch (error) {
-    console.error('Firebase Admin Initialization Error. Using fallback. Error:', error);
-    // A fallback for environments that might have issues with re-initialization.
+    console.error('Firebase Admin Initialization Error:', error);
+    // Fallback for environments where default credentials might be available
     if (!getApps().length) {
-        initializeApp();
+        try {
+            initializeApp();
+        } catch (e) {
+            console.error('Fallback Firebase initialization failed:', e);
+        }
     }
 }
 
@@ -102,4 +104,3 @@ export async function updateProduct(id: string, data: Partial<Omit<Product, 'id'
         throw new Error("Failed to update product.");
     }
 }
-
