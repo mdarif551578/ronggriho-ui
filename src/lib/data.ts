@@ -1,35 +1,33 @@
 
 import 'server-only';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
 import { getFirestore, DocumentData } from 'firebase-admin/firestore';
 import type { Product } from './types';
 
 // Initialize Firebase Admin SDK
-try {
-  if (!getApps().length) {
-    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
-    if (!serviceAccountJson) {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is not set.');
-    }
-    const serviceAccount = JSON.parse(serviceAccountJson);
-    initializeApp({
-      credential: cert(serviceAccount),
-    });
-  }
-} catch (error) {
-    console.error('Firebase Admin Initialization Error:', error);
-    // Fallback for environments where default credentials might be available
-    if (!getApps().length) {
-        try {
-            initializeApp();
-        } catch (e) {
-            console.error('Fallback Firebase initialization failed:', e);
+let adminApp: App;
+if (!getApps().length) {
+    try {
+        const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+        if (!serviceAccountJson) {
+            throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is not set or empty.');
         }
+        const serviceAccount = JSON.parse(serviceAccountJson);
+        adminApp = initializeApp({
+            credential: cert(serviceAccount),
+        });
+        console.log("Firebase Admin SDK initialized successfully.");
+    } catch (error) {
+        console.error('Firebase Admin Initialization Error:', error);
+        // We throw an error here to stop execution if Firebase Admin fails to initialize
+        // as the app cannot function without it on the server.
+        throw new Error("Could not initialize Firebase Admin SDK. Please check service account credentials.");
     }
+} else {
+    adminApp = getApps()[0];
 }
 
-
-const firestore = getFirestore();
+const firestore = getFirestore(adminApp);
 
 function docDataToProduct(doc: DocumentData): Product {
     const data = doc.data();
