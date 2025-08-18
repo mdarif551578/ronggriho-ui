@@ -1,17 +1,39 @@
 
+'use client';
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/product-card';
-import { getProducts } from '@/lib/data';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { clientFirestore } from '@/lib/firebase';
 import type { Product } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
-export default async function Home() {
-  const allProducts: Product[] = await getProducts();
+export default function Home() {
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const q = query(collection(clientFirestore, 'products'));
+        const querySnapshot = await getDocs(q);
+        const fetchedProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        setAllProducts(fetchedProducts);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const flashDeals = allProducts.filter(p => p.discountPrice).slice(0, 4);
   const featuredProducts = allProducts.filter(p => p.tags.includes('featured')).slice(0, 4);
 
@@ -56,9 +78,20 @@ export default async function Home() {
           </Button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {flashDeals.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="aspect-[4/5] w-full" />
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="h-5 w-1/3" />
+                <Skeleton className="h-9 w-full" />
+              </div>
+            ))
+          ) : (
+            flashDeals.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          )}
         </div>
       </section>
       
@@ -93,9 +126,20 @@ export default async function Home() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center font-headline mb-8">Featured Products</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {featuredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="aspect-[4/5] w-full" />
+                  <Skeleton className="h-5 w-2/3" />
+                  <Skeleton className="h-5 w-1/3" />
+                  <Skeleton className="h-9 w-full" />
+                </div>
+              ))
+            ) : (
+              featuredProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            )}
           </div>
         </div>
       </section>

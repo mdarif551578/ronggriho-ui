@@ -1,26 +1,47 @@
 
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/product-card';
-import { getProducts } from '@/lib/data';
-import { Product } from '@/lib/types';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { clientFirestore } from '@/lib/firebase';
+import type { Product } from '@/lib/types';
 import ProductFilters from '@/components/product-filters';
 import ActiveFilters from '@/components/active-filters';
 import SortDropdown from '@/components/sort-dropdown';
 import ProductSearch from '@/components/product-search';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const allProducts = await getProducts();
+export default function ProductsPage() {
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const q = query(collection(clientFirestore, 'products'));
+        const querySnapshot = await getDocs(q);
+        const fetchedProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        setAllProducts(fetchedProducts);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const sortProducts = (products: Product[]): Product[] => {
-    const sort = searchParams?.sort;
+    const sort = searchParams.get('sort');
     if (sort === 'newest') {
-      // Assuming higher ID means newer product.
-      return [...products].sort((a, b) => parseInt(b.id) - parseInt(a.id));
+      // Assuming higher ID means newer product - requires createdAt field for better accuracy
+      return [...products].sort((a, b) => (b.id > a.id ? 1 : -1));
     }
-     if (sort === 'price-asc') {
+    if (sort === 'price-asc') {
       return [...products].sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
     }
     if (sort === 'price-desc') {
@@ -37,23 +58,24 @@ export default async function ProductsPage({
 
     let filtered = products;
     
-    const categories = searchParams.category ? (Array.isArray(searchParams.category) ? searchParams.category : [searchParams.category]) : [];
+    const categories = searchParams.getAll('category');
     if (categories.length > 0) {
       filtered = filtered.filter(product => categories.map(c => c.toLowerCase()).includes(product.category.toLowerCase().replace(/ /g, '-')));
     }
 
-    const sizes = searchParams.size ? (Array.isArray(searchParams.size) ? searchParams.size : [searchParams.size]) : [];
+    const sizes = searchParams.getAll('size');
     if (sizes.length > 0) {
       filtered = filtered.filter(product => product.sizes.some(s => sizes.includes(s)));
     }
     
-    const colors = searchParams.color ? (Array.isArray(searchParams.color) ? searchParams.color : [searchParams.color]) : [];
+    const colors = searchParams.getAll('color');
     if (colors.length > 0) {
       filtered = filtered.filter(product => product.colors.some(c => colors.includes(c.name.toLowerCase())));
     }
 
-    if (searchParams.price && typeof searchParams.price === 'string') {
-        const [min, max] = searchParams.price.split('-').map(Number);
+    const price = searchParams.get('price');
+    if (price) {
+        const [min, max] = price.split('-').map(Number);
         if (!isNaN(min) && !isNaN(max)) {
             filtered = filtered.filter(product => {
                 const price = product.discountPrice || product.price;
@@ -62,8 +84,9 @@ export default async function ProductsPage({
         }
     }
 
-    if (searchParams.q && typeof searchParams.q === 'string') {
-        filtered = filtered.filter(product => product.name.toLowerCase().includes(searchParams.q!.toLowerCase()));
+    const q = searchParams.get('q');
+    if (q) {
+        filtered = filtered.filter(product => product.name.toLowerCase().includes(q.toLowerCase()));
     }
 
     return filtered;
@@ -72,18 +95,17 @@ export default async function ProductsPage({
   const filtered = filterProducts(allProducts);
   const sortedAndFilteredProducts = sortProducts(filtered);
 
-
   const getTitle = () => {
-    if (searchParams?.q) {
-      return `Search results for "${searchParams.q}"`;
+    const q = searchParams.get('q');
+    if (q) {
+      return `Search results for "${q}"`;
     }
-    if (searchParams?.category) {
-        const categoryParam = searchParams.category;
-        const categories = Array.isArray(categoryParam) ? categoryParam : [categoryParam];
-        if (categories.length === 1) {
-            const categoryName = categories[0].replace(/-/g, ' ');
-            return categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-        }
+    const categoryParam = searchParams.getAll('category');
+    if (categoryParam.length === 1) {
+      const categoryName = categoryParam[0].replace(/-/g, ' ');
+      return categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+    }
+    if (categoryParam.length > 1) {
         return 'Filtered Products';
     }
     return 'All Products';
@@ -114,7 +136,18 @@ export default async function ProductsPage({
 
           <ActiveFilters allProducts={allProducts} />
           
-          {sortedAndFilteredProducts.length > 0 ? (
+          {loading ? (
+             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
+                 {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="space-y-2">
+                        <Skeleton className="aspect-[4/5] w-full" />
+                        <Skeleton className="h-5 w-2/3" />
+                        <Skeleton className="h-5 w-1/3" />
+                        <Skeleton className="h-9 w-full" />
+                    </div>
+                ))}
+             </div>
+          ) : sortedAndFilteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
               {sortedAndFilteredProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
