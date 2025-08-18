@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, orderBy, Timestamp, query } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,32 +12,8 @@ import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Order } from '@/lib/types';
 
-interface OrderStatus {
-    date: Timestamp;
-    text: string;
-}
-
-interface Order {
-    id: string;
-    createdAt: Timestamp;
-    status: OrderStatus[] | string;
-    total: number;
-    shippingAddress: {
-        fullName: string;
-    }
-}
-
-const getLatestStatus = (statusHistory: OrderStatus[] | string): string => {
-    if (typeof statusHistory === 'string') {
-        return statusHistory;
-    }
-    if (Array.isArray(statusHistory) && statusHistory.length > 0) {
-        const sortedHistory = [...statusHistory].sort((a, b) => b.date.seconds - a.date.seconds);
-        return sortedHistory[0].text;
-    }
-    return 'Processing';
-};
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -92,7 +68,7 @@ export default function AdminOrdersPage() {
                                 ))
                             ) : (
                                 orders.map((order) => {
-                                    const latestStatus = getLatestStatus(order.status);
+                                    const latestStatus = order.status;
                                     return (
                                         <TableRow key={order.id}>
                                             <TableCell className="font-medium">
@@ -100,7 +76,7 @@ export default function AdminOrdersPage() {
                                                     #{order.id.slice(0, 7).toUpperCase()}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell>{order.shippingAddress.fullName}</TableCell>
+                                            <TableCell>{order.shippingFullName}</TableCell>
                                             <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                                             <TableCell>
                                                 <Badge variant={latestStatus === 'Delivered' || latestStatus === 'Completed' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>

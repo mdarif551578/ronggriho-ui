@@ -12,29 +12,8 @@ import { useEffect, useState } from "react";
 import { clientFirestore } from "@/lib/firebase";
 import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Order } from "@/lib/types";
 
-interface OrderStatus {
-    date: Timestamp;
-    text: string;
-}
-
-interface Order {
-    id: string;
-    createdAt: Timestamp;
-    status: OrderStatus[] | string; // Can be old string or new array
-    total: number;
-}
-
-const getLatestStatus = (statusHistory: OrderStatus[] | string): string => {
-    if (typeof statusHistory === 'string') {
-        return statusHistory;
-    }
-    if (Array.isArray(statusHistory) && statusHistory.length > 0) {
-        const sortedHistory = [...statusHistory].sort((a, b) => b.date.seconds - a.date.seconds);
-        return sortedHistory[0].text;
-    }
-    return 'Processing';
-};
 
 export default function OrdersPage() {
     const { user, loading: authLoading } = useAuth();
@@ -117,7 +96,7 @@ export default function OrdersPage() {
                             </TableHeader>
                             <TableBody>
                                 {orders.map((order) => {
-                                    const latestStatus = getLatestStatus(order.status);
+                                    const latestStatus = order.status;
                                     return (
                                         <TableRow key={order.id}>
                                             <TableCell className="font-medium">#{order.id.slice(0, 7).toUpperCase()}</TableCell>

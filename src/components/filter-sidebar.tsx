@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -27,7 +28,8 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
 
   const { allCategories, allColors, allSizes, minProductPrice, maxProductPrice } = useMemo(() => {
     const categories = [...new Set(allProducts.map(p => p.category))];
-    const colors = [...new Set(allProducts.flatMap(p => p.colors.map(c => c.name)))].sort();
+    const colorNames = allProducts.flatMap(p => p.colors.map(c => c.split(':')[0]));
+    const colors = [...new Set(colorNames)].sort();
     const sizes = [...new Set(allProducts.flatMap(p => p.sizes))].sort();
     const prices = allProducts.map(p => p.discountPrice || p.price);
     return {

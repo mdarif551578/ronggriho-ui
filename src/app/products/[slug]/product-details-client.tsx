@@ -24,7 +24,13 @@ interface ProductDetailsClientProps {
 export default function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(product.sizes[0]);
-  const [selectedColor, setSelectedColor] = useState<string | undefined>(product.colors[0].name);
+  
+  const parsedColors = product.colors.map(c => {
+      const [name, hex] = c.split(':');
+      return { name, hex };
+  })
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(parsedColors[0]?.name);
+  
   const [activeImage, setActiveImage] = useState(product.images[0]);
   
   const { addToCart } = useCart();
@@ -119,7 +125,7 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
             <div>
               <Label className="text-sm font-semibold mb-2 block">Color: <span className="font-normal">{selectedColor}</span></Label>
               <div className="flex gap-2 flex-wrap">
-                {product.colors.map(color => (
+                {parsedColors.map(color => (
                   <button key={color.name} onClick={() => setSelectedColor(color.name)}
                     className={cn('h-8 w-8 rounded-full border-2 transition-all', selectedColor === color.name ? 'border-primary scale-110' : 'border-border')}>
                     <span className="h-full w-full rounded-full block" style={{ backgroundColor: color.hex }} />

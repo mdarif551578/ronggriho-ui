@@ -11,7 +11,7 @@ import { auth, clientFirestore } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -39,7 +39,7 @@ export default function RegisterPage() {
         displayName: fullName,
         email: user.email,
         phone: '', // Add phone number field
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
       });
 
       toast({ title: "Account Created", description: "Welcome to Rong Griho!" });

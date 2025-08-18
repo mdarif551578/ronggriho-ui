@@ -52,6 +52,7 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
         price: Number(formData.get('price')),
         category: formData.get('category') as string,
         tags: (formData.get('tags') as string).split(',').map(tag => tag.trim()).filter(Boolean),
+        colors: (formData.get('colors') as string).split(',').map(c => c.trim()).filter(Boolean),
     };
 
     try {
@@ -86,6 +87,7 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
                             <Skeleton className="h-12" />
                             <Skeleton className="h-12" />
                         </div>
+                        <Skeleton className="h-12" />
                         <Skeleton className="h-12" />
                     </CardContent>
                 </Card>
@@ -137,6 +139,12 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
                     <Label htmlFor="tags">Tags</Label>
                     <Input id="tags" name="tags" defaultValue={product.tags.join(', ')} />
                     <p className="text-sm text-muted-foreground">Enter tags separated by commas.</p>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="colors">Colors</Label>
+                    <Input id="colors" name="colors" defaultValue={product.colors.join(', ')} />
+                    <p className="text-sm text-muted-foreground">Enter colors as `Name:Hex`, separated by commas (e.g., `Red:#FF0000, Blue:#0000FF`).</p>
                 </div>
             </CardContent>
         </Card>

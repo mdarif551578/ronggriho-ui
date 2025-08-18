@@ -11,34 +11,11 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, Timestamp, limit } from "firebase/firestore";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface OrderStatus {
-    date: Timestamp;
-    text: string;
-}
-
-interface Order {
-    id: string;
-    createdAt: Timestamp;
-    status: OrderStatus[];
-    total: number;
-}
-
-const getLatestStatus = (statusHistory: OrderStatus[] | string): string => {
-    if (typeof statusHistory === 'string') {
-        return statusHistory;
-    }
-    if (Array.isArray(statusHistory) && statusHistory.length > 0) {
-        // Sort by date descending to get the latest status first
-        const sortedHistory = [...statusHistory].sort((a, b) => b.date.seconds - a.date.seconds);
-        return sortedHistory[0].text;
-    }
-    return 'Processing'; // Default status
-};
+import type { Order } from "@/lib/types";
 
 
 export default function AccountPage() {
@@ -71,7 +48,8 @@ export default function AccountPage() {
                     const q = query(
                         collection(clientFirestore, 'orders'), 
                         where('userId', '==', user.uid),
-                        orderBy('createdAt', 'desc')
+                        orderBy('createdAt', 'desc'),
+                        limit(5)
                     );
                     const querySnapshot = await getDocs(q);
                     const userOrders = querySnapshot.docs.map(doc => ({
@@ -81,7 +59,6 @@ export default function AccountPage() {
                     setOrders(userOrders);
                 } catch (error) {
                     console.error("Error fetching orders: ", error);
-                    // This is where you might see the index error in the console
                 }
             }
             setLoading(false);
@@ -179,8 +156,8 @@ export default function AccountPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {orders.slice(0, 5).map((order) => {
-                                            const latestStatus = getLatestStatus(order.status);
+                                        {orders.map((order) => {
+                                            const latestStatus = order.status;
                                             return (
                                             <TableRow key={order.id}>
                                                 <TableCell className="font-medium">
@@ -200,7 +177,7 @@ export default function AccountPage() {
                                     </TableBody>
                                 </Table>
                             )}
-                             {orders.length > 5 && (
+                             {orders.length > 0 && (
                                 <div className="text-center mt-4 p-6 md:p-0">
                                     <Button asChild variant="outline"><Link href="/account/orders">View All Orders</Link></Button>
                                 </div>

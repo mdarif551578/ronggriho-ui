@@ -70,7 +70,12 @@ export default function ProductsPage() {
     
     const colors = searchParams.getAll('color');
     if (colors.length > 0) {
-      filtered = filtered.filter(product => product.colors.some(c => colors.includes(c.name.toLowerCase())));
+        filtered = filtered.filter(product => 
+            product.colors.some(c => {
+                const [colorName] = c.split(':');
+                return colors.includes(colorName.toLowerCase());
+            })
+        );
     }
 
     const price = searchParams.get('price');

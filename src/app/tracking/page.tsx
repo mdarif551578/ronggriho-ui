@@ -9,24 +9,20 @@ import { Label } from '@/components/ui/label';
 import { Truck, PackageCheck, Package, CircleCheck, CircleX, Warehouse } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { clientFirestore } from '@/lib/firebase';
-import { doc, getDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, Timestamp } from 'firebase/firestore';
+import type { Order } from '@/lib/types';
+
 
 type TrackingStatus = 'idle' | 'loading' | 'found' | 'not_found';
 
-interface TrackingEventData {
-    text: string;
-    date: Timestamp;
-}
-
 interface TrackingEvent {
     status: string;
-    location: string;
     date: Timestamp;
     icon: React.ElementType;
 }
 
 const statusIconMap: { [key: string]: React.ElementType } = {
-    'created': CircleCheck,
+    'order created': CircleCheck,
     'processing': Warehouse,
     'on the way': Truck,
     'shipped': Truck,
@@ -36,7 +32,13 @@ const statusIconMap: { [key: string]: React.ElementType } = {
 };
 
 const getIconForStatus = (status: string): React.ElementType => {
-    return statusIconMap[status.toLowerCase()] || Package;
+    const normalizedStatus = status.toLowerCase();
+    for (const key in statusIconMap) {
+        if (normalizedStatus.includes(key)) {
+            return statusIconMap[key];
+        }
+    }
+    return Package;
 };
 
 
@@ -44,7 +46,7 @@ export default function TrackingPage() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState('');
   const [status, setStatus] = useState<TrackingStatus>('idle');
-  const [trackingInfo, setTrackingInfo] = useState<TrackingEvent[]>([]);
+  const [trackingHistory, setTrackingHistory] = useState<TrackingEvent[]>([]);
   const [currentStatus, setCurrentStatus] = useState('');
 
   const fetchOrder = async (id: string) => {
@@ -52,30 +54,37 @@ export default function TrackingPage() {
     setStatus('loading');
     try {
         const orderRef = doc(clientFirestore, 'orders', id);
-        const orderSnap = await getDoc(orderRef);
+        
+        onSnapshot(orderRef, (docSnap) => {
+             if (docSnap.exists()) {
+                const orderData = docSnap.data() as Order;
+                
+                // The status field directly holds the latest status string.
+                const latestStatus = orderData.status || 'Status Unavailable';
+                setCurrentStatus(latestStatus);
+                
+                // Mocking history based on current status for now
+                // A real app would have a history field in the order document
+                const history: TrackingEvent[] = [
+                    {
+                        status: latestStatus,
+                        date: orderData.createdAt, // Using createdAt as a placeholder
+                        icon: getIconForStatus(latestStatus)
+                    },
+                     {
+                        status: 'Order Created',
+                        date: orderData.createdAt,
+                        icon: getIconForStatus('order created')
+                    }
+                ].sort((a,b) => b.date.seconds - a.date.seconds);
 
-        if (orderSnap.exists()) {
-            const orderData = orderSnap.data();
-            
-            const history: TrackingEventData[] = orderData.status || [];
+                setTrackingHistory(history);
+                setStatus('found');
+            } else {
+                setStatus('not_found');
+            }
+        });
 
-            const processedHistory: TrackingEvent[] = history
-                .sort((a, b) => b.date.seconds - a.date.seconds)
-                .map(event => ({
-                    status: event.text,
-                    location: 'Warehouse', // Placeholder location
-                    date: event.date,
-                    icon: getIconForStatus(event.text),
-                }));
-            
-            const latestStatus = processedHistory[0]?.status || 'Status Unavailable';
-
-            setTrackingInfo(processedHistory);
-            setCurrentStatus(latestStatus);
-            setStatus('found');
-        } else {
-            setStatus('not_found');
-        }
     } catch (error) {
         console.error("Error fetching tracking info:", error);
         setStatus('not_found');
@@ -141,13 +150,12 @@ export default function TrackingPage() {
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-6 border-l-2 border-primary/20 ml-2">
-                        {trackingInfo.map((event, index) => (
+                        {trackingHistory.map((event, index) => (
                             <li key={index} className="relative pl-8">
                                 <div className="absolute -left-[1.05rem] top-1 flex items-center justify-center bg-background">
                                     <event.icon className="h-8 w-8 p-1.5 rounded-full bg-primary text-primary-foreground" />
                                 </div>
                                 <p className="font-semibold">{event.status}</p>
-                                <p className="text-sm text-muted-foreground">{event.location}</p>
                                 <p className="text-xs text-muted-foreground">{new Date(event.date.seconds * 1000).toLocaleString()}</p>
                             </li>
                         ))}

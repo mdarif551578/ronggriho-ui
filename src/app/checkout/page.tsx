@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { CreditCard, Landmark, ShoppingCart, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
@@ -57,6 +57,16 @@ export default function CheckoutPage() {
   const [nagadTrx, setNagadTrx] = useState('');
 
 
+  useEffect(() => {
+    if (user) {
+        setEmail(user.email || '');
+        const nameParts = user.displayName?.split(' ') || [];
+        setFirstName(nameParts[0] || '');
+        setLastName(nameParts.slice(1).join(' ') || '');
+    }
+  }, [user]);
+
+
   const subtotal = cart.reduce((sum, item) => sum + (item.discountPrice || item.price) * item.quantity, 0);
   const shipping = subtotal > 0 ? 50 : 0;
   
@@ -91,42 +101,16 @@ export default function CheckoutPage() {
 
     const orderData = {
         userId: user.uid,
-        items: cart,
+        items: cart.map(item => `${item.id}:${item.quantity}`),
         total,
-        subtotal,
-        shipping,
-        transactionFee,
         status: 'Processing',
         createdAt: serverTimestamp(),
-        shippingAddress: {
-            fullName: `${firstName} ${lastName}`,
-            address,
-            apartment,
-            city,
-            district,
-            phone,
-            email: email || user.email,
-        },
-        payment: {
-            method: paymentMethod,
-            details: {
-                ...(paymentMethod === 'bkash' && { bkashPhone, bkashTrx }),
-                ...(paymentMethod === 'nagad' && { nagadPhone, nagadTrx }),
-            }
-        },
-        orderNotes,
-        trackingHistory: [
-          {
-            status: 'Order Created',
-            location: 'Dhaka, Bangladesh',
-            date: Timestamp.now(),
-          },
-          {
-            status: 'Processing',
-            location: 'Warehouse',
-            date: Timestamp.now(),
-          }
-        ]
+        shippingFullName: `${firstName} ${lastName}`,
+        shippingAddress: `${address}, ${apartment}`,
+        shippingCity: city,
+        shippingDistrict: district,
+        shippingPhone: phone,
+        paymentMethod: paymentMethod,
     };
 
     try {
