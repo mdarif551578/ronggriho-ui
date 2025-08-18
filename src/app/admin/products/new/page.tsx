@@ -25,10 +25,11 @@ export default function NewProductPage() {
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
     
-    const newProduct: Omit<Product, 'id' | 'slug' | 'images' | 'relatedProductIds' | 'longDescription' | 'reviewsInfo' | 'shippingReturnsInfo'> = {
+    const newProduct: Omit<Product, 'id' | 'slug' | 'images' | 'relatedProductIds' | 'longDescription' | 'reviewsInfo' | 'shippingReturnsInfo' | 'createdAt'> = {
         name,
         description: formData.get('description') as string,
         price: Number(formData.get('price')),
+        discountPrice: Number(formData.get('discountPrice')) || undefined,
         stock: Number(formData.get('stock')),
         category: formData.get('category') as string,
         tags: (formData.get('tags') as string).split(',').map(tag => tag.trim()).filter(Boolean),
@@ -91,14 +92,19 @@ export default function NewProductPage() {
                         <Label htmlFor="price">Price (৳)</Label>
                         <Input id="price" name="price" type="number" step="0.01" placeholder="e.g. 2500" required />
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="discountPrice">Discount Price (৳)</Label>
+                        <Input id="discountPrice" name="discountPrice" type="number" step="0.01" placeholder="e.g. 1999" />
+                    </div>
                      <div className="space-y-2">
                         <Label htmlFor="stock">Stock</Label>
                         <Input id="stock" name="stock" type="number" placeholder="e.g. 50" required />
                     </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="category">Category</Label>
-                        <Input id="category" name="category" placeholder="e.g. Ethnic Wear" required />
-                    </div>
+                </div>
+
+                 <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Input id="category" name="category" placeholder="e.g. Ethnic Wear" required />
                 </div>
 
                  <div className="space-y-2">
@@ -123,3 +129,4 @@ export default function NewProductPage() {
     </form>
   );
 }
+

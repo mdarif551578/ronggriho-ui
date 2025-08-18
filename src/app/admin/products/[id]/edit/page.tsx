@@ -50,10 +50,12 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
         name: formData.get('name') as string,
         description: formData.get('description') as string,
         price: Number(formData.get('price')),
+        discountPrice: Number(formData.get('discountPrice')) || undefined,
         stock: Number(formData.get('stock')),
         category: formData.get('category') as string,
         tags: (formData.get('tags') as string).split(',').map(tag => tag.trim()).filter(Boolean),
         colors: (formData.get('colors') as string).split(',').map(c => c.trim()).filter(Boolean),
+        sizes: (formData.get('sizes') as string).split(',').map(s => s.trim()).filter(Boolean),
     };
 
     try {
@@ -135,24 +137,34 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
                         <Input id="price" name="price" type="number" step="0.01" defaultValue={product.price} />
                     </div>
                      <div className="space-y-2">
+                        <Label htmlFor="discountPrice">Discount Price (৳)</Label>
+                        <Input id="discountPrice" name="discountPrice" type="number" step="0.01" defaultValue={product.discountPrice} />
+                    </div>
+                     <div className="space-y-2">
                         <Label htmlFor="stock">Stock</Label>
                         <Input id="stock" name="stock" type="number" defaultValue={product.stock} />
                     </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="category">Category</Label>
-                        <Input id="category" name="category" defaultValue={product.category} />
-                    </div>
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="category">Category</Label>
+                    <Input id="category" name="category" defaultValue={product.category} />
                 </div>
 
                  <div className="space-y-2">
                     <Label htmlFor="tags">Tags</Label>
-                    <Input id="tags" name="tags" defaultValue={product.tags.join(', ')} />
+                    <Input id="tags" name="tags" defaultValue={product.tags?.join(', ')} />
                     <p className="text-sm text-muted-foreground">Enter tags separated by commas.</p>
                 </div>
 
                 <div className="space-y-2">
+                    <Label htmlFor="sizes">Sizes</Label>
+                    <Input id="sizes" name="sizes" defaultValue={product.sizes?.join(', ')} />
+                     <p className="text-sm text-muted-foreground">Enter sizes separated by commas.</p>
+                </div>
+
+                <div className="space-y-2">
                     <Label htmlFor="colors">Colors</Label>
-                    <Input id="colors" name="colors" defaultValue={product.colors.join(', ')} />
+                    <Input id="colors" name="colors" defaultValue={product.colors?.join(', ')} />
                     <p className="text-sm text-muted-foreground">Enter colors as `Name:Hex`, separated by commas (e.g., `Red:#FF0000, Blue:#0000FF`).</p>
                 </div>
             </CardContent>
@@ -160,3 +172,4 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
     </form>
   );
 }
+

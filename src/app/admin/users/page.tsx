@@ -13,28 +13,33 @@ import type { User } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function AdminUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
+    const { user: currentUser } = useAuth();
 
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const q = query(collection(clientFirestore, 'users'));
+            const querySnapshot = await getDocs(q);
+            const fetchedUsers = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as User));
+            setUsers(fetchedUsers.map(u => ({ ...u, uid: u.id })));
+        } catch (error) {
+            console.error("Error fetching users: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const q = query(collection(clientFirestore, 'users'));
-                const querySnapshot = await getDocs(q);
-                const fetchedUsers = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                } as User));
-                setUsers(fetchedUsers.map(u => ({ ...u, uid: u.id })));
-            } catch (error) {
-                console.error("Error fetching users: ", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchUsers();
     }, []);
 
@@ -94,14 +99,14 @@ export default function AdminUsersPage() {
                                     <TableCell className="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={currentUser?.uid === user.uid}>
                                                     <MoreHorizontal className="h-4 w-4" />
                                                     <span className="sr-only">Toggle menu</span>
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem onClick={() => toggleAdminRole(user)}>
+                                                <DropdownMenuItem onClick={() => toggleAdminRole(user)} disabled={currentUser?.uid === user.uid}>
                                                     {user.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
