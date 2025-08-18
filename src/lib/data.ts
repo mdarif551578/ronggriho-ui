@@ -5,8 +5,8 @@ import { getFirestore, DocumentData } from 'firebase-admin/firestore';
 import type { Product } from './types';
 
 // Initialize Firebase Admin SDK
-if (!getApps().length) {
-  try {
+try {
+  if (!getApps().length) {
     const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
     if (serviceAccountJson) {
       const serviceAccount = JSON.parse(serviceAccountJson);
@@ -14,15 +14,18 @@ if (!getApps().length) {
         credential: cert(serviceAccount),
       });
     } else {
-      // For local development or environments where GOOGLE_APPLICATION_CREDENTIALS is set
+      // Fallback for environments like App Hosting where GOOGLE_APPLICATION_CREDENTIALS might be set
       initializeApp();
     }
-  } catch (error) {
-    console.error('Firebase Admin Initialization Error:', error);
-    // Fallback for environments like App Hosting
-    initializeApp();
   }
+} catch (error) {
+    console.error('Firebase Admin Initialization Error. Using fallback. Error:', error);
+    // A fallback for environments that might have issues with re-initialization.
+    if (!getApps().length) {
+        initializeApp();
+    }
 }
+
 
 const firestore = getFirestore();
 
@@ -99,3 +102,4 @@ export async function updateProduct(id: string, data: Partial<Omit<Product, 'id'
         throw new Error("Failed to update product.");
     }
 }
+
