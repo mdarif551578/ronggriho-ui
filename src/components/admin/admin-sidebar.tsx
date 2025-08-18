@@ -8,6 +8,9 @@ import { Home, ShoppingBag, Package, Users, LogOut, Shirt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import Logo from "../logo";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
     { href: "/admin", label: "Dashboard", icon: Home },
@@ -18,7 +21,14 @@ const navLinks = [
 
 export default function AdminSidebar() {
     const pathname = usePathname();
-    const { logout } = useAdminAuth();
+    const { logout: adminLogout } = useAdminAuth();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        adminLogout();
+        router.push('/auth/login');
+    };
 
     return (
         <aside className="hidden border-r bg-muted/40 md:block">
@@ -46,7 +56,7 @@ export default function AdminSidebar() {
                     </nav>
                 </div>
                  <div className="mt-auto p-4">
-                    <Button size="sm" variant="ghost" className="w-full justify-start gap-3" onClick={logout}>
+                    <Button size="sm" variant="ghost" className="w-full justify-start gap-3" onClick={handleLogout}>
                         <LogOut className="h-4 w-4" />
                         Logout
                     </Button>

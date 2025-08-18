@@ -12,6 +12,19 @@ import { PlusCircle, MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { clientFirestore } from '@/lib/firebase';
+import { doc, deleteDoc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 interface AdminProductsClientPageProps {
     products: Product[];
@@ -20,6 +33,30 @@ interface AdminProductsClientPageProps {
 export default function AdminProductsClientPage({ products: initialProducts }: AdminProductsClientPageProps) {
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [loading, setLoading] = useState(!initialProducts);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+    const { toast } = useToast();
+
+    const openDeleteDialog = (product: Product) => {
+        setProductToDelete(product);
+        setIsDeleteDialogOpen(true);
+    };
+
+    const handleDeleteProduct = async () => {
+        if (!productToDelete) return;
+
+        try {
+            await deleteDoc(doc(clientFirestore, "products", productToDelete.id));
+            setProducts(products.filter(p => p.id !== productToDelete.id));
+            toast({ title: "Success", description: "Product deleted successfully." });
+        } catch (error) {
+            console.error("Error deleting product: ", error);
+            toast({ title: "Error", description: "Failed to delete product.", variant: "destructive" });
+        } finally {
+            setIsDeleteDialogOpen(false);
+            setProductToDelete(null);
+        }
+    };
 
     return (
         <div>
@@ -74,12 +111,11 @@ export default function AdminProductsClientPage({ products: initialProducts }: A
                                         </TableCell>
                                         <TableCell className="font-medium">{product.name}</TableCell>
                                         <TableCell>
-                                            <Badge variant={"default"}>Published</Badge>
+                                            <Badge variant={product.stock > 0 ? "default" : "destructive"}>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</Badge>
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell">৳{product.price.toFixed(2)}</TableCell>
                                         <TableCell className="hidden md:table-cell">
-                                            {/* This needs a real stock field on product in the future */}
-                                            {10 > 0 ? `${10} in stock` : 'Out of stock'}
+                                            {product.stock} in stock
                                         </TableCell>
                                         <TableCell>
                                             <DropdownMenu>
@@ -92,7 +128,7 @@ export default function AdminProductsClientPage({ products: initialProducts }: A
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                     <DropdownMenuItem asChild><Link href={`/admin/products/${product.id}/edit`}>Edit</Link></DropdownMenuItem>
-                                                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => openDeleteDialog(product)} className="text-destructive">Delete</DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -103,7 +139,21 @@ export default function AdminProductsClientPage({ products: initialProducts }: A
                     </Table>
                 </CardContent>
             </Card>
+             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the product
+                            "{productToDelete?.name}" from your database.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteProduct}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
-

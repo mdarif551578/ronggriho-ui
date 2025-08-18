@@ -39,6 +39,7 @@ export default function RegisterPage() {
         displayName: fullName,
         email: user.email,
         phone: '', // Add phone number field
+        role: 'customer', // Default role for new users
         createdAt: serverTimestamp(),
       });
 

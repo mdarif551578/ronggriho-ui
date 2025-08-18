@@ -8,6 +8,7 @@ export interface Product {
   reviewsInfo: string;
   shippingReturnsInfo: string;
   price: number;
+  stock: number;
   discountPrice?: number;
   category: string;
   tags: string[];
@@ -37,5 +38,6 @@ export interface User {
     displayName: string;
     email: string;
     phone: string;
+    role?: 'customer' | 'admin';
     createdAt: any; // Firestore Timestamp
 }

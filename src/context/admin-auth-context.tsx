@@ -4,16 +4,15 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/hooks/use-auth'; // Using the main app auth hook
+import { clientFirestore } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import type { User as AppUser } from '@/lib/types';
 
-// For a real app, use Firebase Auth with custom claims to identify admins.
-// For this prototype, we'll use a simplified mock authentication.
-const ADMIN_EMAIL = 'admin@example.com';
-const ADMIN_PASSWORD = 'password';
 
 interface AdminAuthContextType {
   isAdmin: boolean;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -24,43 +23,64 @@ interface AdminAuthProviderProps {
 }
 
 export default function AdminAuthProvider({ children }: AdminAuthProviderProps) {
+  const { user, loading: authLoading } = useAuth(); // main auth context
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // This effect now handles redirection based on auth state
-    const adminSession = sessionStorage.getItem('isAdmin');
-    const isAuthenticated = adminSession === 'true';
-    setIsAdmin(isAuthenticated);
-    
-    if (!isAuthenticated && pathname !== '/admin/login') {
-      router.push('/admin/login');
-    }
-    
-    setLoading(false);
-  }, [pathname, router]);
+    const checkAdminStatus = async () => {
+      if (authLoading) return;
 
-  const login = async (email: string, password: string) => {
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      sessionStorage.setItem('isAdmin', 'true');
-      setIsAdmin(true);
-      router.push('/admin');
-    } else {
-      throw new Error('Invalid credentials');
-    }
-  };
+      if (user) {
+        try {
+          const userDocRef = doc(clientFirestore, 'users', user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data() as AppUser;
+            const userIsAdmin = userData.role === 'admin';
+            setIsAdmin(userIsAdmin);
+             if (!userIsAdmin && pathname !== '/admin/login') {
+                router.push('/admin/login');
+             }
+          } else {
+             setIsAdmin(false);
+             if (pathname !== '/admin/login') {
+                router.push('/admin/login');
+             }
+          }
+        } catch (error) {
+          console.error("Error checking admin status:", error);
+          setIsAdmin(false);
+           if (pathname !== '/admin/login') {
+             router.push('/admin/login');
+           }
+        }
+      } else {
+         setIsAdmin(false);
+         if (pathname !== '/admin/login') {
+           router.push('/admin/login');
+         }
+      }
+      setLoading(false);
+    };
+
+    checkAdminStatus();
+  }, [user, authLoading, pathname, router]);
+
 
   const logout = () => {
-    sessionStorage.removeItem('isAdmin');
+    // The main useAuth hook handles the actual sign out
+    // We just clear our local state and redirect
     setIsAdmin(false);
-    router.push('/admin/login');
+    router.push('/auth/login'); // Redirect to main login page after logout
   };
+  
+  // No login function here as it's handled by the main app's login flow
+  const value = { isAdmin, loading, logout };
 
-  const value = { isAdmin, loading, login, logout };
-
-  if (loading) {
+  if (loading || authLoading) {
     return (
         <div className="flex h-screen items-center justify-center">
             <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">

@@ -50,6 +50,7 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
         name: formData.get('name') as string,
         description: formData.get('description') as string,
         price: Number(formData.get('price')),
+        stock: Number(formData.get('stock')),
         category: formData.get('category') as string,
         tags: (formData.get('tags') as string).split(',').map(tag => tag.trim()).filter(Boolean),
         colors: (formData.get('colors') as string).split(',').map(c => c.trim()).filter(Boolean),
@@ -84,6 +85,10 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
                         <Skeleton className="h-12" />
                         <Skeleton className="h-20" />
                         <div className="grid md:grid-cols-2 gap-6">
+                            <Skeleton className="h-12" />
+                            <Skeleton className="h-12" />
+                        </div>
+                         <div className="grid md:grid-cols-2 gap-6">
                             <Skeleton className="h-12" />
                             <Skeleton className="h-12" />
                         </div>
@@ -124,10 +129,14 @@ export default function ProductEditPage({ params }: { params: { id: string } }) 
                     <Textarea id="description" name="description" defaultValue={product.description} />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-3 gap-6">
                      <div className="space-y-2">
                         <Label htmlFor="price">Price (৳)</Label>
                         <Input id="price" name="price" type="number" step="0.01" defaultValue={product.price} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="stock">Stock</Label>
+                        <Input id="stock" name="stock" type="number" defaultValue={product.stock} />
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="category">Category</Label>
