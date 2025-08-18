@@ -34,18 +34,20 @@ Rong Griho is a modern e-commerce platform focused on providing a seamless shopp
 
 ### Admin Panel
 - **Dashboard**:
-    - At-a-glance view of key metrics (to be implemented).
+    - At-a-glance view of key metrics (revenue, orders, customers).
 - **Product Management**:
     - View a list of all products.
-    - Add new products (to be implemented).
-    - Edit existing product details (name, price, description, etc.).
+    - Add new products with all necessary details.
+    - Edit existing product details.
+    - Delete products.
 - **Order Management**:
     - View a list of all customer orders.
-    - View order details and update status (to be implemented).
+    - View order details and update order status.
 - **User Management**:
-    - View a list of all registered users (to be implemented).
+    - View a list of all registered users.
+    - Grant and revoke admin privileges.
 - **Secure Login**:
-    - Separate login for administrators.
+    - Separate login for administrators, role-based access control.
 
 ## 3. Technical Architecture
 
@@ -53,7 +55,7 @@ Rong Griho is a modern e-commerce platform focused on providing a seamless shopp
 - **Language**: TypeScript.
 - **Styling**: Tailwind CSS with `tailwindcss-animate` for animations.
 - **UI Components**: ShadCN UI for a consistent and accessible component library.
-- **Database**: Google Firestore for storing product, order, and user data.
+- **Database**: Google Firestore for storing product, order, and user data. All data access is through the Firebase Client SDK.
 - **Authentication**: Firebase Authentication for both customer and admin users.
 - **State Management**: React Context API for global state (cart, wishlist, auth). Client-side state is managed with React Hooks (`useState`, `useEffect`).
 - **AI (Future)**: Genkit for potential generative AI features.
@@ -63,7 +65,6 @@ Rong Griho is a modern e-commerce platform focused on providing a seamless shopp
 - `src/app/`: Main application routes (App Router).
     - `(main)`: Group for customer-facing routes.
     - `admin`: Routes for the admin panel.
-    - `api`: API routes (if any).
 - `src/components/`: Reusable React components.
     - `ui/`: ShadCN UI components.
     - `layout/`: Main layout components like Header and Footer.
@@ -74,3 +75,62 @@ Rong Griho is a modern e-commerce platform focused on providing a seamless shopp
     - `firebase.ts`: Firebase client-side SDK initialization.
     - `types.ts`: TypeScript type definitions.
 - `public/`: Static assets like images and fonts.
+
+## 5. Firestore Data Schema
+
+This section defines the structure for each collection in the Firestore database. The schema uses a simple, flat key-value structure to ensure easy querying and maintainability.
+
+### `users` Collection
+Stores information about registered users. The document ID is the same as the Firebase Auth User ID (UID).
+
+| Field         | Type      | Description                                          | Example                             |
+|---------------|-----------|------------------------------------------------------|-------------------------------------|
+| `uid`         | `string`  | The user's unique ID from Firebase Authentication.   | `"a1b2c3d4e5f6g7h8"`                |
+| `displayName` | `string`  | The user's full name.                                | `"John Doe"`                        |
+| `email`       | `string`  | The user's email address.                            | `"user@example.com"`                |
+| `phone`       | `string`  | The user's phone number.                             | `"+8801234567890"`                  |
+| `role`        | `string`  | User role, either `'customer'` or `'admin'`.         | `"customer"`                        |
+| `createdAt`   | `Timestamp`| The server timestamp when the user was created.      | `Timestamp(seconds=167..., ...)`    |
+
+---
+
+### `products` Collection
+Stores all product information for the e-commerce store.
+
+| Field                 | Type      | Description                                                      | Example                                     |
+|-----------------------|-----------|------------------------------------------------------------------|---------------------------------------------|
+| `name`                | `string`  | The full name of the product.                                    | `"Elegant Silk Saree"`                      |
+| `slug`                | `string`  | A URL-friendly version of the product name.                      | `"elegant-silk-saree"`                      |
+| `description`         | `string`  | A short, plain-text summary of the product.                      | `"A beautiful hand-woven silk saree..."`    |
+| `longDescription`     | `string`  | A detailed product description, can contain HTML.                | `"<p>More details...</p>"`                   |
+| `reviewsInfo`         | `string`  | Information about reviews, can contain HTML.                     | `"<h3>Customer Reviews</h3>..."`            |
+| `shippingReturnsInfo` | `string`  | Information about shipping and returns, can contain HTML.        | `"<h3>Shipping Policy</h3>..."`             |
+| `price`               | `number`  | The original price of the product.                               | `2500`                                      |
+| `discountPrice`       | `number`  | (Optional) The discounted price of the product.                  | `1999`                                      |
+| `stock`               | `number`  | The number of items available in stock.                          | `50`                                        |
+| `category`            | `string`  | The main category of the product.                                | `"Ethnic Wear"`                             |
+| `tags`                | `array`   | An array of strings for filtering and promotion.                 | `["featured", "new-arrival"]`               |
+| `images`              | `array`   | An array of string URLs for product images.                      | `["https://.../img1.png"]`                  |
+| `sizes`               | `array`   | An array of available sizes.                                     | `["S", "M", "L", "XL"]`                     |
+| `colors`              | `array`   | An array of strings defining available colors.                   | `["Red:#FF0000", "Blue:#0000FF"]`            |
+| `relatedProductIds`   | `array`   | An array of product document IDs for related items.              | `["prod_abc", "prod_def"]`                  |
+| `createdAt`           | `Timestamp`| The server timestamp when the product was added.                 | `Timestamp(seconds=167..., ...)`            |
+
+---
+
+### `orders` Collection
+Stores information about customer orders.
+
+| Field              | Type      | Description                                                      | Example                                      |
+|--------------------|-----------|------------------------------------------------------------------|----------------------------------------------|
+| `userId`           | `string`  | The UID of the user who placed the order.                        | `"a1b2c3d4e5f6g7h8"`                         |
+| `items`            | `array`   | An array of strings encoding product ID and quantity.            | `["prod_id1:2", "prod_id2:1"]`               |
+| `total`            | `number`  | The total cost of the order.                                     | `5450.50`                                    |
+| `status`           | `string`  | The current status of the order.                                 | `"Processing"`                               |
+| `createdAt`        | `Timestamp`| The server timestamp when the order was placed.                  | `Timestamp(seconds=167..., ...)`             |
+| `shippingFullName` | `string`  | The full name for the shipping address.                          | `"Jane Doe"`                                 |
+| `shippingAddress`  | `string`  | The street address for shipping.                                 | `"123 Gulshan Ave, Apt 4B"`                  |
+| `shippingCity`     | `string`  | The city for shipping.                                           | `"Dhaka"`                                    |
+| `shippingDistrict` | `string`  | The district for shipping.                                       | `"Dhaka"`                                    |
+| `shippingPhone`    | `string`  | The contact phone number for the delivery.                       | `"+8801987654321"`                           |
+| `paymentMethod`    | `string`  | The payment method used for the order.                           | `"cod"` (Cash on Delivery)                   |

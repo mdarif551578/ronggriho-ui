@@ -16,6 +16,7 @@ export interface Product {
   sizes: string[];
   colors: string[]; // e.g., ["Red:#FF0000", "Blue:#0000FF"]
   relatedProductIds: string[];
+  createdAt: any; // Firestore Timestamp
 }
 
 export interface Order {
