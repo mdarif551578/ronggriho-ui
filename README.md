@@ -4,21 +4,20 @@ Rong Griho is a modern e-commerce platform built with Next.js, designed to showc
 
 ## Core Features
 
--   **Intuitive Product Browsing**: A user-friendly interface for browsing products by category, tag, and style.
--   **Detailed Product Pages**: Comprehensive product showcases with multiple images, detailed descriptions, size charts, and customer reviews.
--   **Style Recommendation Tool**: Personalized 'Complete the Look' suggestions to help users discover matching items and accessories.
--   **Secure and Flexible Checkout**: A secure checkout process with multiple payment options, including COD, cards, and mobile payment gateways.
+-   **Intuitive Product Browsing**: A user-friendly interface for browsing products by category, tag, and style with robust filtering and sorting.
+-   **Detailed Product Pages**: Comprehensive product showcases with multiple images, detailed descriptions, size/color options, and related product suggestions.
+-   **Secure and Flexible Checkout**: A secure checkout process with multiple payment options, including COD and mobile payment gateways (bKash, Nagad).
 -   **Wishlist Management**: Functionality for users to save their favorite items for future purchase.
--   **Bilingual Support**: Full support for both English and Bangla to cater to a broad user base.
--   **Dynamic Promotion Display**: Dynamic cards and banners for showcasing discounts, promotions, and limited-time offers.
+-   **User Accounts**: Secure user authentication and account management for orders, profile settings, and wishlists.
+-   **Admin Panel**: A dedicated dashboard for administrators to manage products, view orders, and oversee users.
 
 ## Style Guidelines
 
 The visual identity of Rong Griho is designed to be clean, modern, and trustworthy.
 
--   **Primary Color**: `#1D4ED8` (A modern blue for trust and reliability).
--   **Background Color**: `#E5E7EB` (A light-blue for a clean browsing experience).
--   **Accent Color**: `#F59E0B` (A yellow-orange to highlight promotions and sales).
+-   **Primary Color**: `hsl(222.2 84% 4.9%)` (A modern, near-black for a sophisticated feel).
+-   **Background Color**: `hsl(0 0% 100%)` (Clean white for a classic e-commerce experience).
+-   **Accent Color**: `hsl(210 40% 96.1%)` (A light grey for secondary elements).
 -   **Font**: 'Inter' (sans-serif) for headlines and body text.
 -   **Iconography**: `lucide-react` for consistent and modern icons.
 -   **Layout**: A mobile-first design built with Tailwind CSS.
@@ -29,6 +28,8 @@ The visual identity of Rong Griho is designed to be clean, modern, and trustwort
 -   **Framework**: Next.js (with App Router)
 -   **UI**: React, ShadCN UI, Tailwind CSS
 -   **AI Features**: Genkit
+-   **Database**: Firebase Firestore
+-   **Authentication**: Firebase Auth
 -   **State Management**: React Context API
 -   **Styling**: Tailwind CSS
 -   **Animations**: Framer Motion
