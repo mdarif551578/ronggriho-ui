@@ -34,6 +34,7 @@ export interface Order {
 }
 
 export interface User {
+    id: string; // Document ID, same as Firebase Auth UID
     uid: string;
     displayName: string;
     email: string;
