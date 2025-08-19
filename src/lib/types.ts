@@ -1,12 +1,17 @@
 
+export interface Review {
+  user: string;
+  text: string;
+  rating: number;
+  createdAt: any; // Firestore Timestamp
+}
+
 export interface Product {
   id: string;
   slug: string;
   name: string;
   description: string;
   longDescription: string;
-  reviewsInfo: string;
-  shippingReturnsInfo: string;
   price: number;
   stock: number;
   discountPrice?: number;
@@ -16,22 +21,34 @@ export interface Product {
   sizes: string[];
   colors: string[]; // e.g., ["Red:#FF0000", "Blue:#0000FF"]
   relatedProductIds: string[];
+  isFeatured: boolean;
+  isFlashSale: boolean;
+  reviews: Review[];
   createdAt: any; // Firestore Timestamp
+}
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
 }
 
 export interface Order {
     id: string;
-    userId: string;
-    items: string[]; // e.g., ["productId:quantity"]
+    uid: string; // Firebase Auth UID
+    items: OrderItem[]; 
     total: number;
-    status: string; // The latest status
-    createdAt: any; // Firestore Timestamp
+    status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+    paymentStatus: "pending" | "paid";
     shippingFullName: string;
     shippingAddress: string;
     shippingCity: string;
     shippingDistrict: string;
     shippingPhone: string;
-    paymentMethod: string;
+    paymentMethod: "cod" | "card" | "bkash";
+    createdAt: any; // Firestore Timestamp
 }
 
 export interface User {
@@ -40,6 +57,6 @@ export interface User {
     displayName: string;
     email: string;
     phone: string;
-    role: 'customer';
+    role: 'customer' | 'admin';
     createdAt: any; // Firestore Timestamp
 }

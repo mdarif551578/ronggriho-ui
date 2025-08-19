@@ -47,7 +47,7 @@ export default function AccountPage() {
                 try {
                     const q = query(
                         collection(clientFirestore, 'orders'), 
-                        where('userId', '==', user.uid),
+                        where('uid', '==', user.uid),
                         orderBy('createdAt', 'desc'),
                         limit(5)
                     );
@@ -167,7 +167,7 @@ export default function AccountPage() {
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant={latestStatus === 'Delivered' || latestStatus === 'Completed' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
+                                                    <Badge variant={latestStatus === 'Delivered' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
                                                         {latestStatus}
                                                     </Badge>
                                                 </TableCell>

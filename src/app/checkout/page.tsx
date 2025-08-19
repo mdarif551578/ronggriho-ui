@@ -18,6 +18,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
+import type { Order, OrderItem } from '@/lib/types';
+
 
 const districts = [
     "Bagerhat", "Bandarban", "Barguna", "Barisal", "Bhola", "Bogra", "Brahmanbaria", "Chandpur",
@@ -38,7 +40,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'bkash'>('cod');
   const [isLoading, setIsLoading] = useState(false);
 
   // Form state
@@ -71,13 +73,10 @@ export default function CheckoutPage() {
   const shipping = subtotal > 0 ? 50 : 0;
   
   const bkashFeePercentage = 0.02; // 2% fee for bKash
-  const nagadFeePercentage = 0.015; // 1.5% fee for Nagad
 
   let transactionFee = 0;
   if (paymentMethod === 'bkash') {
     transactionFee = subtotal * bkashFeePercentage;
-  } else if (paymentMethod === 'nagad') {
-    transactionFee = subtotal * nagadFeePercentage;
   }
 
   const total = subtotal + shipping + transactionFee;
@@ -99,11 +98,20 @@ export default function CheckoutPage() {
         return;
     }
 
-    const orderData = {
-        userId: user.uid,
-        items: cart.map(item => `${item.id}:${item.quantity}`),
+    const orderItems: OrderItem[] = cart.map(item => ({
+        productId: item.id,
+        name: item.name,
+        image: item.images[0],
+        price: item.discountPrice || item.price,
+        quantity: item.quantity,
+    }));
+
+    const orderData: Omit<Order, 'id'> = {
+        uid: user.uid,
+        items: orderItems,
         total,
-        status: 'Processing',
+        status: 'Pending',
+        paymentStatus: 'pending',
         createdAt: serverTimestamp(),
         shippingFullName: `${firstName} ${lastName}`,
         shippingAddress: `${address}, ${apartment}`,
@@ -234,7 +242,7 @@ export default function CheckoutPage() {
 
                 <div>
                     <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
-                    <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
+                    <RadioGroup value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as any)} className="space-y-4">
                         <Label className="flex flex-col gap-4 border rounded-lg p-4 cursor-pointer hover:bg-muted has-[:checked]:bg-muted has-[:checked]:border-primary transition-colors">
                             <div className="flex items-center">
                                 <RadioGroupItem value="bkash" id="bkash" className="mr-4"/>
@@ -256,24 +264,15 @@ export default function CheckoutPage() {
                                 </div>
                             )}
                         </Label>
-                        <Label className="flex flex-col gap-4 border rounded-lg p-4 cursor-pointer hover:bg-muted has-[:checked]:bg-muted has-[:checked]:border-primary transition-colors">
+                         <Label className="flex flex-col gap-4 border rounded-lg p-4 cursor-pointer hover:bg-muted has-[:checked]:bg-muted has-[:checked]:border-primary transition-colors">
                             <div className="flex items-center">
-                                <RadioGroupItem value="nagad" id="nagad" className="mr-4"/>
-                                <span className="font-semibold">Nagad Payment</span>
-                                <Image src="https://placehold.co/80x50.png" data-ai-hint="Nagad logo" alt="Nagad" width={40} height={25} className="ml-auto" />
+                                <RadioGroupItem value="card" id="card" className="mr-4"/>
+                                <span className="font-semibold">Card Payment</span>
+                                <CreditCard className="h-6 w-6 ml-auto text-primary" />
                             </div>
-                            {paymentMethod === 'nagad' && (
+                            {paymentMethod === 'card' && (
                                 <div className="pl-8 pt-4 border-t mt-4 text-sm text-muted-foreground space-y-4 animate-accordion-down">
-                                    <p>Please complete your Nagad payment at <strong className="text-foreground">01928558185</strong> (Agent), then fill the form below.</p>
-                                    <p>Your total payable amount is <strong className="text-foreground">৳{total.toFixed(2)}</strong> (including ৳{transactionFee.toFixed(2)} fee).</p>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="nagad-phone">Your Nagad Phone Number</Label>
-                                        <Input id="nagad-phone" placeholder="e.g. 01XXXXXXXXX" required={paymentMethod === 'nagad'} value={nagadPhone} onChange={e => setNagadPhone(e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="nagad-trx">Nagad Transaction ID (TrxID)</Label>
-                                        <Input id="nagad-trx" placeholder="e.g. 8M7A9B2C1D" required={paymentMethod === 'nagad'} value={nagadTrx} onChange={e => setNagadTrx(e.target.value)} />
-                                    </div>
+                                   <p>Card payment is currently unavailable. Please select another method.</p>
                                 </div>
                             )}
                         </Label>

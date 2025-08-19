@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/product-card';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import type { Product } from '@/lib/types';
 import ProductFilters from '@/components/product-filters';
@@ -38,17 +38,13 @@ export default function ProductsPage() {
   const sortProducts = (products: Product[]): Product[] => {
     const sort = searchParams.get('sort');
     if (sort === 'newest') {
-      // Assuming higher ID means newer product - requires createdAt field for better accuracy
-      return [...products].sort((a, b) => (b.id > a.id ? 1 : -1));
+      return [...products].sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
     }
     if (sort === 'price-asc') {
       return [...products].sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
     }
     if (sort === 'price-desc') {
       return [...products].sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price));
-    }
-    if (sort === 'discount') {
-      return [...products].sort((a, b) => (b.discountPrice ? 1 : -1) - (a.discountPrice ? 1 : -1) || (b.discountPrice || 0) - (a.discountPrice || 0));
     }
     return products;
   };
@@ -60,7 +56,7 @@ export default function ProductsPage() {
     
     const categories = searchParams.getAll('category');
     if (categories.length > 0) {
-      filtered = filtered.filter(product => categories.map(c => c.toLowerCase()).includes(product.category.toLowerCase().replace(/ /g, '-')));
+      filtered = filtered.filter(product => categories.some(c => product.category.toLowerCase().replace(' > ', '-').replace(/ /g, '-') === c.toLowerCase()));
     }
 
     const sizes = searchParams.getAll('size');
@@ -93,6 +89,15 @@ export default function ProductsPage() {
     if (q) {
         filtered = filtered.filter(product => product.name.toLowerCase().includes(q.toLowerCase()));
     }
+    
+    const tag = searchParams.get('tag');
+    if (tag === 'flash-sale') {
+      filtered = filtered.filter(p => p.isFlashSale);
+    }
+    if (tag === 'featured') {
+      filtered = filtered.filter(p => p.isFeatured);
+    }
+
 
     return filtered;
   };
@@ -107,8 +112,8 @@ export default function ProductsPage() {
     }
     const categoryParam = searchParams.getAll('category');
     if (categoryParam.length === 1) {
-      const categoryName = categoryParam[0].replace(/-/g, ' ');
-      return categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+      const categoryName = categoryParam[0].replace(/-/g, ' ').replace(' > ', ' > ');
+      return categoryName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
     if (categoryParam.length > 1) {
         return 'Filtered Products';

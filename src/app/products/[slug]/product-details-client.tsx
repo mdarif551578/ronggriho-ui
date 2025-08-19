@@ -60,6 +60,11 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
       });
     }
   };
+  
+  const averageRating = product.reviews?.length > 0 
+    ? product.reviews.reduce((acc, review) => acc + review.rating, 0) / product.reviews.length
+    : 0;
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -102,10 +107,10 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
           <p className="text-sm font-medium text-primary uppercase tracking-wide">{product.category}</p>
           <h1 className="text-3xl md:text-4xl font-bold font-headline mt-2">{product.name}</h1>
           <div className="flex items-center gap-2 mt-4">
-              <div className="flex text-yellow-500">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
+              <div className="flex text-yellow-400">
+                  {[...Array(5)].map((_, i) => <Star key={i} className={cn("h-5 w-5", i < Math.round(averageRating) ? "fill-current" : "text-gray-300")} />)}
               </div>
-              <p className="text-sm text-muted-foreground">(123 reviews)</p>
+              <p className="text-sm text-muted-foreground">({product.reviews?.length || 0} reviews)</p>
           </div>
           <div className="flex items-baseline gap-4 mt-4">
             {product.discountPrice ? (
@@ -169,19 +174,33 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
       {/* Product Info Tabs */}
        <div className="mt-16">
         <Tabs defaultValue="description" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews</TabsTrigger>
-            <TabsTrigger value="shipping">Shipping & Returns</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews ({product.reviews?.length || 0})</TabsTrigger>
           </TabsList>
           <TabsContent value="description">
             <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
           </TabsContent>
           <TabsContent value="reviews">
-            <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.reviewsInfo }} />
-          </TabsContent>
-          <TabsContent value="shipping">
-            <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.shippingReturnsInfo }} />
+            <div className="mt-6">
+                {(product.reviews && product.reviews.length > 0) ? (
+                    <div className="space-y-6">
+                        {product.reviews.map((review, index) => (
+                            <div key={index} className="border-b pb-4">
+                               <div className="flex items-center mb-2">
+                                 <div className="flex text-yellow-400">
+                                    {[...Array(5)].map((_, i) => <Star key={i} className={cn("h-4 w-4", i < review.rating ? "fill-current" : "text-gray-300")} />)}
+                                 </div>
+                                 <p className="ml-4 font-semibold">{review.user}</p>
+                               </div>
+                               <p className="text-muted-foreground">{review.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-muted-foreground text-center py-8">No reviews yet for this product.</p>
+                )}
+            </div>
           </TabsContent>
         </Tabs>
       </div>

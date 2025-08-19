@@ -26,7 +26,7 @@ export default function OrdersPage() {
                 try {
                     const q = query(
                         collection(clientFirestore, 'orders'), 
-                        where('userId', '==', user.uid),
+                        where('uid', '==', user.uid),
                         orderBy('createdAt', 'desc')
                     );
                     const querySnapshot = await getDocs(q);
@@ -102,7 +102,7 @@ export default function OrdersPage() {
                                             <TableCell className="font-medium">#{order.id.slice(0, 7).toUpperCase()}</TableCell>
                                             <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                                             <TableCell>
-                                                <Badge variant={latestStatus === 'Delivered' || latestStatus === 'Completed' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
+                                                <Badge variant={latestStatus === 'Delivered' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
                                                     {latestStatus}
                                                 </Badge>
                                             </TableCell>

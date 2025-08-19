@@ -38,8 +38,8 @@ export default function RegisterPage() {
         uid: user.uid,
         displayName: fullName,
         email: user.email,
-        phone: '', // Add phone number field
-        role: 'customer',
+        phone: '', 
+        role: email === 'admin@ronggriho.com' ? 'admin' : 'customer',
         createdAt: serverTimestamp(),
       });
 
@@ -103,4 +103,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

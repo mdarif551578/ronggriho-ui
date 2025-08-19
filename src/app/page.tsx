@@ -8,23 +8,35 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/product-card';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, where, limit } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
 export default function Home() {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [flashDeals, setFlashDeals] = useState<Product[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
-        const q = query(collection(clientFirestore, 'products'));
-        const querySnapshot = await getDocs(q);
-        const fetchedProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-        setAllProducts(fetchedProducts);
+        const productsRef = collection(clientFirestore, 'products');
+        
+        // Fetch Flash Deals
+        const flashDealsQuery = query(productsRef, where('isFlashSale', '==', true), limit(4));
+        const flashDealsSnapshot = await getDocs(flashDealsQuery);
+        const fetchedFlashDeals = flashDealsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        setFlashDeals(fetchedFlashDeals);
+
+        // Fetch Featured Products
+        const featuredQuery = query(productsRef, where('isFeatured', '==', true), limit(4));
+        const featuredSnapshot = await getDocs(featuredQuery);
+        const fetchedFeatured = featuredSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        setFeaturedProducts(fetchedFeatured);
+
       } catch (error) {
         console.error("Error fetching products: ", error);
       } finally {
@@ -34,8 +46,6 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  const flashDeals = allProducts.filter(p => p.discountPrice).slice(0, 4);
-  const featuredProducts = allProducts.filter(p => p.tags.includes('featured')).slice(0, 4);
 
   const categories = [
     { name: "T-Shirts", image: "https://placehold.co/400x400.png", dataAiHint: "tshirt fashion" },
@@ -74,7 +84,7 @@ export default function Home() {
         <div className="flex justify-between items-baseline mb-6">
           <h2 className="text-3xl font-bold font-headline">Flash Deals</h2>
           <Button variant="link" asChild>
-            <Link href="/products?sort=discount">View All <ArrowRight className="ml-1 h-4 w-4" /></Link>
+            <Link href="/products?tag=flash-sale">View All <ArrowRight className="ml-1 h-4 w-4" /></Link>
           </Button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">

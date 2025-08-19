@@ -23,11 +23,11 @@ interface TrackingEvent {
 
 const statusIconMap: { [key: string]: React.ElementType } = {
     'order created': CircleCheck,
+    'pending': CircleCheck,
     'processing': Warehouse,
     'on the way': Truck,
     'shipped': Truck,
     'delivered': PackageCheck,
-    'completed': PackageCheck,
     'cancelled': CircleX,
 };
 
@@ -59,12 +59,10 @@ export default function TrackingPage() {
              if (docSnap.exists()) {
                 const orderData = docSnap.data() as Order;
                 
-                // The status field directly holds the latest status string.
                 const latestStatus = orderData.status || 'Status Unavailable';
                 setCurrentStatus(latestStatus);
                 
                 // Mocking history based on current status for now
-                // A real app would have a history field in the order document
                 const history: TrackingEvent[] = [
                     {
                         status: latestStatus,
@@ -72,7 +70,7 @@ export default function TrackingPage() {
                         icon: getIconForStatus(latestStatus)
                     },
                      {
-                        status: 'Order Created',
+                        status: 'Order Placed',
                         date: orderData.createdAt,
                         icon: getIconForStatus('order created')
                     }
