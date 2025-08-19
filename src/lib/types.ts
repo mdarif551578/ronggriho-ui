@@ -2,8 +2,6 @@
 export interface Review {
   user: string;
   text: string;
-  rating: number;
-  createdAt: any; // Firestore Timestamp
 }
 
 export interface Product {
@@ -14,7 +12,7 @@ export interface Product {
   longDescription: string;
   price: number;
   stock: number;
-  discountPrice?: number;
+  discountPrice?: number | null;
   category: string;
   tags: string[];
   images: string[];
@@ -24,15 +22,15 @@ export interface Product {
   isFeatured: boolean;
   isFlashSale: boolean;
   reviews: Review[];
-  createdAt: any; // Firestore Timestamp
+  createdAt: string; // ISO 8601 date string
 }
 
 export interface OrderItem {
-  productId: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
+    productId: string;
+    name: string;
+    image: string;
+    price: number;
+    quantity: number;
 }
 
 export interface Order {

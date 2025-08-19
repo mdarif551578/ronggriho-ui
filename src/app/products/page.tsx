@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/product-card';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import type { Product } from '@/lib/types';
 import ProductFilters from '@/components/product-filters';
@@ -38,7 +38,7 @@ export default function ProductsPage() {
   const sortProducts = (products: Product[]): Product[] => {
     const sort = searchParams.get('sort');
     if (sort === 'newest') {
-      return [...products].sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+      return [...products].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
     if (sort === 'price-asc') {
       return [...products].sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
@@ -56,7 +56,7 @@ export default function ProductsPage() {
     
     const categories = searchParams.getAll('category');
     if (categories.length > 0) {
-      filtered = filtered.filter(product => categories.some(c => product.category.toLowerCase().replace(' > ', '-').replace(/ /g, '-') === c.toLowerCase()));
+      filtered = filtered.filter(product => categories.some(c => product.category.toLowerCase().replace(/ > /g, '-').replace(/ /g, '-') === c.toLowerCase()));
     }
 
     const sizes = searchParams.getAll('size');
@@ -79,8 +79,8 @@ export default function ProductsPage() {
         const [min, max] = price.split('-').map(Number);
         if (!isNaN(min) && !isNaN(max)) {
             filtered = filtered.filter(product => {
-                const price = product.discountPrice || product.price;
-                return price >= min && price <= max;
+                const effectivePrice = product.discountPrice || product.price;
+                return effectivePrice >= min && effectivePrice <= max;
             });
         }
     }
@@ -112,7 +112,7 @@ export default function ProductsPage() {
     }
     const categoryParam = searchParams.getAll('category');
     if (categoryParam.length === 1) {
-      const categoryName = categoryParam[0].replace(/-/g, ' ').replace(' > ', ' > ');
+      const categoryName = categoryParam[0].replace(/-/g, ' ').replace(/ > /g, ' > ');
       return categoryName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
     if (categoryParam.length > 1) {
