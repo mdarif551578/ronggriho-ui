@@ -33,26 +33,18 @@ export default function RegisterPage() {
       // Update profile in Firebase Auth
       await updateProfile(user, { displayName: fullName });
 
-      // Determine user role
-      const userRole = email === 'admin@ronggriho.com' ? 'admin' : 'customer';
-
       // Create a document in the 'users' collection
       await setDoc(doc(clientFirestore, "users", user.uid), {
         uid: user.uid,
         displayName: fullName,
         email: user.email,
         phone: '', // Add phone number field
-        role: userRole,
+        role: 'customer',
         createdAt: serverTimestamp(),
       });
 
       toast({ title: "Account Created", description: "Welcome to Rong Griho!" });
-      
-      if (userRole === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/account');
-      }
+      router.push('/account');
 
     } catch (err: any) {
        switch (err.code) {
