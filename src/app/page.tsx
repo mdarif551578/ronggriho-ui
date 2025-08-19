@@ -17,10 +17,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function Home() {
   const [flashDeals, setFlashDeals] = useState<Product[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<{ name: string; href: string; image: string; dataAiHint: string; }[]>([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsAndCategories = async () => {
       setLoading(true);
       try {
         const productsRef = collection(clientFirestore, 'products');
@@ -37,22 +38,29 @@ export default function Home() {
         const fetchedFeatured = featuredSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
         setFeaturedProducts(fetchedFeatured);
 
+        // Fetch all products for categories
+        const allProductsSnapshot = await getDocs(productsRef);
+        const allProducts = allProductsSnapshot.docs.map(doc => doc.data() as Product);
+        const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
+
+        const categoryData = uniqueCategories.map(cat => ({
+            name: cat,
+            href: `/products?category=${cat.toLowerCase().replace(/\s+/g, '-')}`,
+            image: "https://placehold.co/400x400.png", // Using a generic placeholder
+            dataAiHint: cat.toLowerCase().split(' ')[0] || "fashion"
+        })).slice(0, 4); // Limit to 4 categories on the homepage
+
+        setCategories(categoryData);
+
+
       } catch (error) {
         console.error("Error fetching products: ", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchProductsAndCategories();
   }, []);
-
-
-  const categories = [
-    { name: "Urban Desi", href: "/products?category=urban-desi", image: "https://placehold.co/400x400.png", dataAiHint: "saree model" },
-    { name: "Global Threads", href: "/products?category=global-threads", image: "https://placehold.co/400x400.png", dataAiHint: "woman jeans" },
-    { name: "T-Shirts", href: "/products?category=t-shirts", image: "https://placehold.co/400x400.png", dataAiHint: "tshirt fashion" },
-    { name: "Accessories", href: "/products?category=accessories", image: "https://placehold.co/400x400.png", dataAiHint: "fashion accessories" },
-  ];
 
   return (
     <div className="space-y-12 md:space-y-16 lg:space-y-20">
@@ -109,25 +117,34 @@ export default function Home() {
       <section className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center font-headline mb-8">Shop by Category</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {categories.map(category => (
-            <Link key={category.name} href={category.href} className="group block">
-              <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                <CardContent className="p-0">
-                  <Image
-                    src={category.image}
-                    alt={category.name}
-                    width={400}
-                    height={400}
-                    className="w-full h-auto aspect-square object-cover"
-                    data-ai-hint={category.dataAiHint}
-                  />
-                </CardContent>
-                <CardFooter className="p-4">
-                  <h3 className="text-lg font-semibold w-full text-center">{category.name}</h3>
-                </CardFooter>
-              </Card>
-            </Link>
-          ))}
+          {loading ? (
+             Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                 <Skeleton className="aspect-square w-full" />
+                 <Skeleton className="h-8 w-full mt-2" />
+              </div>
+            ))
+          ) : (
+            categories.map(category => (
+              <Link key={category.name} href={category.href} className="group block">
+                <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                  <CardContent className="p-0">
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      width={400}
+                      height={400}
+                      className="w-full h-auto aspect-square object-cover"
+                      data-ai-hint={category.dataAiHint}
+                    />
+                  </CardContent>
+                  <CardFooter className="p-4">
+                    <h3 className="text-lg font-semibold w-full text-center">{category.name}</h3>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))
+          )}
         </div>
       </section>
 

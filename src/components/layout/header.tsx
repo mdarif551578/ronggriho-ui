@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { ShoppingBag, Heart, User, Search, Menu, X, Home, Shirt, ShoppingCart as ShoppingCartIcon, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,15 +13,10 @@ import { useRouter, usePathname } from 'next/navigation';
 import ClientOnly from '../client-only';
 import { useAuth } from '@/hooks/use-auth';
 import Logo from '../logo';
+import { collection, getDocs } from 'firebase/firestore';
+import { clientFirestore } from '@/lib/firebase';
+import type { Product } from '@/lib/types';
 
-
-const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'All Products', href: '/products' },
-  { name: 'Urban Desi', href: '/products?category=urban-desi' },
-  { name: 'Global Threads', href: '/products?category=global-threads' },
-  { name: 'Accessories', href: '/products?category=accessories' },
-];
 
 const mobileNavLinks = [
     { name: 'Home', href: '/', icon: Home },
@@ -37,6 +32,36 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [navLinks, setNavLinks] = useState([
+    { name: 'Home', href: '/' },
+    { name: 'All Products', href: '/products' },
+  ]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+        try {
+            const productsRef = collection(clientFirestore, 'products');
+            const allProductsSnapshot = await getDocs(productsRef);
+            const allProducts = allProductsSnapshot.docs.map(doc => doc.data() as Product);
+            const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
+            
+            const categoryLinks = uniqueCategories.map(cat => ({
+                name: cat,
+                href: `/products?category=${cat.toLowerCase().replace(/\s+/g, '-')}`
+            }));
+
+            setNavLinks([
+                { name: 'Home', href: '/' },
+                { name: 'All Products', href: '/products' },
+                ...categoryLinks
+            ]);
+        } catch (error) {
+            console.error("Failed to fetch categories for header", error);
+        }
+    }
+    fetchCategories();
+  }, []);
+
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);

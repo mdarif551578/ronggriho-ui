@@ -1,11 +1,39 @@
 
+'use client';
+
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Github, Twitter, Instagram, Shirt } from 'lucide-react';
 import Logo from '../logo';
+import { useEffect, useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { clientFirestore } from '@/lib/firebase';
+import { Product } from '@/lib/types';
 
 export default function Footer() {
+  const [categories, setCategories] = useState<{name: string, href: string}[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+        try {
+            const productsRef = collection(clientFirestore, 'products');
+            const allProductsSnapshot = await getDocs(productsRef);
+            const allProducts = allProductsSnapshot.docs.map(doc => doc.data() as Product);
+            const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
+            
+            const categoryLinks = uniqueCategories.map(cat => ({
+                name: cat,
+                href: `/products?category=${cat.toLowerCase().replace(/\s+/g, '-')}`
+            }));
+            setCategories(categoryLinks);
+        } catch (error) {
+            console.error("Failed to fetch categories for footer", error);
+        }
+    }
+    fetchCategories();
+  }, []);
+
   return (
     <footer className="bg-secondary/50 border-t">
       <div className="container mx-auto px-4 py-8 md:py-12">
@@ -26,9 +54,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Shop</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/products?category=urban-desi" className="text-muted-foreground hover:text-primary">Urban Desi</Link></li>
-              <li><Link href="/products?category=global-threads" className="text-muted-foreground hover:text-primary">Global Threads</Link></li>
-              <li><Link href="/products?category=accessories" className="text-muted-foreground hover:text-primary">Accessories</Link></li>
+              {categories.map(cat => (
+                 <li key={cat.name}><Link href={cat.href} className="text-muted-foreground hover:text-primary">{cat.name}</Link></li>
+              ))}
               <li><Link href="/products?sort=newest" className="text-muted-foreground hover:text-primary">New Arrivals</Link></li>
             </ul>
           </div>
