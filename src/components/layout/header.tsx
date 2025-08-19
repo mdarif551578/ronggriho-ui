@@ -194,19 +194,20 @@ export default function Header() {
       <div className="pb-16 md:hidden">
         {/* This div creates space for the bottom nav */}
       </div>
-
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50">
-        <div className="container mx-auto px-2">
-            <div className="flex justify-around h-16">
-                 {mobileNavLinks.map(link => (
-                    <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center p-1">
-                        <link.icon className="h-6 w-6 mb-1" />
-                        <span className="text-xs font-medium">{link.name}</span>
-                    </Link>
-                ))}
-            </div>
-        </div>
-      </nav>
+      <ClientOnly>
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t z-50">
+          <div className="container mx-auto px-2">
+              <div className="flex justify-around h-16">
+                  {mobileNavLinks.map(link => (
+                      <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center p-1">
+                          <link.icon className="h-6 w-6 mb-1" />
+                          <span className="text-xs font-medium">{link.name}</span>
+                      </Link>
+                  ))}
+              </div>
+          </div>
+        </nav>
+      </ClientOnly>
     </>
   );
 }
