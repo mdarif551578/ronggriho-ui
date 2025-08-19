@@ -32,10 +32,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [navLinks, setNavLinks] = useState([
-    { name: 'Home', href: '/' },
-    { name: 'All Products', href: '/products' },
-  ]);
+  const [navLinks, setNavLinks] = useState<{name: string, href: string}[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -50,11 +47,7 @@ export default function Header() {
                 href: `/products?category=${cat.toLowerCase().replace(/\s+/g, '-')}`
             }));
 
-            setNavLinks([
-                { name: 'Home', href: '/' },
-                { name: 'All Products', href: '/products' },
-                ...categoryLinks
-            ]);
+            setNavLinks(categoryLinks);
         } catch (error) {
             console.error("Failed to fetch categories for header", error);
         }
@@ -98,15 +91,19 @@ export default function Header() {
             </div>
 
             <nav className="hidden lg:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
-                >
-                  {link.name}
-                </Link>
-              ))}
+                <Link href="/" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">Home</Link>
+                <Link href="/products" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">All Products</Link>
+                <ClientOnly>
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </ClientOnly>
             </nav>
 
             <div className="flex items-center gap-1 md:gap-2">
@@ -174,6 +171,8 @@ export default function Header() {
                   </form>
                 </div>
                 <nav className="flex flex-col gap-4">
+                  <Link href="/" className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors py-2" onClick={toggleMenu}>Home</Link>
+                  <Link href="/products" className="text-lg font-medium text-foreground/80 hover:text-primary transition-colors py-2" onClick={toggleMenu}>All Products</Link>
                   {navLinks.map((link) => (
                     <Link
                       key={link.name}

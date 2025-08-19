@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import { Product } from '@/lib/types';
+import ClientOnly from '../client-only';
 
 export default function Footer() {
   const [categories, setCategories] = useState<{name: string, href: string}[]>([]);
@@ -54,9 +55,11 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Shop</h4>
             <ul className="space-y-2 text-sm">
-              {categories.map(cat => (
-                 <li key={cat.name}><Link href={cat.href} className="text-muted-foreground hover:text-primary">{cat.name}</Link></li>
-              ))}
+              <ClientOnly>
+                {categories.map(cat => (
+                   <li key={cat.name}><Link href={cat.href} className="text-muted-foreground hover:text-primary">{cat.name}</Link></li>
+                ))}
+              </ClientOnly>
               <li><Link href="/products?sort=newest" className="text-muted-foreground hover:text-primary">New Arrivals</Link></li>
             </ul>
           </div>
