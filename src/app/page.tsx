@@ -48,10 +48,10 @@ export default function Home() {
 
 
   const categories = [
-    { name: "T-Shirts", image: "https://placehold.co/400x400.png", dataAiHint: "tshirt fashion" },
-    { name: "Ethnic Wear", image: "https://placehold.co/400x400.png", dataAiHint: "saree model" },
-    { name: "Accessories", image: "https://placehold.co/400x400.png", dataAiHint: "fashion accessories" },
-    { name: "Western", image: "https://placehold.co/400x400.png", dataAiHint: "woman jeans" },
+    { name: "Urban Desi", href: "/products?category=urban-desi", image: "https://placehold.co/400x400.png", dataAiHint: "saree model" },
+    { name: "Global Threads", href: "/products?category=global-threads", image: "https://placehold.co/400x400.png", dataAiHint: "woman jeans" },
+    { name: "T-Shirts", href: "/products?category=t-shirts", image: "https://placehold.co/400x400.png", dataAiHint: "tshirt fashion" },
+    { name: "Accessories", href: "/products?category=accessories", image: "https://placehold.co/400x400.png", dataAiHint: "fashion accessories" },
   ];
 
   return (
@@ -110,7 +110,7 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center font-headline mb-8">Shop by Category</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {categories.map(category => (
-            <Link key={category.name} href={`/products?category=${category.name.toLowerCase().replace(' ', '-')}`} className="group block">
+            <Link key={category.name} href={category.href} className="group block">
               <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                 <CardContent className="p-0">
                   <Image

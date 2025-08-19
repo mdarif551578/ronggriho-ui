@@ -18,8 +18,8 @@ import Logo from '../logo';
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'All Products', href: '/products' },
-  { name: 'Ethnic Wear', href: '/products?category=ethnic-wear' },
-  { name: 'T-Shirts', href: '/products?category=t-shirts' },
+  { name: 'Urban Desi', href: '/products?category=urban-desi' },
+  { name: 'Global Threads', href: '/products?category=global-threads' },
   { name: 'Accessories', href: '/products?category=accessories' },
 ];
 
