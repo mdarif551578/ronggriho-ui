@@ -100,7 +100,7 @@ export default function OrdersPage() {
                                     return (
                                         <TableRow key={order.id}>
                                             <TableCell className="font-medium">#{order.id.slice(0, 7).toUpperCase()}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
+                                            <TableCell className="hidden md:table-cell">{order.createdAt && new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                                             <TableCell>
                                                 <Badge variant={latestStatus === 'Delivered' ? 'default' : latestStatus === 'Cancelled' ? 'destructive' : 'secondary'}>
                                                     {latestStatus}
