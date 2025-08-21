@@ -13,6 +13,7 @@ export interface Product {
   longDescription: string;
   price: number;
   stock: number;
+  shippingFee: number;
   discountPrice?: number | null;
   category: string;
   tags: string[];
@@ -46,6 +47,7 @@ export interface Order {
     uid: string; // Firebase Auth UID
     items: OrderItem[];
     total: number;
+    shippingFee: number;
     status: OrderStatus;
     statusHistory: StatusHistoryItem[];
     paymentStatus: "pending" | "paid";

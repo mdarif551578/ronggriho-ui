@@ -70,7 +70,7 @@ export default function CheckoutPage() {
 
 
   const subtotal = cart.reduce((sum, item) => sum + (item.discountPrice || item.price) * item.quantity, 0);
-  const shipping = subtotal > 0 ? 50 : 0;
+  const shipping = cart.reduce((sum, item) => sum + (item.shippingFee || 0) * item.quantity, 0);
   
   const bkashFeePercentage = 0.02; // 2% fee for bKash
 
@@ -110,6 +110,7 @@ export default function CheckoutPage() {
         uid: user.uid,
         items: orderItems,
         total,
+        shippingFee: shipping,
         status: 'Pending',
         paymentStatus: 'pending',
         createdAt: serverTimestamp(),

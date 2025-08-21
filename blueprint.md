@@ -85,6 +85,7 @@ Stores all product information for the store.
 | `sizes`             | `array`     | Available sizes                                                                     | `["S", "M", "L", "XL"]`                                                                        |
 | `colors`            | `array`     | Available colors                                                                    | `["Black:#000000", "Gray:#808080"]`                                                            |
 | `relatedProductIds` | `array`     | Related product IDs                                                                 | `["prod_123", "prod_456"]`                                                                     |
+| `shippingFee`       | `number`    | Shipping fee for the product                                                        | `50`                                                                                           |
 | `isFeatured`        | `boolean`   | If shown on homepage                                                                | `true`                                                                                         |
 | `isFlashSale`       | `boolean`   | If part of flash sale                                                               | `false`                                                                                        |
 | `createdAt`         | `Timestamp` | When the product was added                                                          | `Timestamp(...)`                                                                               |
@@ -101,6 +102,7 @@ Stores information about customer orders.
 | `uid`              | `string`  | The UID of the user who placed the order.                        | `"a1b2c3d4e5f6g7h8"`                         |
 | `items`            | `array`   | An array of ordered item objects.                                | `[{"productId":"prod_xyz","name":"Oversized Tee","quantity":1,"price":999,"image":"url"}]` |
 | `total`            | `number`  | The total cost of the order.                                     | `1150.00`                                    |
+| `shippingFee`      | `number`    | Shipping fee for the product       | `50`                                                    |
 | `status`           | `string`  | The current status of the order.                                 | `"Processing"`                               |
 | `statusHistory`    | `array`   | An array of status change objects with timestamps.               | `[{"status":"Pending","timestamp":Timestamp(...)}, {"status":"Processing","timestamp":Timestamp(...)}]` |
 | `createdAt`        | `Timestamp`| The server timestamp when the order was placed.                  | `Timestamp(seconds=167..., ...)`             |
@@ -111,4 +113,5 @@ Stores information about customer orders.
 | `shippingPhone`    | `string`  | The contact phone number for the delivery.                       | `"+8801987654321"`                           |
 | `paymentMethod`    | `string`  | The payment method used for the order.                           | `"cod"` (Cash on Delivery)                   |
 | `paymentStatus`    | `string`  | The status of the payment.                                       | `"pending"`                                  |
+
     
