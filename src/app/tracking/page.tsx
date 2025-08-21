@@ -178,7 +178,7 @@ export default function TrackingPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                     <div className="mb-8 p-4 bg-muted/50 rounded-lg">
+                     <div className="p-4 bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-4">
                            <CurrentStatusIcon className="h-10 w-10 p-2 rounded-full bg-primary text-primary-foreground" />
                            <div>
@@ -190,20 +190,6 @@ export default function TrackingPage() {
                            </div>
                         </div>
                     </div>
-                    
-                    <h3 className="font-semibold mb-4">Order History</h3>
-                    <ul className="space-y-6 border-l-2 border-primary/20 ml-2">
-                        {trackingHistory.map((event, index) => (
-                            <li key={index} className="relative pl-8">
-                                <div className="absolute -left-[1.05rem] top-1 flex items-center justify-center bg-background">
-                                    <event.icon className="h-8 w-8 p-1.5 rounded-full bg-primary text-primary-foreground" />
-                                </div>
-                                <p className="font-semibold">{event.status}</p>
-                                <p className="text-sm text-muted-foreground">{event.description}</p>
-                                <p className="text-xs text-muted-foreground mt-1">{new Date(event.date.seconds * 1000).toLocaleString()}</p>
-                            </li>
-                        ))}
-                    </ul>
                 </CardContent>
             </Card>
         )}
