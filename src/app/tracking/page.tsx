@@ -67,8 +67,8 @@ export default function TrackingPage() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState('');
   const [status, setStatus] = useState<TrackingStatus>('idle');
+  const [orderData, setOrderData] = useState<Order | null>(null);
   const [trackingHistory, setTrackingHistory] = useState<TrackingEvent[]>([]);
-  const [latestStatusEvent, setLatestStatusEvent] = useState<TrackingEvent | null>(null);
 
   const fetchOrder = async (id: string) => {
     if (!id) return;
@@ -78,9 +78,10 @@ export default function TrackingPage() {
         
         const unsubscribe = onSnapshot(orderRef, (docSnap) => {
              if (docSnap.exists()) {
-                const orderData = docSnap.data() as Order;
+                const fetchedOrderData = docSnap.data() as Order;
+                setOrderData(fetchedOrderData);
                 
-                const history: TrackingEvent[] = (orderData.statusHistory || [])
+                const history: TrackingEvent[] = (fetchedOrderData.statusHistory || [])
                     .map(event => ({
                         status: event.status,
                         date: event.timestamp,
@@ -90,12 +91,11 @@ export default function TrackingPage() {
                     .sort((a,b) => b.date.seconds - a.date.seconds);
 
                 setTrackingHistory(history);
-                setLatestStatusEvent(history[0] || null);
                 setStatus('found');
             } else {
                 setStatus('not_found');
+                setOrderData(null);
                 setTrackingHistory([]);
-                setLatestStatusEvent(null);
             }
         });
 
@@ -115,8 +115,8 @@ export default function TrackingPage() {
         fetchOrder(paramOrderId);
     } else {
         setStatus('idle');
+        setOrderData(null);
         setTrackingHistory([]);
-        setLatestStatusEvent(null);
     }
   }, [searchParams]);
 
@@ -127,6 +127,11 @@ export default function TrackingPage() {
     window.history.pushState({}, '', newUrl);
     fetchOrder(orderId);
   };
+  
+  const latestStatusEvent = trackingHistory[0] || null;
+  const currentStatus = orderData?.status || 'Pending';
+  const CurrentStatusIcon = getIconForStatus(currentStatus);
+  const currentStatusDescription = getDescriptionForStatus(currentStatus);
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -164,22 +169,24 @@ export default function TrackingPage() {
             </Card>
         )}
 
-        {status === 'found' && latestStatusEvent && (
+        {status === 'found' && orderData && (
             <Card className="w-full max-w-2xl mx-auto mt-8">
                 <CardHeader>
                     <CardTitle>Tracking Details for #{orderId.toUpperCase().slice(0, 7)}</CardTitle>
                     <CardDescription>
-                        Current status: <span className="font-semibold text-primary">{latestStatusEvent.status}</span>
+                        Current status: <span className="font-semibold text-primary">{currentStatus}</span>
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                      <div className="mb-8 p-4 bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-4">
-                           <latestStatusEvent.icon className="h-10 w-10 p-2 rounded-full bg-primary text-primary-foreground" />
+                           <CurrentStatusIcon className="h-10 w-10 p-2 rounded-full bg-primary text-primary-foreground" />
                            <div>
-                            <p className="font-bold text-lg">{latestStatusEvent.status}</p>
-                            <p className="text-muted-foreground">{latestStatusEvent.description}</p>
-                            <p className="text-sm text-muted-foreground mt-1">Last Updated: {new Date(latestStatusEvent.date.seconds * 1000).toLocaleString()}</p>
+                            <p className="font-bold text-lg">{currentStatus}</p>
+                            <p className="text-muted-foreground">{currentStatusDescription}</p>
+                            {latestStatusEvent && (
+                                <p className="text-sm text-muted-foreground mt-1">Last Updated: {new Date(latestStatusEvent.date.seconds * 1000).toLocaleString()}</p>
+                            )}
                            </div>
                         </div>
                     </div>
