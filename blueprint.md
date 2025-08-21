@@ -70,25 +70,25 @@ Stores information about registered users. The document ID is the same as the Fi
 ### `products` Collection
 Stores all product information for the store.
 
-| Field                 | Type      | Description                                                      | Example                                     |
-|-----------------------|-----------|------------------------------------------------------------------|---------------------------------------------|
-| `name`                | `string`  | The full name of the product.                                    | `"Oversized Graphic Tee"`                   |
-| `slug`                | `string`  | A URL-friendly version of the product name.                      | `"oversized-graphic-tee"`                   |
-| `description`         | `string`  | A short, plain-text summary of the product.                      | `"A comfortable oversized tee with a retro print."` |
-| `longDescription`     | `string`  | A detailed product description, can contain HTML.                | `"<p>More details about the fabric...</p>"`|
-| `reviews`             | `array`   | An array of review objects.                                      | `[{"user": "Anika", "text": "Love the fit!"}]` |
-| `price`               | `number`  | The original price of the product.                               | `1200`                                      |
-| `discountPrice`       | `number`  | (Optional) The discounted price of the product.                  | `999`                                       |
-| `stock`               | `number`  | The number of items available in stock.                          | `100`                                       |
-| `category`            | `string`  | The main category of the product.                                | `"Urban Desi"`                              |
-| `tags`                | `array`   | An array of strings for filtering.                               | `["streetwear", "new-arrival"]`             |
-| `images`              | `array`   | An array of string URLs for product images.                      | `["https://.../img1.png"]`                  |
-| `sizes`               | `array`   | An array of available sizes.                                     | `["S", "M", "L", "XL"]`                     |
-| `colors`              | `array`   | An array of strings defining available colors.                   | `["Black:#000000", "White:#FFFFFF"]`         |
-| `relatedProductIds`   | `array`   | An array of product document IDs for related items.              | `["prod_abc", "prod_def"]`                  |
-| `isFeatured`          | `boolean` | If `true`, product appears in the featured section.              | `true`                                      |
-| `isFlashSale`         | `boolean` | If `true`, product appears in the flash deals section.           | `false`                                     |
-| `createdAt`           | `Timestamp`| The server timestamp when the product was added.                 | `Timestamp(seconds=167..., ...)`            |
+| Field               | Type        | Description                                                                         | Example                                                                                        |
+| ------------------- | ----------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `name`              | `string`    | Product name                                                                        | `"Classic Cotton T-Shirt"`                                                                     |
+| `slug`              | `string`    | URL-friendly name                                                                   | `"classic-cotton-tshirt"`                                                                      |
+| `description`       | `string`    | Short summary                                                                       | `"Soft and breathable cotton t-shirt"`                                                         |
+| `longDescription`   | `string`    | Detailed description (HTML allowed)                                                 | `"<p>Crafted from 100% cotton...</p>"`                                                         |
+| `price`             | `number`    | Original price                                                                      | `24.99`                                                                                        |
+| `discountPrice`     | `number`    | Discounted price (optional)                                                         | `19.99`                                                                                        |
+| `stock`             | `number`    | Available quantity                                                                  | `150`                                                                                          |
+| `category`          | `string`    | Product category                                                                    | `"Men > T-Shirts"`                                                                             |
+| `tags`              | `array`     | Tags for filtering                                                                  | `["casual", "summer"]`                                                                         |
+| `images`            | `array`     | Product image URLs                                                                  | `["https://.../img1.png"]`                                                                     |
+| `sizes`             | `array`     | Available sizes                                                                     | `["S", "M", "L", "XL"]`                                                                        |
+| `colors`            | `array`     | Available colors                                                                    | `["Black:#000000", "Gray:#808080"]`                                                            |
+| `relatedProductIds` | `array`     | Related product IDs                                                                 | `["prod_123", "prod_456"]`                                                                     |
+| `isFeatured`        | `boolean`   | If shown on homepage                                                                | `true`                                                                                         |
+| `isFlashSale`       | `boolean`   | If part of flash sale                                                               | `false`                                                                                        |
+| `createdAt`         | `Timestamp` | When the product was added                                                          | `Timestamp(...)`                                                                               |
+| `reviews`           | `array`     | A list or reviews that contains individual review object with user and text as key. | `[ { "user":"John", "text":"Fantastic Product" } , { "user":"Macharthy", "text":"Awesome" } ]` |
 
 
 ---
@@ -110,3 +110,5 @@ Stores information about customer orders.
 | `shippingPhone`    | `string`  | The contact phone number for the delivery.                       | `"+8801987654321"`                           |
 | `paymentMethod`    | `string`  | The payment method used for the order.                           | `"cod"` (Cash on Delivery)                   |
 | `paymentStatus`    | `string`  | The status of the payment.                                       | `"pending"`                                  |
+
+    

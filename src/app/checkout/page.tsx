@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useCart } from '@/hooks/use-cart';
@@ -100,8 +99,6 @@ export default function CheckoutPage() {
 
     const orderItems: OrderItem[] = cart.map(item => ({
         productId: item.id,
-        name: item.name,
-        image: item.images[0],
         price: item.discountPrice || item.price,
         quantity: item.quantity,
     }));
@@ -112,7 +109,7 @@ export default function CheckoutPage() {
         total,
         status: 'Pending',
         paymentStatus: 'pending',
-        createdAt: serverTimestamp(),
+        createdAt: serverTimestamp() as Timestamp,
         shippingFullName: `${firstName} ${lastName}`,
         shippingAddress: `${address}, ${apartment}`,
         shippingCity: city,
@@ -324,3 +321,5 @@ export default function CheckoutPage() {
     </form>
   );
 }
+
+    

@@ -31,17 +31,18 @@ Rong Griho is a modern fashion platform curated for the young, urban Bangladeshi
     - Save favorite products for later viewing and purchase.
 - **Static & Info Pages**:
     - About Us, Contact, FAQ, Privacy Policy, Terms of Service, Return Policy.
-## 2. Technical Architecture
+
+## 3. Technical Architecture
 
 - **Framework**: Next.js 14+ with App Router (Static Export).
 - **Language**: TypeScript.
 - **Styling**: Tailwind CSS with `tailwindcss-animate` for animations.
 - **UI Components**: ShadCN UI for a consistent and accessible component library.
 - **Database**: Google Firestore for storing product, order, and user data (accessed via Client SDK).
-- **Authentication**: Firebase Authentication for both customer and admin users.
+- **Authentication**: Firebase Authentication for customer users.
 - **State Management**: React Context API for global state (cart, wishlist, auth).
 
-## 3. File Structure Highlights
+## 4. File Structure Highlights
 
 - `src/app/`: Main application routes (App Router).
 - `src/components/`: Reusable React components.
@@ -50,57 +51,64 @@ Rong Griho is a modern fashion platform curated for the young, urban Bangladeshi
 - `src/lib/`: Core logic, types, and Firebase configuration.
 - `public/`: Static assets.
 
-## 4. Firestore Data Schema
-## `users` Collection
+## 5. Firestore Data Schema
 
-|Field|Type|Description|Example|
-|---|---|---|---|
-|`displayName`|`string`|Full name of the user|`"Zayan Chowdhury"`|
-|`email`|`string`|Email address|`"user@example.com"`|
-|`phone`|`string`|Phone number|`"+8801234567890"`|
-|`role`|`string`|`'customer'` or `'admin'`|`"customer"`|
-|`createdAt`|`Timestamp`|When the user was created|`Timestamp(...)`|
+### `users` Collection
+Stores information about registered users. The document ID is the same as the Firebase Auth User ID (UID).
 
----
-
-## `products` Collection
-
-| Field                 | Type      | Description                                                      | Example                                     |
-|-----------------------|-----------|------------------------------------------------------------------|---------------------------------------------|
-| `name`                | `string`  | The full name of the product.                                    | `"Oversized Graphic Tee"`                   |
-| `slug`                | `string`  | A URL-friendly version of the product name.                      | `"oversized-graphic-tee"`                   |
-| `description`         | `string`  | A short, plain-text summary of the product.                      | `"A comfortable oversized tee with a retro print."` |
-| `longDescription`     | `string`  | A detailed product description, can contain HTML.                | `"<p>More details about the fabric...</p>"`|
-| `reviews`             | `array`   | An array of review objects.                                      | `[{"user": "Anika", "text": "Love the fit!"}]` |
-| `price`               | `number`  | The original price of the product.                               | `1200`                                      |
-| `discountPrice`       | `number`  | (Optional) The discounted price of the product.                  | `999`                                       |
-| `stock`               | `number`  | The number of items available in stock.                          | `100`                                       |
-| `category`            | `string`  | The main category of the product.                                | `"Urban Desi"`                              |
-| `tags`                | `array`   | An array of strings for filtering.                               | `["streetwear", "new-arrival"]`             |
-| `images`              | `array`   | An array of string URLs for product images.                      | `["https://.../img1.png"]`                  |
-| `sizes`               | `array`   | An array of available sizes.                                     | `["S", "M", "L", "XL"]`                     |
-| `colors`              | `array`   | An array of strings defining available colors.                   | `["Black:#000000", "White:#FFFFFF"]`         |
-| `relatedProductIds`   | `array`   | An array of product document IDs for related items.              | `["prod_abc", "prod_def"]`                  |
-| `isFeatured`          | `boolean` | If `true`, product appears in the featured section.              | `true`                                      |
-| `isFlashSale`         | `boolean` | If `true`, product appears in the flash deals section.           | `false`                                     |
-| `createdAt`           | `Timestamp`| The server timestamp when the product was added.                 | `Timestamp(seconds=167..., ...)`            |
-
+| Field         | Type      | Description                                          | Example                             |
+|---------------|-----------|------------------------------------------------------|-------------------------------------|
+| `uid`         | `string`  | The user's unique ID from Firebase Authentication.   | `"a1b2c3d4e5f6g7h8"`                |
+| `displayName` | `string`  | The user's full name.                                | `"Zayan Chowdhury"`                 |
+| `email`       | `string`  | The user's email address.                            | `"user@example.com"`                |
+| `phone`       | `string`  | The user's phone number.                             | `"+8801234567890"`                  |
+| `role`        | `string`  | User role, always `'customer'`.                      | `"customer"`                        |
+| `createdAt`   | `Timestamp`| The server timestamp when the user was created.      | `Timestamp(seconds=167..., ...)`    |
 
 ---
 
-## `orders` Collection
+### `products` Collection
+Stores all product information for the store.
 
-|Field|Type|Description|Example|
-|---|---|---|---|
-|`uid`|`string`|User ID (from `users`)|`"user_doc_id"`|
-|`items`|`array`|Array of ordered item objects.|`[{"productId":"prod_xyz","name":"Oversized Tee","quantity":1,"price":999,"image":"url"}]`|
-|`total`|`number`|Total order amount|`1150.00`|
-|`status`|`string`|`"Pending"`, `"Processing"`, etc.|`"Processing"`|
-|`shippingFullName`|`string`|Recipient name|`"Anika Rahman"`|
-|`shippingAddress`|`string`|Street address|`"House 12, Road 5, Dhanmondi"`|
-|`shippingCity`|`string`|City|`"Dhaka"`|
-|`shippingDistrict`|`string`|District|`"Dhaka"`|
-|`shippingPhone`|`string`|Contact number|`"+8801987654321"`|
-|`paymentMethod`|`string`|`"cod"`, `"card"`, `"bkash"`|`"cod"`|
-|`paymentStatus`|`string`|`"pending"` or `"paid"`|`"pending"`|
-|`createdAt`|`Timestamp`|When the order was placed|`Timestamp(...)`|
+| Field               | Type        | Description                                                                         | Example                                                                                        |
+| ------------------- | ----------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `name`              | `string`    | Product name                                                                        | `"Classic Cotton T-Shirt"`                                                                     |
+| `slug`              | `string`    | URL-friendly name                                                                   | `"classic-cotton-tshirt"`                                                                      |
+| `description`       | `string`    | Short summary                                                                       | `"Soft and breathable cotton t-shirt"`                                                         |
+| `longDescription`   | `string`    | Detailed description (HTML allowed)                                                 | `"<p>Crafted from 100% cotton...</p>"`                                                         |
+| `price`             | `number`    | Original price                                                                      | `24.99`                                                                                        |
+| `discountPrice`     | `number`    | Discounted price (optional)                                                         | `19.99`                                                                                        |
+| `stock`             | `number`    | Available quantity                                                                  | `150`                                                                                          |
+| `category`          | `string`    | Product category                                                                    | `"Men > T-Shirts"`                                                                             |
+| `tags`              | `array`     | Tags for filtering                                                                  | `["casual", "summer"]`                                                                         |
+| `images`            | `array`     | Product image URLs                                                                  | `["https://.../img1.png"]`                                                                     |
+| `sizes`             | `array`     | Available sizes                                                                     | `["S", "M", "L", "XL"]`                                                                        |
+| `colors`            | `array`     | Available colors                                                                    | `["Black:#000000", "Gray:#808080"]`                                                            |
+| `relatedProductIds` | `array`     | Related product IDs                                                                 | `["prod_123", "prod_456"]`                                                                     |
+| `isFeatured`        | `boolean`   | If shown on homepage                                                                | `true`                                                                                         |
+| `isFlashSale`       | `boolean`   | If part of flash sale                                                               | `false`                                                                                        |
+| `createdAt`         | `Timestamp` | When the product was added                                                          | `Timestamp(...)`                                                                               |
+| `reviews`           | `array`     | A list or reviews that contains individual review object with user and text as key. | `[ { "user":"John", "text":"Fantastic Product" } , { "user":"Macharthy", "text":"Awesome" } ]` |
+
+
+---
+
+### `orders` Collection
+Stores information about customer orders.
+
+| Field              | Type      | Description                                                      | Example                                      |
+|--------------------|-----------|------------------------------------------------------------------|----------------------------------------------|
+| `uid`              | `string`  | The UID of the user who placed the order.                        | `"a1b2c3d4e5f6g7h8"`                         |
+| `items`            | `array`   | An array of ordered item objects.                                | `[{"productId":"prod_xyz","name":"Oversized Tee","quantity":1,"price":999,"image":"url"}]` |
+| `total`            | `number`  | The total cost of the order.                                     | `1150.00`                                    |
+| `status`           | `string`  | The current status of the order.                                 | `"Processing"`                               |
+| `createdAt`        | `Timestamp`| The server timestamp when the order was placed.                  | `Timestamp(seconds=167..., ...)`             |
+| `shippingFullName` | `string`  | The full name for the shipping address.                          | `"Anika Rahman"`                             |
+| `shippingAddress`  | `string`  | The street address for shipping.                                 | `"House 12, Road 5, Dhanmondi"`              |
+| `shippingCity`     | `string`  | The city for shipping.                                           | `"Dhaka"`                                    |
+| `shippingDistrict` | `string`  | The district for shipping.                                       | `"Dhaka"`                                    |
+| `shippingPhone`    | `string`  | The contact phone number for the delivery.                       | `"+8801987654321"`                           |
+| `paymentMethod`    | `string`  | The payment method used for the order.                           | `"cod"` (Cash on Delivery)                   |
+| `paymentStatus`    | `string`  | The status of the payment.                                       | `"pending"`                                  |
+
+    

@@ -1,4 +1,3 @@
-
 import { Timestamp } from "firebase/firestore";
 
 export interface Review {
@@ -29,16 +28,14 @@ export interface Product {
 
 export interface OrderItem {
     productId: string;
-    name: string;
-    image: string;
-    price: number;
     quantity: number;
+    price: number;
 }
 
 export interface Order {
     id: string;
     uid: string; // Firebase Auth UID
-    items: OrderItem[]; 
+    items: OrderItem[];
     total: number;
     status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
     paymentStatus: "pending" | "paid";
@@ -52,11 +49,12 @@ export interface Order {
 }
 
 export interface User {
-    id: string; // Document ID, same as Firebase Auth UID
-    uid: string;
+    uid: string; // Document ID, same as Firebase Auth UID
     displayName: string;
     email: string;
     phone: string;
-    role: 'customer';
-    createdAt: any; // Firestore Timestamp
+    role: 'customer' | 'admin';
+    createdAt: Timestamp; // Firestore Timestamp
 }
+
+    
