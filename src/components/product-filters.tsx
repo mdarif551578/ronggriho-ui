@@ -6,7 +6,12 @@ import { Button } from './ui/button';
 import { Filter } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useState } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+
 
 interface ProductFiltersProps {
     allProducts: Product[];
@@ -17,19 +22,19 @@ export default function ProductFilters({ allProducts }: ProductFiltersProps) {
 
     return (
         <>
-            {/* Mobile Filter Collapsible */}
-            <div className="lg:hidden">
-                <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-                    <CollapsibleTrigger asChild>
-                        <Button variant="outline" className="w-full">
+            {/* Mobile Filter Sheet */}
+             <div className="lg:hidden">
+                <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                    <SheetTrigger asChild>
+                         <Button variant="outline" className="w-full">
                             <Filter className="mr-2 h-4 w-4" />
                             Filters
                         </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="py-4">
-                        <FilterSidebar allProducts={allProducts} onFilterChange={() => setIsOpen(false)} />
-                    </CollapsibleContent>
-                </Collapsible>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-3/4 p-0">
+                         <FilterSidebar allProducts={allProducts} onFilterChange={() => setIsOpen(false)} />
+                    </SheetContent>
+                </Sheet>
             </div>
 
             {/* Desktop Filter Sidebar */}

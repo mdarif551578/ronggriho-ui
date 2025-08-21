@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -18,16 +19,14 @@ export default function ActiveFilters({ allProducts }: ActiveFiltersProps) {
 
     const activeFilters = useMemo(() => {
         const filters: { type: string, value: string, display: string }[] = [];
-        const params = new URLSearchParams(Array.from(searchParams.entries()));
+        const params = new URLSearchParams(searchParams.toString());
 
         params.forEach((value, key) => {
-            if (['category', 'size', 'color'].includes(key)) {
-                value.split(',').forEach(v => {
-                    filters.push({
-                        type: key,
-                        value: v,
-                        display: `${key}: ${v.replace(/-/g, ' ')}`
-                    });
+            if (key === 'category' || key === 'size' || key === 'color') {
+                filters.push({
+                    type: key,
+                    value: value,
+                    display: `${key}: ${key === 'color' ? value.split(':')[0] : value}`
                 });
             } else if (key === 'price') {
                 filters.push({ type: 'price', value, display: `Price: ৳${value.replace('-', ' - ৳')}` });
@@ -38,28 +37,30 @@ export default function ActiveFilters({ allProducts }: ActiveFiltersProps) {
     }, [searchParams]);
 
     const handleRemoveFilter = (type: string, value: string) => {
-        const current = new URLSearchParams(Array.from(searchParams.entries()));
-        
-        if (type === 'price') {
-             current.delete('price');
-        } else {
-            const values = current.getAll(type).flatMap(v => v.split(','));
-            const newValues = values.filter(v => v !== value);
-            
-            if (newValues.length > 0) {
-                current.set(type, newValues.join(','));
-            } else {
-                current.delete(type);
+        const current = new URLSearchParams(searchParams.toString());
+        const newParams = new URLSearchParams();
+
+        // Re-add all params except the one to be removed
+        current.forEach((val, key) => {
+            if (!(key === type && val === value)) {
+                 newParams.append(key, val);
             }
-        }
+        });
        
-        const search = current.toString();
+        const search = newParams.toString();
         const query = search ? `?${search}` : '';
         router.push(`${pathname}${query}`, { scroll: false });
     };
 
     const clearAllFilters = () => {
-        router.push(pathname, { scroll: false });
+        const current = new URLSearchParams(searchParams.toString());
+        current.delete('category');
+        current.delete('size');
+        current.delete('color');
+        current.delete('price');
+        const search = current.toString();
+        const query = search ? `?${search}` : '';
+        router.push(`${pathname}${query}`, { scroll: false });
     };
 
     if (activeFilters.length === 0) return null;

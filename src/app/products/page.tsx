@@ -42,7 +42,7 @@ export default function ProductsPage() {
 
     const categories = searchParams.getAll('category');
     if (categories.length > 0) {
-      q = query(q, where('category', 'in', categories.map(c => c.replace(/-/g, ' ').replace(/ > /g, ' > ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '))));
+      q = query(q, where('category', 'in', categories));
     }
 
     const sizes = searchParams.getAll('size');
@@ -52,8 +52,7 @@ export default function ProductsPage() {
     
     const colors = searchParams.getAll('color');
     if (colors.length > 0) {
-        const colorNames = colors.map(c => c.charAt(0).toUpperCase() + c.slice(1));
-        q = query(q, where('colors', 'array-contains-any', colorNames.map(name => `${name}:${'#000000'}`))); // Firestore needs a full value to query
+        q = query(q, where('colors', 'array-contains-any', colors));
     }
 
     const price = searchParams.get('price');
@@ -127,6 +126,7 @@ export default function ProductsPage() {
   useEffect(() => {
     // Fetch all products for filter options
     const fetchAllForFilters = async () => {
+        setLoading(true);
         try {
             const q = query(collection(clientFirestore, 'products'));
             const querySnapshot = await getDocs(q);
@@ -135,9 +135,12 @@ export default function ProductsPage() {
         } catch (error) {
             console.error("Error fetching all products for filters: ", error);
         }
+        setLoading(false);
     }
     fetchAllForFilters();
+  }, []);
 
+  useEffect(() => {
     // Fetch the first page of products whenever filters change
     setPage(1);
     setLastVisible(null);
@@ -164,8 +167,7 @@ export default function ProductsPage() {
     }
     const categoryParam = searchParams.getAll('category');
     if (categoryParam.length === 1) {
-      const categoryName = categoryParam[0].replace(/-/g, ' ').replace(/ > /g, ' > ');
-      return categoryName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      return categoryParam[0];
     }
     if (categoryParam.length > 1) {
         return 'Filtered Products';
@@ -186,12 +188,12 @@ export default function ProductsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="grid lg:grid-cols-4 gap-8">
         
-        <div className="lg:col-span-1">
+        <aside className="lg:col-span-1 lg:sticky lg:top-20 self-start">
           <div className="lg:hidden mb-4">
             <ProductSearch />
           </div>
           <ProductFilters allProducts={allProducts} />
-        </div>
+        </aside>
         
         <div className="lg:col-span-3">
           <div className="hidden lg:block mb-4">

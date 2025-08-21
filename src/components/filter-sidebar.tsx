@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/lib/types';
 import { useMemo, useState, useEffect } from 'react';
+import { ScrollArea } from './ui/scroll-area';
 
 interface FilterSidebarProps {
   allProducts: Product[];
@@ -28,16 +29,15 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
 
   const { allCategories, allColors, allSizes, minProductPrice, maxProductPrice } = useMemo(() => {
     const categories = [...new Set(allProducts.map(p => p.category))];
-    const colorNames = allProducts.flatMap(p => p.colors.map(c => c.split(':')[0]));
-    const colors = [...new Set(colorNames)].sort();
+    const colors = [...new Set(allProducts.flatMap(p => p.colors))].sort();
     const sizes = [...new Set(allProducts.flatMap(p => p.sizes))].sort();
     const prices = allProducts.map(p => p.discountPrice || p.price);
     return {
       allCategories: categories,
       allColors: colors,
       allSizes: sizes,
-      minProductPrice: Math.floor(Math.min(...prices)),
-      maxProductPrice: Math.ceil(Math.max(...prices)),
+      minProductPrice: prices.length > 0 ? Math.floor(Math.min(...prices)) : 0,
+      maxProductPrice: prices.length > 0 ? Math.ceil(Math.max(...prices)) : 1000,
     };
   }, [allProducts]);
 
@@ -63,30 +63,44 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
   }, [priceParam]);
 
 
-  const handleFilterChange = (type: string, value: string) => {
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
+  const handleMultiFilterChange = (type: string, value: string) => {
+    const current = new URLSearchParams(searchParams.toString());
     
     const values = current.getAll(type);
     if (values.includes(value)) {
-        current.delete(type);
-        values.filter(v => v !== value).forEach(v => current.append(type, v));
+        // Create new params, excluding the one we want to remove
+        const newParams = new URLSearchParams();
+        current.forEach((val, key) => {
+            if (key !== type || val !== value) {
+                newParams.append(key, val);
+            }
+        });
+        const search = newParams.toString();
+        const query = search ? `?${search}` : '';
+        router.push(`${pathname}${query}`, { scroll: false });
     } else {
         current.append(type, value);
+        const search = current.toString();
+        const query = search ? `?${search}` : '';
+        router.push(`${pathname}${query}`, { scroll: false });
     }
 
-    const search = current.toString();
-    const query = search ? `?${search}` : '';
-    router.push(`${pathname}${query}`, { scroll: false });
     onFilterChange?.();
   };
 
   const handlePriceSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
-    const finalMinPrice = minPrice === '' || Number(minPrice) < minProductPrice ? minProductPrice : Number(minPrice);
-    const finalMaxPrice = maxPrice === '' || Number(maxPrice) > maxProductPrice ? maxProductPrice : Number(maxPrice);
+    const current = new URLSearchParams(searchParams.toString());
+    const minVal = minPrice === '' ? '' : Number(minPrice);
+    const maxVal = maxPrice === '' ? '' : Number(maxPrice);
 
-    current.set('price', `${finalMinPrice}-${finalMaxPrice}`);
+    if (minVal !== '' && maxVal !== '' && minVal > maxVal) {
+        current.set('price', `${maxVal}-${minVal}`);
+    } else if (minVal !== '' || maxVal !== '') {
+        current.set('price', `${minVal}-${maxVal}`);
+    } else {
+        current.delete('price');
+    }
     const search = current.toString();
     const query = search ? `?${search}` : '';
     router.push(`${pathname}${query}`, { scroll: false });
@@ -95,7 +109,11 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
 
   const FilterContainer = ({ isMobile, children }: { isMobile: boolean, children: React.ReactNode }) => {
     if (isMobile) {
-      return <div className="h-full overflow-y-auto">{children}</div>;
+      return (
+        <ScrollArea className="h-full">
+            <div className="p-4">{children}</div>
+        </ScrollArea>
+      )
     }
     return (
       <Card>
@@ -110,22 +128,24 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
 
   return (
     <FilterContainer isMobile={!!onFilterChange}>
-      <Accordion type="multiple" defaultValue={['category', 'size', 'color', 'price']} className="space-y-4">
+      <Accordion type="multiple" defaultValue={['category', 'size', 'color', 'price']} className="w-full">
         <AccordionItem value="category">
           <AccordionTrigger>Category</AccordionTrigger>
           <AccordionContent>
-              <div className="space-y-2">
-                  {allCategories.map(category => (
-                      <div key={category} className="flex items-center space-x-2">
-                          <Checkbox 
-                              id={`cat-${category}`} 
-                              checked={selectedCategories.includes(category.toLowerCase().replace(' ', '-'))}
-                              onCheckedChange={() => handleFilterChange('category', category.toLowerCase().replace(' ', '-'))}
-                          />
-                          <Label htmlFor={`cat-${category}`} className="font-normal">{category}</Label>
-                      </div>
-                  ))}
-              </div>
+              <ScrollArea className="h-40">
+                <div className="space-y-2 p-1">
+                    {allCategories.map(category => (
+                        <div key={category} className="flex items-center space-x-2">
+                            <Checkbox 
+                                id={`cat-${category}`} 
+                                checked={selectedCategories.includes(category)}
+                                onCheckedChange={() => handleMultiFilterChange('category', category)}
+                            />
+                            <Label htmlFor={`cat-${category}`} className="font-normal cursor-pointer">{category}</Label>
+                        </div>
+                    ))}
+                </div>
+              </ScrollArea>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="size">
@@ -137,9 +157,9 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
                       <Checkbox 
                           id={`size-${size}`}
                           checked={selectedSizes.includes(size)}
-                          onCheckedChange={() => handleFilterChange('size', size)}
+                          onCheckedChange={() => handleMultiFilterChange('size', size)}
                       />
-                      <Label htmlFor={`size-${size}`} className="font-normal">{size}</Label>
+                      <Label htmlFor={`size-${size}`} className="font-normal cursor-pointer">{size}</Label>
                   </div>
                   ))}
               </div>
@@ -149,16 +169,19 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
           <AccordionTrigger>Color</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
-              {allColors.map(color => (
-                <div key={color} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`color-${color}`}
-                    checked={selectedColors.includes(color.toLowerCase())}
-                    onCheckedChange={() => handleFilterChange('color', color.toLowerCase())}
-                  />
-                  <Label htmlFor={`color-${color}`} className="font-normal">{color}</Label>
-                </div>
-              ))}
+              {allColors.map(colorString => {
+                const [colorName] = colorString.split(':');
+                return (
+                    <div key={colorString} className="flex items-center space-x-2">
+                    <Checkbox
+                        id={`color-${colorName}`}
+                        checked={selectedColors.includes(colorString)}
+                        onCheckedChange={() => handleMultiFilterChange('color', colorString)}
+                    />
+                    <Label htmlFor={`color-${colorName}`} className="font-normal cursor-pointer">{colorName}</Label>
+                    </div>
+                )
+            })}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -173,6 +196,7 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
                     className="w-full"
+                    min={0}
                   />
                   <span>-</span>
                   <Input
@@ -181,6 +205,7 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
                     className="w-full"
+                    min={0}
                   />
                 </div>
                 <Button type="submit" className="w-full">Apply Price</Button>
