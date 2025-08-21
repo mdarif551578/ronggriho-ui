@@ -16,23 +16,14 @@ export default function Footer() {
   const [categories, setCategories] = useState<{name: string, href: string}[]>([]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-        try {
-            const productsRef = collection(clientFirestore, 'products');
-            const allProductsSnapshot = await getDocs(productsRef);
-            const allProducts = allProductsSnapshot.docs.map(doc => doc.data() as Product);
-            const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
-            
-            const categoryLinks = uniqueCategories.map(cat => ({
-                name: cat,
-                href: `/products?category=${cat.toLowerCase().replace(/\s+/g, '-')}`
-            }));
-            setCategories(categoryLinks);
-        } catch (error) {
-            console.error("Failed to fetch categories for footer", error);
-        }
-    }
-    fetchCategories();
+    // Define static modern categories to avoid fetching all products
+    const modernCategories = [
+        { name: "Urban Desi", href: "/products?category=Urban+Desi" },
+        { name: "Global Threads", href: "/products?category=Global+Threads" },
+        { name: "T-Shirts", href: "/products?category=T-Shirts" },
+        { name: "Accessories", href: "/products?category=Accessories" },
+    ];
+    setCategories(modernCategories);
   }, []);
 
   return (
@@ -44,7 +35,7 @@ export default function Footer() {
                 <Logo />
               </Link>
             <p className="text-muted-foreground text-sm">
-              Your one-stop shop for modern and traditional Bangladeshi fashion.
+              Curated styles for the modern Bangladeshi youth.
             </p>
             <div className="flex space-x-4 mt-4">
               <Link href="#" aria-label="Twitter"><Twitter className="h-5 w-5 text-muted-foreground hover:text-primary" /></Link>
@@ -60,7 +51,7 @@ export default function Footer() {
                    <li key={cat.name}><Link href={cat.href} className="text-muted-foreground hover:text-primary">{cat.name}</Link></li>
                 ))}
               </ClientOnly>
-              <li><Link href="/products?sort=newest" className="text-muted-foreground hover:text-primary">New Arrivals</Link></li>
+              <li><Link href="/products?tag=new-arrival" className="text-muted-foreground hover:text-primary">New Arrivals</Link></li>
             </ul>
           </div>
           <div>

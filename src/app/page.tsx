@@ -38,20 +38,18 @@ export default function Home() {
         const fetchedFeatured = featuredSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
         setFeaturedProducts(fetchedFeatured);
 
-        // Fetch all products for categories
-        const allProductsSnapshot = await getDocs(productsRef);
-        const allProducts = allProductsSnapshot.docs.map(doc => doc.data() as Product);
-        const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
-
-        const categoryData = uniqueCategories.map(cat => ({
-            name: cat,
-            href: `/products?category=${cat.toLowerCase().replace(/\s+/g, '-')}`,
-            image: "https://placehold.co/400x400.png", // Using a generic placeholder
-            dataAiHint: cat.toLowerCase().split(' ')[0] || "fashion"
-        })).slice(0, 4); // Limit to 4 categories on the homepage
-
-        setCategories(categoryData);
-
+        // Define static modern categories
+        const modernCategories = [
+            { name: "Urban Desi", href: "/products?category=Urban+Desi", dataAiHint: "urban fashion" },
+            { name: "Global Threads", href: "/products?category=Global+Threads", dataAiHint: "modern clothing" },
+            { name: "T-Shirts", href: "/products?category=T-Shirts", dataAiHint: "t-shirt" },
+            { name: "Accessories", href: "/products?category=Accessories", dataAiHint: "fashion accessory" },
+        ];
+        
+        setCategories(modernCategories.map(cat => ({
+            ...cat,
+            image: "https://placehold.co/400x400.png"
+        })));
 
       } catch (error) {
         console.error("Error fetching products: ", error);
@@ -71,18 +69,18 @@ export default function Home() {
           alt="Fashion model"
           fill
           className="z-0 object-cover"
-          data-ai-hint="fashion banner"
+          data-ai-hint="youth fashion banner"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10" />
         <div className="z-20 p-4">
           <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight">
-            Style Redefined, Locally Inspired
+            The Future of Dhaka Style
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl">
-            Discover the best of Bangladeshi craftsmanship and contemporary trends.
+            Curated looks for the modern Bangladeshi.
           </p>
           <Button asChild size="lg" className="mt-8">
-            <Link href="/products">Shop Now <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Link href="/products">Shop New Arrivals <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>
       </section>

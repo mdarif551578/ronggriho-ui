@@ -10,11 +10,11 @@ export default function AboutPage() {
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white">
         <Image
           src="https://placehold.co/1600x600.png"
-          alt="Rong Griho Team"
+          alt="Modern fashion shoot"
           layout="fill"
           objectFit="cover"
           className="z-0"
-          data-ai-hint="team business"
+          data-ai-hint="youth fashion"
         />
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="z-20 p-4">
@@ -22,7 +22,7 @@ export default function AboutPage() {
             About Rong Griho
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg">
-            Weaving tradition with contemporary style.
+            Defining the new wave of Bangladeshi style.
           </p>
         </div>
       </section>
@@ -35,7 +35,7 @@ export default function AboutPage() {
           <Card>
             <CardContent className="p-8 text-center text-lg text-muted-foreground">
               <p>
-                Founded in the heart of Dhaka, Rong Griho was born from a passion for Bangladesh's rich textile heritage and a vision to bring it to the modern wardrobe. We believe that fashion is a form of storytelling, and our collections are a testament to the intricate artistry of local craftsmen, reimagined for the global citizen. We partner with skilled artisans to create pieces that are not only beautiful but also sustainable and ethical.
+                Rong Griho started as a conversation among friends in a Dhaka cafe, talking about the styles we saw online versus what we could actually find at home. We wanted clothes that reflected our identity—a blend of global trends and our unique urban desi culture. So, we decided to build it ourselves. Rong Griho is for the young, the bold, and the fashion-forward individuals shaping the future of Bangladeshi style.
               </p>
             </CardContent>
           </Card>
@@ -50,7 +50,7 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                To empower local artisans by creating a global platform for their craft, while providing our customers with high-quality, unique, and culturally rich fashion that they can cherish.
+                To provide young Bangladeshis with access to high-quality, contemporary fashion that is both trendy and accessible. We aim to curate a collection that empowers self-expression and confidence.
               </p>
             </CardContent>
           </Card>
@@ -61,7 +61,7 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                To be a leading global brand for Bangladeshi fashion, celebrated for our commitment to authenticity, craftsmanship, sustainability, and contemporary design.
+                To become the go-to fashion destination for the modern Bangladeshi youth, known for our on-trend styles, quality products, and connection to the local urban culture.
               </p>
             </CardContent>
           </Card>

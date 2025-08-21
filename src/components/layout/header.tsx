@@ -35,24 +35,14 @@ export default function Header() {
   const [navLinks, setNavLinks] = useState<{name: string, href: string}[]>([]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-        try {
-            const productsRef = collection(clientFirestore, 'products');
-            const allProductsSnapshot = await getDocs(productsRef);
-            const allProducts = allProductsSnapshot.docs.map(doc => doc.data() as Product);
-            const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
-            
-            const categoryLinks = uniqueCategories.map(cat => ({
-                name: cat,
-                href: `/products?category=${cat.toLowerCase().replace(/\s+/g, '-')}`
-            }));
-
-            setNavLinks(categoryLinks);
-        } catch (error) {
-            console.error("Failed to fetch categories for header", error);
-        }
-    }
-    fetchCategories();
+    // Define static modern categories to avoid fetching all products
+    const modernCategories = [
+        { name: "Urban Desi", href: "/products?category=Urban+Desi" },
+        { name: "Global Threads", href: "/products?category=Global+Threads" },
+        { name: "T-Shirts", href: "/products?category=T-Shirts" },
+        { name: "Accessories", href: "/products?category=Accessories" },
+    ];
+    setNavLinks(modernCategories);
   }, []);
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);

@@ -1,15 +1,14 @@
 # Rong Griho
 
-Rong Griho is a modern e-commerce platform built with Next.js, designed to showcase the rich textile heritage of Bangladesh with a contemporary twist. This application provides a seamless and engaging shopping experience for users interested in high-quality, culturally rich fashion.
+Rong Griho is a modern e-commerce platform built with Next.js, tailored for young, fashion-forward Bangladeshis. The brand merges contemporary global trends with the unique identity of urban desi culture, offering a curated selection of apparel and accessories.
 
 ## Core Features
 
--   **Intuitive Product Browsing**: A user-friendly interface for browsing products by category, tag, and style with robust filtering and sorting.
--   **Detailed Product Pages**: Comprehensive product showcases with multiple images, detailed descriptions, size/color options, and related product suggestions.
+-   **Intuitive Product Browsing**: A user-friendly interface for browsing products by modern categories like "Urban Desi" and "Global Threads."
+-   **Detailed Product Pages**: Comprehensive product showcases with multiple images, detailed descriptions, and style suggestions.
 -   **Secure and Flexible Checkout**: A secure checkout process with multiple payment options, including COD and mobile payment gateways (bKash, Nagad).
 -   **Wishlist Management**: Functionality for users to save their favorite items for future purchase.
 -   **User Accounts**: Secure user authentication and account management for orders, profile settings, and wishlists.
--   **Admin Panel**: A dedicated dashboard for administrators to manage products, view orders, and oversee users.
 
 ## Style Guidelines
 
@@ -27,8 +26,7 @@ The visual identity of Rong Griho is designed to be clean, modern, and trustwort
 
 -   **Framework**: Next.js (with App Router)
 -   **UI**: React, ShadCN UI, Tailwind CSS
--   **AI Features**: Genkit
--   **Database**: Firebase Firestore
+-   **Database**: Firebase Firestore (Client-Side)
 -   **Authentication**: Firebase Auth
 -   **State Management**: React Context API
 -   **Styling**: Tailwind CSS

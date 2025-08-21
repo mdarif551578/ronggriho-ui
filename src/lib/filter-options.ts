@@ -4,9 +4,8 @@
 // NOTE: You must manually update these lists if you add new categories, sizes, or colors to your products.
 
 export const allCategories = [
-    "Ethnic Wear",
-    "Global Threads",
     "Urban Desi",
+    "Global Threads",
     "T-Shirts",
     "Accessories"
 ];

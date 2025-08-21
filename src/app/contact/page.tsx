@@ -9,11 +9,11 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold font-headline text-center mb-4">Contact Us</h1>
-      <p className="text-lg text-muted-foreground text-center mb-12">We'd love to hear from you. Get in touch with us.</p>
+      <p className="text-lg text-muted-foreground text-center mb-12">Got a question or just want to say hi? Drop us a line.</p>
       
       <div className="grid md:grid-cols-2 gap-12">
         <div>
-            <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
+            <h2 className="text-2xl font-semibold mb-6">Send a Message</h2>
             <Card>
                 <CardContent className="p-6">
                     <form className="space-y-4">
@@ -29,7 +29,7 @@ export default function ContactPage() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="subject">Subject</Label>
-                            <Input id="subject" placeholder="Subject" />
+                            <Input id="subject" placeholder="What's this about?" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="message">Message</Label>
@@ -41,14 +41,14 @@ export default function ContactPage() {
             </Card>
         </div>
         <div>
-            <h2 className="text-2xl font-semibold mb-6">Our Information</h2>
+            <h2 className="text-2xl font-semibold mb-6">Our Info</h2>
             <div className="space-y-6">
                 <Card>
                     <CardHeader className="flex-row items-center gap-4">
                         <Mail className="h-8 w-8 text-primary" />
                         <div>
                             <CardTitle className="text-lg">Email</CardTitle>
-                            <p className="text-muted-foreground">support@dhakaithreads.com</p>
+                            <p className="text-muted-foreground">support@ronggriho.com</p>
                         </div>
                     </CardHeader>
                 </Card>
