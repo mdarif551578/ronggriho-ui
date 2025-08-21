@@ -105,13 +105,18 @@ export default function CheckoutPage() {
         image: item.images[0]
     }));
 
+    const now = serverTimestamp();
+
     const orderData = {
         uid: user.uid,
         items: orderItems,
         total,
         status: 'Pending',
         paymentStatus: 'pending',
-        createdAt: serverTimestamp(),
+        createdAt: now,
+        statusHistory: [
+            { status: 'Pending', timestamp: now }
+        ],
         shippingFullName: `${firstName} ${lastName}`,
         shippingAddress: `${address}, ${apartment}`,
         shippingCity: city,
@@ -323,5 +328,3 @@ export default function CheckoutPage() {
     </form>
   );
 }
-
-    

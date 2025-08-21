@@ -10,7 +10,7 @@ import { Truck, PackageCheck, Package, CircleCheck, CircleX, Warehouse } from 'l
 import { useSearchParams } from 'next/navigation';
 import { clientFirestore } from '@/lib/firebase';
 import { doc, getDoc, onSnapshot, Timestamp } from 'firebase/firestore';
-import type { Order } from '@/lib/types';
+import type { Order, StatusHistoryItem } from '@/lib/types';
 
 
 type TrackingStatus = 'idle' | 'loading' | 'found' | 'not_found';
@@ -22,11 +22,11 @@ interface TrackingEvent {
 }
 
 const statusIconMap: { [key: string]: React.ElementType } = {
-    'order created': CircleCheck,
     'pending': CircleCheck,
+    'order placed': CircleCheck,
     'processing': Warehouse,
-    'on the way': Truck,
     'shipped': Truck,
+    'on the way': Truck,
     'delivered': PackageCheck,
     'cancelled': CircleX,
 };
@@ -62,19 +62,13 @@ export default function TrackingPage() {
                 const latestStatus = orderData.status || 'Status Unavailable';
                 setCurrentStatus(latestStatus);
                 
-                // Mocking history based on current status for now
-                const history: TrackingEvent[] = [
-                    {
-                        status: latestStatus,
-                        date: orderData.createdAt, // Using createdAt as a placeholder
-                        icon: getIconForStatus(latestStatus)
-                    },
-                     {
-                        status: 'Order Placed',
-                        date: orderData.createdAt,
-                        icon: getIconForStatus('order created')
-                    }
-                ].sort((a,b) => b.date.seconds - a.date.seconds);
+                const history: TrackingEvent[] = (orderData.statusHistory || [])
+                    .map(event => ({
+                        status: event.status,
+                        date: event.timestamp,
+                        icon: getIconForStatus(event.status),
+                    }))
+                    .sort((a,b) => b.date.seconds - a.date.seconds);
 
                 setTrackingHistory(history);
                 setStatus('found');

@@ -28,8 +28,17 @@ export interface Product {
 
 export interface OrderItem {
     productId: string;
+    name: string;
     quantity: number;
     price: number;
+    image: string;
+}
+
+export type OrderStatus = "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+
+export interface StatusHistoryItem {
+  status: OrderStatus;
+  timestamp: Timestamp;
 }
 
 export interface Order {
@@ -37,7 +46,8 @@ export interface Order {
     uid: string; // Firebase Auth UID
     items: OrderItem[];
     total: number;
-    status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+    status: OrderStatus;
+    statusHistory: StatusHistoryItem[];
     paymentStatus: "pending" | "paid";
     shippingFullName: string;
     shippingAddress: string;
@@ -56,5 +66,3 @@ export interface User {
     role: 'customer' | 'admin';
     createdAt: Timestamp; // Firestore Timestamp
 }
-
-    

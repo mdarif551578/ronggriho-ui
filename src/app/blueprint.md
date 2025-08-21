@@ -102,6 +102,7 @@ Stores information about customer orders.
 | `items`            | `array`   | An array of ordered item objects.                                | `[{"productId":"prod_xyz","name":"Oversized Tee","quantity":1,"price":999,"image":"url"}]` |
 | `total`            | `number`  | The total cost of the order.                                     | `1150.00`                                    |
 | `status`           | `string`  | The current status of the order.                                 | `"Processing"`                               |
+| `statusHistory`    | `array`   | An array of status change objects with timestamps.               | `[{"status":"Pending","timestamp":Timestamp(...)}, {"status":"Processing","timestamp":Timestamp(...)}]` |
 | `createdAt`        | `Timestamp`| The server timestamp when the order was placed.                  | `Timestamp(seconds=167..., ...)`             |
 | `shippingFullName` | `string`  | The full name for the shipping address.                          | `"Anika Rahman"`                             |
 | `shippingAddress`  | `string`  | The street address for shipping.                                 | `"House 12, Road 5, Dhanmondi"`              |
