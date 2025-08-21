@@ -99,17 +99,19 @@ export default function CheckoutPage() {
 
     const orderItems: OrderItem[] = cart.map(item => ({
         productId: item.id,
-        price: item.discountPrice || item.price,
         quantity: item.quantity,
+        price: item.discountPrice || item.price,
+        name: item.name,
+        image: item.images[0]
     }));
 
-    const orderData: Omit<Order, 'id'> = {
+    const orderData = {
         uid: user.uid,
         items: orderItems,
         total,
         status: 'Pending',
         paymentStatus: 'pending',
-        createdAt: serverTimestamp() as Timestamp,
+        createdAt: serverTimestamp(),
         shippingFullName: `${firstName} ${lastName}`,
         shippingAddress: `${address}, ${apartment}`,
         shippingCity: city,
