@@ -5,6 +5,7 @@ import type { Product } from '@/lib/types';
 import ProductDetailsClient from './product-details-client';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Timestamp } from 'firebase/firestore';
 
 
 // This function tells Next.js which slugs to generate at build time
@@ -24,6 +25,16 @@ export async function generateStaticParams() {
   return slugs;
 }
 
+const toSerializableObject = (productData: any): Product => {
+  const data = { ...productData };
+  for (const key in data) {
+    if (data[key] instanceof Timestamp) {
+      data[key] = data[key].toDate().toISOString();
+    }
+  }
+  return data as Product;
+};
+
 
 async function getProduct(slug: string): Promise<Product | null> {
     const productsRef = collection(clientFirestore, 'products');
@@ -34,7 +45,8 @@ async function getProduct(slug: string): Promise<Product | null> {
         return null;
     }
     const doc = querySnapshot.docs[0];
-    return { id: doc.id, ...doc.data() } as Product;
+    const productData = { id: doc.id, ...doc.data() };
+    return toSerializableObject(productData);
 }
 
 async function getRelatedProducts(product: Product): Promise<Product[]> {
@@ -44,7 +56,7 @@ async function getRelatedProducts(product: Product): Promise<Product[]> {
     const productsRef = collection(clientFirestore, 'products');
     const q = query(productsRef, where('__name__', 'in', product.relatedProductIds));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    return querySnapshot.docs.map(doc => toSerializableObject({ id: doc.id, ...doc.data() }));
 }
 
 

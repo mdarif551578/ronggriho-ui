@@ -24,7 +24,7 @@ export interface Product {
   isFeatured: boolean;
   isFlashSale: boolean;
   reviews: Review[];
-  createdAt: Timestamp;
+  createdAt: string; // Changed from Timestamp to string to support serialization
 }
 
 export interface OrderItem {
@@ -48,7 +48,7 @@ export interface Order {
     shippingDistrict: string;
     shippingPhone: string;
     paymentMethod: "cod" | "card" | "bkash";
-    createdAt: Timestamp;
+    createdAt: Timestamp; // This can remain a Timestamp for client-side operations
 }
 
 export interface User {
