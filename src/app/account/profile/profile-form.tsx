@@ -81,6 +81,7 @@ export default function ProfileForm() {
 
         try {
             const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            
             // Re-authenticate user before changing password
             await reauthenticateWithCredential(user, credential);
             
@@ -93,10 +94,12 @@ export default function ProfileForm() {
         } catch (error: any) {
              console.error("Error updating password: ", error);
              let errorMessage = "An unexpected error occurred. Please try again.";
-             if (error.code === 'auth/wrong-password') {
+             if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                  errorMessage = "The current password you entered is incorrect.";
              } else if (error.code === 'auth/weak-password') {
                  errorMessage = "The new password is too weak. It should be at least 6 characters.";
+             } else if (error.code === 'auth/requires-recent-login') {
+                 errorMessage = "For security, please log out and log back in before changing your password.";
              }
             toast({ title: "Password Update Failed", description: errorMessage, variant: "destructive" });
         } finally {
