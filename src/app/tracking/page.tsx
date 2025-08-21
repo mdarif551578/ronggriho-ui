@@ -68,7 +68,7 @@ export default function TrackingPage() {
   const [orderId, setOrderId] = useState('');
   const [status, setStatus] = useState<TrackingStatus>('idle');
   const [trackingHistory, setTrackingHistory] = useState<TrackingEvent[]>([]);
-  const [currentStatus, setCurrentStatus] = useState('');
+  const [latestStatusEvent, setLatestStatusEvent] = useState<TrackingEvent | null>(null);
 
   const fetchOrder = async (id: string) => {
     if (!id) return;
@@ -76,12 +76,9 @@ export default function TrackingPage() {
     try {
         const orderRef = doc(clientFirestore, 'orders', id);
         
-        onSnapshot(orderRef, (docSnap) => {
+        const unsubscribe = onSnapshot(orderRef, (docSnap) => {
              if (docSnap.exists()) {
                 const orderData = docSnap.data() as Order;
-                
-                const latestStatus = orderData.status || 'Status Unavailable';
-                setCurrentStatus(latestStatus);
                 
                 const history: TrackingEvent[] = (orderData.statusHistory || [])
                     .map(event => ({
@@ -93,11 +90,17 @@ export default function TrackingPage() {
                     .sort((a,b) => b.date.seconds - a.date.seconds);
 
                 setTrackingHistory(history);
+                setLatestStatusEvent(history[0] || null);
                 setStatus('found');
             } else {
                 setStatus('not_found');
+                setTrackingHistory([]);
+                setLatestStatusEvent(null);
             }
         });
+
+        // Cleanup the listener when the component unmounts or the orderId changes
+        return () => unsubscribe();
 
     } catch (error) {
         console.error("Error fetching tracking info:", error);
@@ -110,11 +113,18 @@ export default function TrackingPage() {
     if (paramOrderId) {
         setOrderId(paramOrderId);
         fetchOrder(paramOrderId);
+    } else {
+        setStatus('idle');
+        setTrackingHistory([]);
+        setLatestStatusEvent(null);
     }
   }, [searchParams]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('orderId', orderId);
+    window.history.pushState({}, '', newUrl);
     fetchOrder(orderId);
   };
 
@@ -154,15 +164,27 @@ export default function TrackingPage() {
             </Card>
         )}
 
-        {status === 'found' && (
+        {status === 'found' && latestStatusEvent && (
             <Card className="w-full max-w-2xl mx-auto mt-8">
                 <CardHeader>
                     <CardTitle>Tracking Details for #{orderId.toUpperCase().slice(0, 7)}</CardTitle>
                     <CardDescription>
-                        Current status: <span className="font-semibold text-primary">{currentStatus}</span>
+                        Current status: <span className="font-semibold text-primary">{latestStatusEvent.status}</span>
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                     <div className="mb-8 p-4 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-4">
+                           <latestStatusEvent.icon className="h-10 w-10 p-2 rounded-full bg-primary text-primary-foreground" />
+                           <div>
+                            <p className="font-bold text-lg">{latestStatusEvent.status}</p>
+                            <p className="text-muted-foreground">{latestStatusEvent.description}</p>
+                            <p className="text-sm text-muted-foreground mt-1">Last Updated: {new Date(latestStatusEvent.date.seconds * 1000).toLocaleString()}</p>
+                           </div>
+                        </div>
+                    </div>
+                    
+                    <h3 className="font-semibold mb-4">Order History</h3>
                     <ul className="space-y-6 border-l-2 border-primary/20 ml-2">
                         {trackingHistory.map((event, index) => (
                             <li key={index} className="relative pl-8">
