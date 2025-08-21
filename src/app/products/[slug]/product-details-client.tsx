@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -131,8 +130,8 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
                   <div className="flex gap-2 flex-wrap">
                     {parsedColors.map(color => (
                       <button key={color.name} onClick={() => setSelectedColor(color.name)}
-                        className={cn('h-8 w-8 rounded-full border-2 transition-all', selectedColor === color.name ? 'border-primary scale-110' : 'border-border')}>
-                        <span className="h-full w-full rounded-full block" style={{ backgroundColor: color.hex }} />
+                        className={cn('h-8 w-8 rounded-full border-2 transition-all flex items-center justify-center', selectedColor === color.name ? 'border-primary scale-110' : 'border-border')}>
+                        <span className="h-full w-full rounded-full block border" style={{ backgroundColor: color.hex }} />
                         <span className="sr-only">{color.name}</span>
                       </button>
                     ))}
