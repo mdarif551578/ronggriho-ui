@@ -7,12 +7,13 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAYxNV1soev0QJ5m8_gz_qykG5a4qBdrLo",
-  authDomain: "rong-griho.firebaseapp.com",
-  projectId: "rong-griho",
-  storageBucket: "rong-griho.appspot.com",
-  messagingSenderId: "932531070870",
-  appId: "1:932531070870:web:87bae6648e3b7bee909fb7"
+  "projectId": "dhakai-threads",
+  "appId": "1:932531070870:web:87bae6648e3b7bee909fb7",
+  "storageBucket": "dhakai-threads.firebasestorage.app",
+  "apiKey": "AIzaSyAYxNV1soev0QJ5m8_gz_qykG5a4qBdrLo",
+  "authDomain": "dhakai-threads.firebaseapp.com",
+  "measurementId": "G-RLZGCTSV9H",
+  "messagingSenderId": "932531070870"
 };
 
 
