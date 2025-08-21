@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, FormEvent } from "react";
 import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import { auth, clientFirestore } from "@/lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -58,12 +58,12 @@ export default function ProfileForm() {
             // Update Firebase Auth profile
             await updateProfile(user, { displayName });
 
-            // Update user document in Firestore
+            // Update user document in Firestore. Use set with merge to create if it doesn't exist.
             const userDocRef = doc(clientFirestore, 'users', user.uid);
-            await updateDoc(userDocRef, {
+            await setDoc(userDocRef, {
                 displayName,
                 phone: phoneNumber,
-            });
+            }, { merge: true });
 
             toast({ title: "Profile Updated", description: "Your information has been saved." });
         } catch (error: any) {
