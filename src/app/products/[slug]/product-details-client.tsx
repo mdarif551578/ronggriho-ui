@@ -23,13 +23,14 @@ interface ProductDetailsClientProps {
 
 export default function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState<string | undefined>(product.sizes[0]);
   
   const parsedColors = product.colors.map(c => {
       const [name, hex] = c.split(':');
       return { name, hex };
   })
-  const [selectedColor, setSelectedColor] = useState<string | undefined>(parsedColors[0]?.name);
+
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(product.sizes?.[0]);
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(parsedColors?.[0]?.name);
   
   const [activeImage, setActiveImage] = useState(product.images[0]);
   
@@ -60,6 +61,9 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
       });
     }
   };
+
+  const hasSizes = product.sizes && product.sizes.length > 0;
+  const hasColors = parsedColors && parsedColors.length > 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -118,31 +122,37 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
           <Separator className="my-6" />
 
           {/* Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <Label className="text-sm font-semibold mb-2 block">Color: <span className="font-normal">{selectedColor}</span></Label>
-              <div className="flex gap-2 flex-wrap">
-                {parsedColors.map(color => (
-                  <button key={color.name} onClick={() => setSelectedColor(color.name)}
-                    className={cn('h-8 w-8 rounded-full border-2 transition-all', selectedColor === color.name ? 'border-primary scale-110' : 'border-border')}>
-                    <span className="h-full w-full rounded-full block" style={{ backgroundColor: color.hex }} />
-                    <span className="sr-only">{color.name}</span>
-                  </button>
-                ))}
-              </div>
+          {(hasColors || hasSizes) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {hasColors && (
+                <div>
+                  <Label className="text-sm font-semibold mb-2 block">Color: <span className="font-normal">{selectedColor}</span></Label>
+                  <div className="flex gap-2 flex-wrap">
+                    {parsedColors.map(color => (
+                      <button key={color.name} onClick={() => setSelectedColor(color.name)}
+                        className={cn('h-8 w-8 rounded-full border-2 transition-all', selectedColor === color.name ? 'border-primary scale-110' : 'border-border')}>
+                        <span className="h-full w-full rounded-full block" style={{ backgroundColor: color.hex }} />
+                        <span className="sr-only">{color.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {hasSizes && (
+                <div>
+                  <Label className="text-sm font-semibold mb-2 block">Size</Label>
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.sizes.map(size => <SelectItem key={size} value={size}>{size}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
-            <div>
-              <Label className="text-sm font-semibold mb-2 block">Size</Label>
-              <Select value={selectedSize} onValueChange={setSelectedSize}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select size" />
-                </SelectTrigger>
-                <SelectContent>
-                  {product.sizes.map(size => <SelectItem key={size} value={size}>{size}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          )}
           
           <div className="mt-6">
             <Label className="text-sm font-semibold mb-2 block">Quantity</Label>
