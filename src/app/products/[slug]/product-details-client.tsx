@@ -25,8 +25,9 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
   const [quantity, setQuantity] = useState(1);
   
   const parsedColors = product.colors.map(c => {
-      const [name, hex] = c.split(':');
-      return { name, hex };
+      const parts = c.split(':');
+      // Handle cases where color might just be a name without a hex
+      return { name: parts[0], hex: parts[1] || '#ffffff' };
   })
 
   const [selectedSize, setSelectedSize] = useState<string | undefined>(product.sizes?.[0]);
