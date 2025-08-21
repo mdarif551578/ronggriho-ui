@@ -74,10 +74,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10" />
         <div className="z-20 p-4">
           <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight">
-            The Future of Dhaka Style
+            Style Beyond the Trend
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl">
-            Curated looks for the modern Bangladeshi.
+            Globally inspired, but distinctly Dhaka. This is Rong Griho.
           </p>
           <Button asChild size="lg" className="mt-8">
             <Link href="/products">Shop New Arrivals <ArrowRight className="ml-2 h-5 w-5" /></Link>
