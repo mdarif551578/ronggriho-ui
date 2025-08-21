@@ -19,6 +19,7 @@ interface TrackingEvent {
     status: string;
     date: Timestamp;
     icon: React.ElementType;
+    description: string;
 }
 
 const statusIconMap: { [key: string]: React.ElementType } = {
@@ -31,6 +32,16 @@ const statusIconMap: { [key: string]: React.ElementType } = {
     'cancelled': CircleX,
 };
 
+const statusDescriptionMap: { [key: string]: string } = {
+    'pending': 'আপনার অর্ডারটি গৃহীত হয়েছে এবং পর্যালোচনার অপেক্ষায় আছে।',
+    'order placed': 'আপনার অর্ডারটি সফলভাবে গৃহীত হয়েছে।',
+    'processing': 'আপনার অর্ডারটি প্রস্তুত করা হচ্ছে।',
+    'shipped': 'আপনার অর্ডারটি কুরিয়ারে পাঠানো হয়েছে।',
+    'on the way': 'আপনার অর্ডারটি ডেলিভারির জন্য বের হয়েছে।',
+    'delivered': 'আপনার অর্ডারটি সফলভাবে ডেলিভারি করা হয়েছে।',
+    'cancelled': 'আপনার অর্ডারটি বাতিল করা হয়েছে।',
+};
+
 const getIconForStatus = (status: string): React.ElementType => {
     const normalizedStatus = status.toLowerCase();
     for (const key in statusIconMap) {
@@ -39,6 +50,16 @@ const getIconForStatus = (status: string): React.ElementType => {
         }
     }
     return Package;
+};
+
+const getDescriptionForStatus = (status: string): string => {
+    const normalizedStatus = status.toLowerCase();
+    for (const key in statusDescriptionMap) {
+        if (normalizedStatus.includes(key)) {
+            return statusDescriptionMap[key];
+        }
+    }
+    return 'আপনার অর্ডারের অবস্থা আপডেট করা হয়েছে।';
 };
 
 
@@ -67,6 +88,7 @@ export default function TrackingPage() {
                         status: event.status,
                         date: event.timestamp,
                         icon: getIconForStatus(event.status),
+                        description: getDescriptionForStatus(event.status),
                     }))
                     .sort((a,b) => b.date.seconds - a.date.seconds);
 
@@ -148,7 +170,8 @@ export default function TrackingPage() {
                                     <event.icon className="h-8 w-8 p-1.5 rounded-full bg-primary text-primary-foreground" />
                                 </div>
                                 <p className="font-semibold">{event.status}</p>
-                                <p className="text-xs text-muted-foreground">{new Date(event.date.seconds * 1000).toLocaleString()}</p>
+                                <p className="text-sm text-muted-foreground">{event.description}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{new Date(event.date.seconds * 1000).toLocaleString()}</p>
                             </li>
                         ))}
                     </ul>
