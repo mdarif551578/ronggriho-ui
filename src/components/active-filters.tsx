@@ -6,13 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { useMemo } from 'react';
-import type { Product } from '@/lib/types';
 
-interface ActiveFiltersProps {
-    allProducts: Product[];
-}
-
-export default function ActiveFilters({ allProducts }: ActiveFiltersProps) {
+export default function ActiveFilters() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -26,7 +21,7 @@ export default function ActiveFilters({ allProducts }: ActiveFiltersProps) {
                 filters.push({
                     type: key,
                     value: value,
-                    display: `${key}: ${key === 'color' ? value.split(':')[0] : value}`
+                    display: `${key}: ${value.replace('-', ' ')}`
                 });
             } else if (key === 'price') {
                 filters.push({ type: 'price', value, display: `Price: ৳${value.replace('-', ' - ৳')}` });
@@ -38,16 +33,21 @@ export default function ActiveFilters({ allProducts }: ActiveFiltersProps) {
 
     const handleRemoveFilter = (type: string, value: string) => {
         const current = new URLSearchParams(searchParams.toString());
-        const newParams = new URLSearchParams();
-
-        // Re-add all params except the one to be removed
-        current.forEach((val, key) => {
-            if (!(key === type && val === value)) {
-                 newParams.append(key, val);
-            }
-        });
+        
+        const values = current.getAll(type);
+        
+        if (values.length <= 1) {
+            current.delete(type);
+        } else {
+            current.delete(type);
+            values.forEach(val => {
+                if (val !== value) {
+                    current.append(type, val);
+                }
+            });
+        }
        
-        const search = newParams.toString();
+        const search = current.toString();
         const query = search ? `?${search}` : '';
         router.push(`${pathname}${query}`, { scroll: false });
     };

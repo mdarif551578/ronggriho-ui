@@ -4,7 +4,6 @@
 import FilterSidebar from './filter-sidebar';
 import { Button } from './ui/button';
 import { Filter } from 'lucide-react';
-import type { Product } from '@/lib/types';
 import { useState } from 'react';
 import {
   Sheet,
@@ -13,11 +12,7 @@ import {
 } from "@/components/ui/sheet"
 
 
-interface ProductFiltersProps {
-    allProducts: Product[];
-}
-
-export default function ProductFilters({ allProducts }: ProductFiltersProps) {
+export default function ProductFilters() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -32,14 +27,14 @@ export default function ProductFilters({ allProducts }: ProductFiltersProps) {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="w-3/4 p-0">
-                         <FilterSidebar allProducts={allProducts} onFilterChange={() => setIsOpen(false)} />
+                         <FilterSidebar onFilterChange={() => setIsOpen(false)} />
                     </SheetContent>
                 </Sheet>
             </div>
 
             {/* Desktop Filter Sidebar */}
             <div className="hidden lg:block">
-                <FilterSidebar allProducts={allProducts} />
+                <FilterSidebar />
             </div>
         </>
     );

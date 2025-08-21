@@ -13,33 +13,19 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Product } from '@/lib/types';
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ScrollArea } from './ui/scroll-area';
+import { allCategories, allSizes, allColors, minProductPrice, maxProductPrice } from '@/lib/filter-options';
+
 
 interface FilterSidebarProps {
-  allProducts: Product[];
   onFilterChange?: () => void;
 }
 
-export default function FilterSidebar({ allProducts, onFilterChange }: FilterSidebarProps) {
+export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const { allCategories, allColors, allSizes, minProductPrice, maxProductPrice } = useMemo(() => {
-    const categories = [...new Set(allProducts.map(p => p.category))];
-    const colors = [...new Set(allProducts.flatMap(p => p.colors))].sort();
-    const sizes = [...new Set(allProducts.flatMap(p => p.sizes))].sort();
-    const prices = allProducts.map(p => p.discountPrice || p.price);
-    return {
-      allCategories: categories,
-      allColors: colors,
-      allSizes: sizes,
-      minProductPrice: prices.length > 0 ? Math.floor(Math.min(...prices)) : 0,
-      maxProductPrice: prices.length > 0 ? Math.ceil(Math.max(...prices)) : 1000,
-    };
-  }, [allProducts]);
 
   const selectedCategories = searchParams.getAll('category');
   const selectedSizes = searchParams.getAll('size');
@@ -68,23 +54,16 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
     
     const values = current.getAll(type);
     if (values.includes(value)) {
-        // Create new params, excluding the one we want to remove
-        const newParams = new URLSearchParams();
-        current.forEach((val, key) => {
-            if (key !== type || val !== value) {
-                newParams.append(key, val);
-            }
-        });
-        const search = newParams.toString();
-        const query = search ? `?${search}` : '';
-        router.push(`${pathname}${query}`, { scroll: false });
+        const newValues = values.filter(v => v !== value);
+        current.delete(type);
+        newValues.forEach(v => current.append(type, v));
     } else {
         current.append(type, value);
-        const search = current.toString();
-        const query = search ? `?${search}` : '';
-        router.push(`${pathname}${query}`, { scroll: false });
     }
 
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+    router.push(`${pathname}${query}`, { scroll: false });
     onFilterChange?.();
   };
 
@@ -169,16 +148,16 @@ export default function FilterSidebar({ allProducts, onFilterChange }: FilterSid
           <AccordionTrigger>Color</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
-              {allColors.map(colorString => {
-                const [colorName] = colorString.split(':');
+              {allColors.map(color => {
+                const colorValue = color.replace(' ', '-');
                 return (
-                    <div key={colorString} className="flex items-center space-x-2">
+                    <div key={colorValue} className="flex items-center space-x-2">
                     <Checkbox
-                        id={`color-${colorName}`}
-                        checked={selectedColors.includes(colorString)}
-                        onCheckedChange={() => handleMultiFilterChange('color', colorString)}
+                        id={`color-${colorValue}`}
+                        checked={selectedColors.includes(colorValue)}
+                        onCheckedChange={() => handleMultiFilterChange('color', colorValue)}
                     />
-                    <Label htmlFor={`color-${colorName}`} className="font-normal cursor-pointer">{colorName}</Label>
+                    <Label htmlFor={`color-${colorValue}`} className="font-normal cursor-pointer">{color}</Label>
                     </div>
                 )
             })}

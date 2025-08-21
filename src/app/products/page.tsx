@@ -14,11 +14,12 @@ import ProductSearch from '@/components/product-search';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { allCategories, allSizes, allColors, minProductPrice, maxProductPrice } from '@/lib/filter-options';
+
 
 const PRODUCTS_PER_PAGE = 9;
 
 export default function ProductsPage() {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastVisible, setLastVisible] = useState<DocumentSnapshot | null>(null);
@@ -52,7 +53,7 @@ export default function ProductsPage() {
     
     const colors = searchParams.getAll('color');
     if (colors.length > 0) {
-        q = query(q, where('colors', 'array-contains-any', colors));
+        q = query(q, where('colors', 'array-contains-any', colors.map(c => c.replace('-', ' '))));
     }
 
     const price = searchParams.get('price');
@@ -122,24 +123,6 @@ export default function ProductsPage() {
     }
   }, [buildQuery, lastVisible, firstVisible]);
 
-
-  useEffect(() => {
-    // Fetch all products for filter options
-    const fetchAllForFilters = async () => {
-        setLoading(true);
-        try {
-            const q = query(collection(clientFirestore, 'products'));
-            const querySnapshot = await getDocs(q);
-            const fetchedProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-            setAllProducts(fetchedProducts);
-        } catch (error) {
-            console.error("Error fetching all products for filters: ", error);
-        }
-        setLoading(false);
-    }
-    fetchAllForFilters();
-  }, []);
-
   useEffect(() => {
     // Fetch the first page of products whenever filters change
     setPage(1);
@@ -192,7 +175,7 @@ export default function ProductsPage() {
           <div className="lg:hidden mb-4">
             <ProductSearch />
           </div>
-          <ProductFilters allProducts={allProducts} />
+          <ProductFilters />
         </aside>
         
         <div className="lg:col-span-3">
@@ -207,7 +190,7 @@ export default function ProductsPage() {
              </div>
           </div>
 
-          <ActiveFilters allProducts={allProducts} />
+          <ActiveFilters />
           
           {loading ? (
              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
