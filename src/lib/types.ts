@@ -1,4 +1,6 @@
 
+import { Timestamp } from "firebase/firestore";
+
 export interface Review {
   user: string;
   text: string;
@@ -22,7 +24,7 @@ export interface Product {
   isFeatured: boolean;
   isFlashSale: boolean;
   reviews: Review[];
-  createdAt: string; // ISO 8601 date string
+  createdAt: Timestamp;
 }
 
 export interface OrderItem {
@@ -46,7 +48,7 @@ export interface Order {
     shippingDistrict: string;
     shippingPhone: string;
     paymentMethod: "cod" | "card" | "bkash";
-    createdAt: any; // Firestore Timestamp
+    createdAt: Timestamp;
 }
 
 export interface User {
