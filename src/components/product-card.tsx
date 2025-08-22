@@ -23,7 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   const handleAddToCart = () => {
-    addToCart({ ...product, quantity: 1 });
+    addToCart({ ...product, quantity: 1, shippingFee: product.shippingFee || 0 });
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
@@ -82,7 +82,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </CardContent>
       <CardFooter className="p-4 flex flex-col items-start flex-grow">
         <div className="flex-grow">
-          <p className="text-xs text-muted-foreground">{product.category.join(', ')}</p>
+          <p className="text-xs text-muted-foreground">{Array.isArray(product.category) ? product.category.join(', ') : product.category}</p>
           <h3 className="font-semibold text-sm leading-tight mt-1">
             <Link href={`/products/${product.slug}`} className="hover:underline transition-colors">
               {product.name}
