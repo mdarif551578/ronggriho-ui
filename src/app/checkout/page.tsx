@@ -72,11 +72,11 @@ export default function CheckoutPage() {
   const subtotal = cart.reduce((sum, item) => sum + (item.discountPrice || item.price) * item.quantity, 0);
   const shipping = cart.reduce((sum, item) => sum + (item.shippingFee || 0) * item.quantity, 0);
   
-  const bkashFeePercentage = 0.02; // 2% fee for bKash
+  const transactionFeePercentage = 0.02; // 2% fee
 
   let transactionFee = 0;
-  if (paymentMethod === 'bkash') {
-    transactionFee = subtotal * bkashFeePercentage;
+  if (paymentMethod === 'bkash' || paymentMethod === 'nagad') {
+    transactionFee = subtotal * transactionFeePercentage;
   }
 
   const total = subtotal + shipping + transactionFee;
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
                             {paymentMethod === 'nagad' && (
                                 <div className="pl-8 pt-4 border-t mt-4 text-sm text-muted-foreground space-y-4 animate-accordion-down">
                                     <p>Please complete your Nagad payment at <strong className="text-foreground">01928558184</strong> (Agent), then fill the form below.</p>
-                                    <p>Your total payable amount is <strong className="text-foreground">৳{total.toFixed(2)}</strong>.</p>
+                                    <p>Your total payable amount is <strong className="text-foreground">৳{total.toFixed(2)}</strong> (including ৳{transactionFee.toFixed(2)} fee).</p>
                                     <div className="space-y-2">
                                         <Label htmlFor="nagad-phone">Your Nagad Phone Number</Label>
                                         <Input id="nagad-phone" placeholder="e.g. 01XXXXXXXXX" required={paymentMethod === 'nagad'} value={nagadPhone} onChange={e => setNagadPhone(e.target.value)}/>
@@ -348,5 +348,3 @@ export default function CheckoutPage() {
     </form>
   );
 }
-
-    
