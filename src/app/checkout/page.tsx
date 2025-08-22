@@ -40,7 +40,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'bkash'>('cod');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'bkash' | 'nagad'>('cod');
   const [isLoading, setIsLoading] = useState(false);
 
   // Form state
@@ -106,14 +106,13 @@ export default function CheckoutPage() {
         image: item.images[0]
     }));
 
-    const orderData = {
+    const orderData: Omit<Order, 'id'> = {
         uid: user.uid,
         items: orderItems,
         total,
-        shippingFee: shipping,
         status: 'Pending',
         paymentStatus: 'pending',
-        createdAt: serverTimestamp(),
+        createdAt: serverTimestamp() as Timestamp,
         statusHistory: [
             { status: 'Pending', timestamp: Timestamp.now() }
         ],
@@ -264,6 +263,27 @@ export default function CheckoutPage() {
                                     <div className="space-y-2">
                                         <Label htmlFor="bkash-trx">bKash Transaction ID (TrxID)</Label>
                                         <Input id="bkash-trx" placeholder="e.g. 8M7A9B2C1D" required={paymentMethod === 'bkash'} value={bkashTrx} onChange={e => setBkashTrx(e.target.value)} />
+                                    </div>
+                                </div>
+                            )}
+                        </Label>
+                         <Label className="flex flex-col gap-4 border rounded-lg p-4 cursor-pointer hover:bg-muted has-[:checked]:bg-muted has-[:checked]:border-primary transition-colors">
+                            <div className="flex items-center">
+                                <RadioGroupItem value="nagad" id="nagad" className="mr-4"/>
+                                <span className="font-semibold">Nagad Payment</span>
+                                <Image src="https://placehold.co/80x50.png" data-ai-hint="Nagad logo" alt="Nagad" width={40} height={25} className="ml-auto" />
+                            </div>
+                            {paymentMethod === 'nagad' && (
+                                <div className="pl-8 pt-4 border-t mt-4 text-sm text-muted-foreground space-y-4 animate-accordion-down">
+                                    <p>Please complete your Nagad payment at <strong className="text-foreground">01928558184</strong> (Agent), then fill the form below.</p>
+                                    <p>Your total payable amount is <strong className="text-foreground">৳{total.toFixed(2)}</strong>.</p>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nagad-phone">Your Nagad Phone Number</Label>
+                                        <Input id="nagad-phone" placeholder="e.g. 01XXXXXXXXX" required={paymentMethod === 'nagad'} value={nagadPhone} onChange={e => setNagadPhone(e.target.value)}/>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nagad-trx">Nagad Transaction ID (TrxID)</Label>
+                                        <Input id="nagad-trx" placeholder="e.g. 8M7A9B2C1D" required={paymentMethod === 'nagad'} value={nagadTrx} onChange={e => setNagadTrx(e.target.value)} />
                                     </div>
                                 </div>
                             )}

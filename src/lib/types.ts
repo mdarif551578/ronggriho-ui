@@ -47,7 +47,6 @@ export interface Order {
     uid: string; // Firebase Auth UID
     items: OrderItem[];
     total: number;
-    shippingFee: number;
     status: OrderStatus;
     statusHistory: StatusHistoryItem[];
     paymentStatus: "pending" | "paid";
@@ -56,7 +55,7 @@ export interface Order {
     shippingCity: string;
     shippingDistrict: string;
     shippingPhone: string;
-    paymentMethod: "cod" | "card" | "bkash";
+    paymentMethod: "cod" | "card" | "bkash" | 'nagad';
     createdAt: Timestamp; // This can remain a Timestamp for client-side operations
 }
 
