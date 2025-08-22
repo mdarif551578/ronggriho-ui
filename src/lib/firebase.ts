@@ -1,7 +1,6 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAnalytics, isSupported }from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -21,7 +20,9 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const clientFirestore = getFirestore(app);
 const auth = getAuth(app);
-const analytics = typeof window !== 'undefined' && isSupported().then(yes => yes ? getAnalytics(app) : null);
+// Firebase Analytics is disabled to prevent the Installations API error.
+// To re-enable, you must ensure the Firebase Installations API is enabled in your Google Cloud project.
+const analytics = null;
 
 
 export { app, clientFirestore, auth, analytics };
