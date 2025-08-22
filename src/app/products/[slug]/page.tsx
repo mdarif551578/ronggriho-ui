@@ -51,8 +51,8 @@ async function getProduct(slug: string): Promise<Product | null> {
         return null;
     }
     const doc = querySnapshot.docs[0];
-    const productData = { id: doc.id, ...doc.data() };
-    return toSerializableObject(productData);
+    const productData = toSerializableObject({ id: doc.id, ...doc.data() });
+    return productData;
 }
 
 async function getRelatedProducts(product: Product): Promise<Product[]> {
@@ -75,9 +75,32 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
 
+  const title = `${product.name} | Rong Griho`;
+  const description = product.description;
+  const imageUrl = product.images?.[0] || 'https://rong-griho.vercel.app/og-image.png';
+
   return {
-    title: `${product.name} | Rong Griho`,
-    description: product.description,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      images: [
+        {
+          url: imageUrl,
+          width: 800,
+          height: 1000,
+          alt: product.name,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 
