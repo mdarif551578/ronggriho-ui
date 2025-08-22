@@ -29,7 +29,13 @@ const toSerializableObject = (productData: any): Product => {
   const data = { ...productData };
   for (const key in data) {
     if (data[key] instanceof Timestamp) {
+      // Convert Timestamp to a serializable format, like an ISO string
       data[key] = data[key].toDate().toISOString();
+    } else if (Array.isArray(data[key])) {
+      // Optional: Check for Timestamps within arrays if needed, though not required by current schema
+      data[key] = data[key].map((item: any) => 
+        item instanceof Timestamp ? item.toDate().toISOString() : item
+      );
     }
   }
   return data as Product;
