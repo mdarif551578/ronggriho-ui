@@ -40,16 +40,13 @@ export default function Home() {
 
         // Define static modern categories
         const modernCategories = [
-            { name: "Urban Desi", href: "/products?category=Urban+Desi", dataAiHint: "urban fashion" },
-            { name: "Global Threads", href: "/products?category=Global+Threads", dataAiHint: "modern clothing" },
-            { name: "T-Shirts", href: "/products?category=T-Shirts", dataAiHint: "t-shirt" },
-            { name: "Accessories", href: "/products?category=Accessories", dataAiHint: "fashion accessory" },
+            { name: "Urban Desi", href: "/products?category=Urban+Desi", dataAiHint: "urban fashion", image: "Le-Reve.png" },
+            { name: "Global Threads", href: "/products?category=Global+Threads", dataAiHint: "modern clothing", image: "glb02.jpg" },
+            { name: "T-Shirts", href: "/products?category=T-Shirts", dataAiHint: "t-shirt", image: "tshirts.png" },
+            { name: "Accessories", href: "/products?category=Accessories", dataAiHint: "fashion accessory", image: "accessories.jpg" },
         ];
         
-        setCategories(modernCategories.map(cat => ({
-            ...cat,
-            image: "https://placehold.co/400x400.png"
-        })));
+        setCategories(modernCategories);
 
       } catch (error) {
         console.error("Error fetching products: ", error);
@@ -65,7 +62,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[60vh] md:h-[70vh] w-full flex items-center justify-center text-center text-white">
         <Image
-          src="https://placehold.co/1600x900.png"
+          src="/banner.png"
           alt="Fashion model"
           fill
           className="z-0 object-cover"
