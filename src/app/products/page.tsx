@@ -71,7 +71,7 @@ export default function ProductsPage() {
     const searchQuery = searchParams.get('q')?.toLowerCase();
 
     return allProducts.filter(product => {
-      const categoryMatch = categories.length === 0 || categories.includes(product.category);
+      const categoryMatch = categories.length === 0 || product.category.some(cat => categories.includes(cat));
       const sizeMatch = sizes.length === 0 || product.sizes.some(s => sizes.includes(s));
       const colorMatch = colors.length === 0 || product.colors.some(c => colors.includes(c.split(':')[0]));
       const searchMatch = !searchQuery || product.name.toLowerCase().includes(searchQuery);

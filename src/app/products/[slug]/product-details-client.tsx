@@ -104,7 +104,7 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
 
         {/* Product Details */}
         <div className="py-4">
-          <p className="text-sm font-medium text-primary uppercase tracking-wide">{product.category}</p>
+          <p className="text-sm font-medium text-primary uppercase tracking-wide">{product.category.join(', ')}</p>
           <h1 className="text-3xl md:text-4xl font-bold font-headline mt-2">{product.name}</h1>
           <div className="flex items-center gap-2 mt-4">
               <p className="text-sm text-muted-foreground">({product.reviews?.length || 0} reviews)</p>

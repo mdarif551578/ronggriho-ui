@@ -1,3 +1,4 @@
+
 import { Timestamp } from "firebase/firestore";
 
 export interface Review {
@@ -15,7 +16,7 @@ export interface Product {
   stock: number;
   shippingFee: number;
   discountPrice?: number | null;
-  category: string;
+  category: string[];
   tags: string[];
   images: string[];
   sizes: string[];

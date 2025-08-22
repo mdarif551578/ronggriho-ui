@@ -82,7 +82,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </CardContent>
       <CardFooter className="p-4 flex flex-col items-start flex-grow">
         <div className="flex-grow">
-          <p className="text-xs text-muted-foreground">{product.category}</p>
+          <p className="text-xs text-muted-foreground">{product.category.join(', ')}</p>
           <h3 className="font-semibold text-sm leading-tight mt-1">
             <Link href={`/products/${product.slug}`} className="hover:underline transition-colors">
               {product.name}
