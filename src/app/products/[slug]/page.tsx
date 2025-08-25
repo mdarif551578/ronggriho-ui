@@ -1,46 +1,29 @@
 
+'use client';
+
+import { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import type { Product } from '@/lib/types';
 import ProductDetailsClient from './product-details-client';
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { Timestamp } from 'firebase/firestore';
-
-
-// This function tells Next.js which slugs to generate at build time
-export async function generateStaticParams() {
-  const productsRef = collection(clientFirestore, 'products');
-  const q = query(productsRef);
-  const querySnapshot = await getDocs(q);
-  
-  if (querySnapshot.empty) {
-    return [];
-  }
-
-  const slugs = querySnapshot.docs.map(doc => ({
-    slug: doc.data().slug as string,
-  }));
-  
-  return slugs;
-}
+import { notFound, useParams } from 'next/navigation';
+import ProductPageLoading from './loading';
 
 const toSerializableObject = (productData: any): Product => {
   const data = { ...productData };
   for (const key in data) {
-    if (data[key] instanceof Timestamp) {
+    if (data[key] instanceof (globalThis.Timestamp || Object)) {
       // Convert Timestamp to a serializable format, like an ISO string
-      data[key] = data[key].toDate().toISOString();
+      data[key] = (data[key] as any).toDate().toISOString();
     } else if (Array.isArray(data[key])) {
-      // Optional: Check for Timestamps within arrays if needed, though not required by current schema
+      // Optional: Check for Timestamps within arrays if needed
       data[key] = data[key].map((item: any) => 
-        item instanceof Timestamp ? item.toDate().toISOString() : item
+        item instanceof (globalThis.Timestamp || Object) ? (item as any).toDate().toISOString() : item
       );
     }
   }
   return data as Product;
 };
-
 
 async function getProduct(slug: string): Promise<Product | null> {
     const productsRef = collection(clientFirestore, 'products');
@@ -51,8 +34,9 @@ async function getProduct(slug: string): Promise<Product | null> {
         return null;
     }
     const doc = querySnapshot.docs[0];
-    const productData = toSerializableObject({ id: doc.id, ...doc.data() });
-    return productData;
+    // The data from the client SDK is already largely serializable, but good practice to ensure.
+    const productData = { id: doc.id, ...doc.data() };
+    return productData as Product;
 }
 
 async function getRelatedProducts(product: Product): Promise<Product[]> {
@@ -62,57 +46,51 @@ async function getRelatedProducts(product: Product): Promise<Product[]> {
     const productsRef = collection(clientFirestore, 'products');
     const q = query(productsRef, where('__name__', 'in', product.relatedProductIds));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => toSerializableObject({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
 }
 
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const product = await getProduct(params.slug);
+export default function ProductPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!product) {
-    return {
-      title: 'Product Not Found',
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!slug) return;
+      
+      setLoading(true);
+      const fetchedProduct = await getProduct(slug);
+      
+      if (!fetchedProduct) {
+        setProduct(null);
+        setLoading(false);
+        // This will render the not-found page if used in a server component context,
+        // but here we can just show a message or redirect.
+        // For static export, notFound() inside useEffect will cause an error.
+        // We'll handle it by showing a "not found" state in the UI.
+        return;
+      }
+      
+      setProduct(fetchedProduct);
+      const fetchedRelatedProducts = await getRelatedProducts(fetchedProduct);
+      setRelatedProducts(fetchedRelatedProducts);
+      setLoading(false);
     };
+
+    fetchProductData();
+  }, [slug]);
+
+  if (loading) {
+    return <ProductPageLoading />;
   }
-
-  const title = `${product.name} | Rong Griho`;
-  const description = product.description;
-  const imageUrl = product.images?.[0] || 'https://rong-griho.vercel.app/og-image.png';
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      type: 'article',
-      images: [
-        {
-          url: imageUrl,
-          width: 800,
-          height: 1000,
-          alt: product.name,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [imageUrl],
-    },
-  };
-}
-
-
-export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const product = await getProduct(params.slug);
 
   if (!product) {
-    notFound();
+    // In a real app, you might render a custom 404 component here
+    return <div className="container mx-auto text-center py-20">Product not found.</div>;
   }
-
-  const relatedProducts = await getRelatedProducts(product);
 
   return <ProductDetailsClient product={product} relatedProducts={relatedProducts} />;
 }
