@@ -158,109 +158,111 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
   const hasColors = parsedColors && parsedColors.length > 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        {/* Product Images */}
-        <div>
-          <div className="aspect-[4/5] relative w-full overflow-hidden rounded-lg shadow-lg">
-            <Image
-              src={activeImage || product.images[0]}
-              alt={product.name}
-              fill
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-              data-ai-hint="fashion product closeup"
-            />
+    <>
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          {/* Product Images */}
+          <div>
+            <div className="aspect-[4/5] relative w-full overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={activeImage || product.images[0]}
+                alt={product.name}
+                fill
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                data-ai-hint="fashion product closeup"
+              />
+            </div>
+            <div className="grid grid-cols-4 gap-2 mt-4">
+              {product.images.map((img, index) => (
+                <div 
+                  key={index} 
+                  className={cn(
+                    "aspect-square relative cursor-pointer rounded-md overflow-hidden border-2 transition-colors",
+                    img === activeImage ? 'border-primary' : 'border-transparent hover:border-primary/50'
+                  )}
+                  onClick={() => setActiveImage(img)}
+                >
+                  <Image
+                    src={img}
+                    alt={`${product.name} thumbnail ${index + 1}`}
+                    fill
+                    className="w-full h-full object-cover"
+                    data-ai-hint="fashion product thumbnail"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-4 gap-2 mt-4">
-            {product.images.map((img, index) => (
-              <div 
-                key={index} 
-                className={cn(
-                  "aspect-square relative cursor-pointer rounded-md overflow-hidden border-2 transition-colors",
-                  img === activeImage ? 'border-primary' : 'border-transparent hover:border-primary/50'
-                )}
-                onClick={() => setActiveImage(img)}
-              >
-                <Image
-                  src={img}
-                  alt={`${product.name} thumbnail ${index + 1}`}
-                  fill
-                  className="w-full h-full object-cover"
-                  data-ai-hint="fashion product thumbnail"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Product Details */}
-        <div className="py-4">
-          <p className="text-sm font-medium text-primary uppercase tracking-wide">{product.category.join(', ')}</p>
-          <h1 className="text-3xl md:text-4xl font-bold font-headline mt-2">{product.name}</h1>
-          <div className="flex items-center gap-2 mt-4">
-              <p className="text-sm text-muted-foreground">({product.reviews?.length || 0} reviews)</p>
-          </div>
-          <div className="flex items-baseline gap-4 mt-4">
-            {product.discountPrice ? (
-              <>
-                <p className="text-3xl font-bold text-destructive">৳{product.discountPrice.toFixed(2)}</p>
-                <p className="text-xl text-muted-foreground line-through">৳{product.price.toFixed(2)}</p>
-              </>
-            ) : (
-              <p className="text-3xl font-bold">৳{product.price.toFixed(2)}</p>
-            )}
-          </div>
-          <p className="mt-4 text-muted-foreground">{product.description}</p>
-          <Separator className="my-6" />
+          {/* Product Details */}
+          <div className="py-4">
+            <p className="text-sm font-medium text-primary uppercase tracking-wide">{product.category.join(', ')}</p>
+            <h1 className="text-3xl md:text-4xl font-bold font-headline mt-2">{product.name}</h1>
+            <div className="flex items-center gap-2 mt-4">
+                <p className="text-sm text-muted-foreground">({product.reviews?.length || 0} reviews)</p>
+            </div>
+            <div className="flex items-baseline gap-4 mt-4">
+              {product.discountPrice ? (
+                <>
+                  <p className="text-3xl font-bold text-destructive">৳{product.discountPrice.toFixed(2)}</p>
+                  <p className="text-xl text-muted-foreground line-through">৳{product.price.toFixed(2)}</p>
+                </>
+              ) : (
+                <p className="text-3xl font-bold">৳{product.price.toFixed(2)}</p>
+              )}
+            </div>
+            <p className="mt-4 text-muted-foreground">{product.description}</p>
+            <Separator className="my-6" />
 
-          {/* Options */}
-          {(hasColors || hasSizes) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {hasColors && parsedColors && (
-                <div>
-                  <Label className="text-sm font-semibold mb-2 block">Color: <span className="font-normal">{selectedColor}</span></Label>
-                  <div className="flex gap-2 flex-wrap">
-                    {parsedColors.map(color => (
-                      <button key={color.name} onClick={() => setSelectedColor(color.name)}
-                        className={cn('h-8 w-8 rounded-full border-2 transition-all flex items-center justify-center', selectedColor === color.name ? 'border-primary scale-110' : 'border-border')}>
-                        <span className="h-full w-full rounded-full block border" style={{ backgroundColor: color.hex }} />
-                        <span className="sr-only">{color.name}</span>
-                      </button>
-                    ))}
+            {/* Options */}
+            {(hasColors || hasSizes) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {hasColors && parsedColors && (
+                  <div>
+                    <Label className="text-sm font-semibold mb-2 block">Color: <span className="font-normal">{selectedColor}</span></Label>
+                    <div className="flex gap-2 flex-wrap">
+                      {parsedColors.map(color => (
+                        <button key={color.name} onClick={() => setSelectedColor(color.name)}
+                          className={cn('h-8 w-8 rounded-full border-2 transition-all flex items-center justify-center', selectedColor === color.name ? 'border-primary scale-110' : 'border-border')}>
+                          <span className="h-full w-full rounded-full block border" style={{ backgroundColor: color.hex }} />
+                          <span className="sr-only">{color.name}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-              {hasSizes && (
-                <div>
-                  <Label className="text-sm font-semibold mb-2 block">Size</Label>
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.sizes.map(size => <SelectItem key={size} value={size}>{size}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+                )}
+                {hasSizes && (
+                  <div>
+                    <Label className="text-sm font-semibold mb-2 block">Size</Label>
+                    <Select value={selectedSize} onValueChange={setSelectedSize}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {product.sizes.map(size => <SelectItem key={size} value={size}>{size}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <div className="mt-6">
+              <Label className="text-sm font-semibold mb-2 block">Quantity</Label>
+              <div className="flex items-center border rounded-md w-fit">
+                <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
+                <span className="w-12 text-center font-medium">{quantity}</span>
+                <Button variant="ghost" size="icon" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
+              </div>
             </div>
-          )}
-          
-          <div className="mt-6">
-            <Label className="text-sm font-semibold mb-2 block">Quantity</Label>
-            <div className="flex items-center border rounded-md w-fit">
-              <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
-              <span className="w-12 text-center font-medium">{quantity}</span>
-              <Button variant="ghost" size="icon" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
+            
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <Button size="lg" className="flex-1 text-lg py-6" onClick={handleAddToCart}><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart</Button>
+              <Button size="lg" variant="outline" className="flex-1 text-lg py-6" onClick={handleWishlistToggle}>
+                <Heart className={cn("mr-2 h-5 w-5", isInWishlist(product.id) && "fill-destructive text-destructive")} /> 
+                Wishlist
+              </Button>
             </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <Button size="lg" className="flex-1 text-lg py-6" onClick={handleAddToCart}><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart</Button>
-            <Button size="lg" variant="outline" className="flex-1 text-lg py-6" onClick={handleWishlistToggle}>
-              <Heart className={cn("mr-2 h-5 w-5", isInWishlist(product.id) && "fill-destructive text-destructive")} /> 
-              Wishlist
-            </Button>
           </div>
         </div>
       </div>
@@ -274,7 +276,7 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
           </TabsList>
           <TabsContent value="description">
             <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
-          </Tabs.Content>
+          </TabsContent>
           <TabsContent value="reviews">
             <div className="mt-6">
                 {(product.reviews && product.reviews.length > 0) ? (
@@ -303,6 +305,6 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
           {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
         </div>
       </div>
-    </div>
+    </>
   );
 }
