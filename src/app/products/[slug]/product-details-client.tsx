@@ -267,42 +267,44 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
         </div>
       </div>
       
-      {/* Product Info Tabs */}
-       <div className="mt-16">
-        <Tabs defaultValue="description" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({product.reviews?.length || 0})</TabsTrigger>
-          </TabsList>
-          <TabsContent value="description">
-            <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
-          </TabsContent>
-          <TabsContent value="reviews">
-            <div className="mt-6">
-                {(product.reviews && product.reviews.length > 0) ? (
-                    <div className="space-y-6">
-                        {product.reviews.map((review, index) => (
-                            <div key={index} className="border-b pb-4">
-                               <div className="flex items-center mb-2">
-                                 <p className="ml-4 font-semibold">{review.user}</p>
-                               </div>
-                               <p className="text-muted-foreground">{review.text}</p>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-muted-foreground text-center py-8">No reviews yet for this product.</p>
-                )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+      <div className="container mx-auto px-4 py-8">
+        {/* Product Info Tabs */}
+        <div className="mt-8">
+          <Tabs defaultValue="description" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="description">Description</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews ({product.reviews?.length || 0})</TabsTrigger>
+            </TabsList>
+            <TabsContent value="description">
+              <div className="mt-6 text-muted-foreground prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
+            </TabsContent>
+            <TabsContent value="reviews">
+              <div className="mt-6">
+                  {(product.reviews && product.reviews.length > 0) ? (
+                      <div className="space-y-6">
+                          {product.reviews.map((review, index) => (
+                              <div key={index} className="border-b pb-4">
+                                <div className="flex items-center mb-2">
+                                  <p className="ml-4 font-semibold">{review.user}</p>
+                                </div>
+                                <p className="text-muted-foreground">{review.text}</p>
+                              </div>
+                          ))}
+                      </div>
+                  ) : (
+                      <p className="text-muted-foreground text-center py-8">No reviews yet for this product.</p>
+                  )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
 
-      {/* Related Products */}
-      <div className="mt-16">
-        <h2 className="text-3xl font-bold text-center font-headline mb-8">You Might Also Like</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
+        {/* Related Products */}
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-center font-headline mb-8">You Might Also Like</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
         </div>
       </div>
     </>
