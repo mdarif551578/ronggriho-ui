@@ -2,7 +2,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -15,29 +15,116 @@ import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/hooks/use-wishlist';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { useParams } from 'next/navigation';
+import { collection, getDocs, query, where, limit } from 'firebase/firestore';
+import { clientFirestore } from '@/lib/firebase';
+import ProductPageLoading from './loading';
 
-interface ProductDetailsClientProps {
-    product: Product;
-    relatedProducts: Product[];
+async function getProduct(slug: string): Promise<Product | null> {
+    if (!slug) return null;
+    const productsRef = collection(clientFirestore, 'products');
+    const q = query(productsRef, where('slug', '==', slug), limit(1));
+    
+    try {
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            return null;
+        }
+        const doc = querySnapshot.docs[0];
+        const productData = { id: doc.id, ...doc.data() };
+        return productData as Product;
+    } catch (error) {
+        console.error("Error fetching product by slug:", error);
+        return null;
+    }
 }
 
-export default function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
+async function getRelatedProducts(product: Product): Promise<Product[]> {
+    if (!product.relatedProductIds || product.relatedProductIds.length === 0) {
+        return [];
+    }
+    const productsRef = collection(clientFirestore, 'products');
+    const q = query(productsRef, where('__name__', 'in', product.relatedProductIds));
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    } catch (error) {
+        console.error("Error fetching related products:", error);
+        return [];
+    }
+}
+
+
+export default function ProductDetailsClient() {
+  const params = useParams();
+  const slug = params.slug as string;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!slug) return;
+      
+      setLoading(true);
+      try {
+          const fetchedProduct = await getProduct(slug);
+          
+          if (fetchedProduct) {
+              setProduct(fetchedProduct);
+              const fetchedRelatedProducts = await getRelatedProducts(fetchedProduct);
+              setRelatedProducts(fetchedRelatedProducts);
+          } else {
+              setProduct(null);
+          }
+      } catch (error) {
+        console.error("Error in fetchProductData:", error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductData();
+  }, [slug]);
+
   const [quantity, setQuantity] = useState(1);
   
-  const parsedColors = product.colors.map(c => {
+  const parsedColors = product?.colors.map(c => {
       const parts = c.split(':');
       // Handle cases where color might just be a name without a hex
       return { name: parts[0], hex: parts[1] || '#ffffff' };
   })
 
-  const [selectedSize, setSelectedSize] = useState<string | undefined>(product.sizes?.[0]);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(product?.sizes?.[0]);
   const [selectedColor, setSelectedColor] = useState<string | undefined>(parsedColors?.[0]?.name);
   
-  const [activeImage, setActiveImage] = useState(product.images[0]);
+  const [activeImage, setActiveImage] = useState(product?.images[0]);
+
+  useEffect(() => {
+    if (product) {
+      setActiveImage(product.images[0]);
+      setSelectedSize(product.sizes?.[0]);
+      const newParsedColors = product.colors.map(c => {
+        const parts = c.split(':');
+        return { name: parts[0], hex: parts[1] || '#ffffff' };
+      });
+      setSelectedColor(newParsedColors?.[0]?.name);
+    }
+  }, [product]);
+
   
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  if (loading) {
+    return <ProductPageLoading />;
+  }
+
+  if (!product) {
+    return <div className="container mx-auto text-center py-20">Product not found.</div>;
+  }
 
   const handleAddToCart = () => {
     addToCart({ ...product, quantity, shippingFee: product.shippingFee || 0 });
@@ -73,7 +160,7 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
         <div>
           <div className="aspect-[4/5] relative w-full overflow-hidden rounded-lg shadow-lg">
             <Image
-              src={activeImage}
+              src={activeImage || product.images[0]}
               alt={product.name}
               fill
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
@@ -125,7 +212,7 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
           {/* Options */}
           {(hasColors || hasSizes) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {hasColors && (
+              {hasColors && parsedColors && (
                 <div>
                   <Label className="text-sm font-semibold mb-2 block">Color: <span className="font-normal">{selectedColor}</span></Label>
                   <div className="flex gap-2 flex-wrap">
