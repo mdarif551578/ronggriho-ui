@@ -21,7 +21,20 @@ async function getProduct(slug: string): Promise<Product | null> {
         }
         const doc = querySnapshot.docs[0];
         const productData = { id: doc.id, ...doc.data() };
-        return productData as Product;
+
+        // Firestore Timestamps are not serializable, so convert them to strings
+        const toSerializableObject = (obj: any): any => {
+          for (const key in obj) {
+            if (obj[key] instanceof Object && 'seconds' in obj[key] && 'nanoseconds' in obj[key]) {
+              obj[key] = new Date(obj[key].seconds * 1000).toISOString();
+            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+              toSerializableObject(obj[key]);
+            }
+          }
+          return obj;
+        };
+
+        return toSerializableObject(productData) as Product;
     } catch (error) {
         console.error("Error fetching product by slug:", error);
         return null;
@@ -42,25 +55,6 @@ async function getRelatedProducts(product: Product): Promise<Product[]> {
         return [];
     }
 }
-
-// This function tells Next.js which slugs to pre-render at build time for static export.
-// It runs ONLY at build time.
-export async function generateStaticParams() {
-    try {
-        const productsRef = collection(clientFirestore, 'products');
-        const snapshot = await getDocs(productsRef);
-        const slugs = snapshot.docs.map(doc => ({
-            slug: doc.data().slug as string,
-        }));
-        // Filter out any products that might not have a slug
-        return slugs.filter(s => s.slug);
-    } catch (error) {
-        console.error("Error in generateStaticParams, returning empty array:", error);
-        // Return an empty array on error to prevent build failure
-        return [];
-    }
-}
-
 
 export default function ProductPage() {
   const params = useParams();

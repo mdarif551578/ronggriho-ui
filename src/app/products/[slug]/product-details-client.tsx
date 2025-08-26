@@ -40,7 +40,7 @@ export default function ProductDetailsClient({ product, relatedProducts }: Produ
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = () => {
-    addToCart({ ...product, quantity });
+    addToCart({ ...product, quantity, shippingFee: product.shippingFee || 0 });
     toast({
       title: "Added to cart",
       description: `${quantity} x ${product.name} has been added to your cart.`,
