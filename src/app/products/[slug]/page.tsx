@@ -6,37 +6,26 @@ import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import type { Product } from '@/lib/types';
 import ProductDetailsClient from './product-details-client';
-import { notFound, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import ProductPageLoading from './loading';
 
-const toSerializableObject = (productData: any): Product => {
-  const data = { ...productData };
-  for (const key in data) {
-    if (data[key] instanceof (globalThis.Timestamp || Object)) {
-      // Convert Timestamp to a serializable format, like an ISO string
-      data[key] = (data[key] as any).toDate().toISOString();
-    } else if (Array.isArray(data[key])) {
-      // Optional: Check for Timestamps within arrays if needed
-      data[key] = data[key].map((item: any) => 
-        item instanceof (globalThis.Timestamp || Object) ? (item as any).toDate().toISOString() : item
-      );
-    }
-  }
-  return data as Product;
-};
-
 async function getProduct(slug: string): Promise<Product | null> {
+    if (!slug) return null;
     const productsRef = collection(clientFirestore, 'products');
     const q = query(productsRef, where('slug', '==', slug), limit(1));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
+    
+    try {
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            return null;
+        }
+        const doc = querySnapshot.docs[0];
+        const productData = { id: doc.id, ...doc.data() };
+        return productData as Product;
+    } catch (error) {
+        console.error("Error fetching product by slug:", error);
         return null;
     }
-    const doc = querySnapshot.docs[0];
-    // The data from the client SDK is already largely serializable, but good practice to ensure.
-    const productData = { id: doc.id, ...doc.data() };
-    return productData as Product;
 }
 
 async function getRelatedProducts(product: Product): Promise<Product[]> {
@@ -45,10 +34,24 @@ async function getRelatedProducts(product: Product): Promise<Product[]> {
     }
     const productsRef = collection(clientFirestore, 'products');
     const q = query(productsRef, where('__name__', 'in', product.relatedProductIds));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    } catch (error) {
+        console.error("Error fetching related products:", error);
+        return [];
+    }
 }
 
+// This function tells Next.js which slugs to pre-render at build time.
+export async function generateStaticParams() {
+    const productsRef = collection(clientFirestore, 'products');
+    const snapshot = await getDocs(productsRef);
+    const slugs = snapshot.docs.map(doc => ({
+        slug: doc.data().slug as string,
+    }));
+    return slugs.filter(s => s.slug); // Filter out any undefined/null slugs
+}
 
 export default function ProductPage() {
   const params = useParams();
@@ -62,22 +65,22 @@ export default function ProductPage() {
       if (!slug) return;
       
       setLoading(true);
-      const fetchedProduct = await getProduct(slug);
-      
-      if (!fetchedProduct) {
+      try {
+          const fetchedProduct = await getProduct(slug);
+          
+          if (fetchedProduct) {
+              setProduct(fetchedProduct);
+              const fetchedRelatedProducts = await getRelatedProducts(fetchedProduct);
+              setRelatedProducts(fetchedRelatedProducts);
+          } else {
+              setProduct(null);
+          }
+      } catch (error) {
+        console.error("Error in fetchProductData:", error);
         setProduct(null);
+      } finally {
         setLoading(false);
-        // This will render the not-found page if used in a server component context,
-        // but here we can just show a message or redirect.
-        // For static export, notFound() inside useEffect will cause an error.
-        // We'll handle it by showing a "not found" state in the UI.
-        return;
       }
-      
-      setProduct(fetchedProduct);
-      const fetchedRelatedProducts = await getRelatedProducts(fetchedProduct);
-      setRelatedProducts(fetchedRelatedProducts);
-      setLoading(false);
     };
 
     fetchProductData();
@@ -88,7 +91,6 @@ export default function ProductPage() {
   }
 
   if (!product) {
-    // In a real app, you might render a custom 404 component here
     return <div className="container mx-auto text-center py-20">Product not found.</div>;
   }
 
