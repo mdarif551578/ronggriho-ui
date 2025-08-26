@@ -43,15 +43,24 @@ async function getRelatedProducts(product: Product): Promise<Product[]> {
     }
 }
 
-// This function tells Next.js which slugs to pre-render at build time.
+// This function tells Next.js which slugs to pre-render at build time for static export.
+// It runs ONLY at build time.
 export async function generateStaticParams() {
-    const productsRef = collection(clientFirestore, 'products');
-    const snapshot = await getDocs(productsRef);
-    const slugs = snapshot.docs.map(doc => ({
-        slug: doc.data().slug as string,
-    }));
-    return slugs.filter(s => s.slug); // Filter out any undefined/null slugs
+    try {
+        const productsRef = collection(clientFirestore, 'products');
+        const snapshot = await getDocs(productsRef);
+        const slugs = snapshot.docs.map(doc => ({
+            slug: doc.data().slug as string,
+        }));
+        // Filter out any products that might not have a slug
+        return slugs.filter(s => s.slug);
+    } catch (error) {
+        console.error("Error in generateStaticParams, returning empty array:", error);
+        // Return an empty array on error to prevent build failure
+        return [];
+    }
 }
+
 
 export default function ProductPage() {
   const params = useParams();
