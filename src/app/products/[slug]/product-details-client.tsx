@@ -127,7 +127,12 @@ export default function ProductDetailsClient({ slug }: { slug: string }) {
   }
 
   if (!product) {
-    return <div className="container mx-auto text-center py-20">Product not found.</div>;
+    return (
+        <div className="container mx-auto px-4 py-8 text-center">
+            <h1 className="text-4xl font-bold">404</h1>
+            <p className="text-lg text-muted-foreground mt-2">This page could not be found.</p>
+        </div>
+    );
   }
 
   const handleAddToCart = () => {
