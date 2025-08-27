@@ -189,9 +189,17 @@ export default function Header() {
           <div className="container mx-auto px-2">
               <div className="flex justify-around h-16">
                   {mobileNavLinks.map(link => (
-                      <Link key={link.name} href={link.href} className="flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center p-1">
+                      <Link key={link.name} href={link.href} className="relative flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-1/5 text-center p-1">
                           <link.icon className="h-6 w-6 mb-1" />
                           <span className="text-xs font-medium">{link.name}</span>
+                          {link.name === 'Cart' && cartItemCount > 0 && (
+                            <Badge
+                                variant="destructive"
+                                className="absolute top-1 right-1/2 translate-x-[120%] h-5 w-5 flex items-center justify-center p-0 text-xs"
+                            >
+                                {cartItemCount}
+                            </Badge>
+                          )}
                       </Link>
                   ))}
               </div>
