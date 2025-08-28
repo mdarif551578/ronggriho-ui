@@ -20,6 +20,13 @@ import { clientFirestore } from '@/lib/firebase';
 import ProductPageLoading from './loading';
 import { useParams } from 'next/navigation';
 
+
+// This tells Next.js to not generate any pages at build time.
+// The page will act as a fallback and handle all slugs at runtime.
+export function generateStaticParams() {
+  return [];
+}
+
 async function getProduct(slug: string): Promise<Product | null> {
     if (!slug) return null;
     const productsRef = collection(clientFirestore, 'products');
@@ -275,7 +282,6 @@ export default function ProductDetailsPage() {
       </div>
       
       <div className="container mx-auto px-4 py-8">
-        {/* Product Info Tabs */}
         <div className="mt-8">
           <Tabs defaultValue="description" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -306,7 +312,6 @@ export default function ProductDetailsPage() {
           </Tabs>
         </div>
 
-        {/* Related Products */}
         <div className="mt-16">
           <h2 className="text-3xl font-bold text-center font-headline mb-8">You Might Also Like</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
