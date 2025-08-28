@@ -19,6 +19,10 @@ import { collection, getDocs, query, where, limit } from 'firebase/firestore';
 import { clientFirestore } from '@/lib/firebase';
 import ProductPageLoading from './loading';
 
+interface ProductDetailsClientProps {
+  slug: string;
+}
+
 async function getProduct(slug: string): Promise<Product | null> {
     if (!slug) return null;
     const productsRef = collection(clientFirestore, 'products');
@@ -53,9 +57,6 @@ async function getRelatedProducts(product: Product): Promise<Product[]> {
     }
 }
 
-interface ProductDetailsClientProps {
-  slug: string;
-}
 
 export default function ProductDetailsClient({ slug }: ProductDetailsClientProps) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -275,7 +276,6 @@ export default function ProductDetailsClient({ slug }: ProductDetailsClientProps
       </div>
       
       <div className="container mx-auto px-4 py-8">
-        {/* Product Info Tabs */}
         <div className="mt-8">
           <Tabs defaultValue="description" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -306,7 +306,6 @@ export default function ProductDetailsClient({ slug }: ProductDetailsClientProps
           </Tabs>
         </div>
 
-        {/* Related Products */}
         <div className="mt-16">
           <h2 className="text-3xl font-bold text-center font-headline mb-8">You Might Also Like</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
