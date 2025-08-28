@@ -31,6 +31,7 @@ async function getProduct(slug: string): Promise<Product | null> {
     try {
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
+            console.warn(`Product with slug "${slug}" not found.`);
             return null;
         }
         const doc = querySnapshot.docs[0];
