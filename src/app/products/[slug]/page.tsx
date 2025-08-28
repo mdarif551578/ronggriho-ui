@@ -1,3 +1,4 @@
+
 import ProductDetailsClient from './product-details-client';
 
 // This function is required for static export of dynamic routes.
