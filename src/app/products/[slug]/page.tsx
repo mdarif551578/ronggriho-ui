@@ -2,7 +2,8 @@ import ProductDetailsClient from './product-details-client';
 
 // This function is required for static export of dynamic routes.
 // We return an empty array because we want all product fetching and rendering
-// to happen on the client side at runtime.
+// to happen on the client side at runtime. This satisfies the build requirement
+// without pre-rendering any pages at build time.
 export async function generateStaticParams() {
   return [];
 }
