@@ -2,8 +2,6 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  trailingSlash: true,
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
@@ -20,6 +18,10 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      }
     ],
   },
   serverExternalPackages: ['firebase-admin'],
