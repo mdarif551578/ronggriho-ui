@@ -1,5 +1,12 @@
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'Read the Rong Griho privacy policy to understand how we collect, use, and protect your personal information.',
+  alternates: { canonical: '/privacy-policy' },
+};
 
 export default function PrivacyPolicyPage() {
   return (

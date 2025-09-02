@@ -2,6 +2,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Target, Eye } from "lucide-react";
 import Image from "next/image";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn the story behind Rong Griho, our mission to provide contemporary fashion, and our vision for the future of Bangladeshi style.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About Rong Griho',
+    description: 'Learn the story behind our brand and our mission to redefine Bangladeshi fashion.',
+    url: '/about',
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -9,12 +21,13 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="relative h-[50vh] w-full flex items-center justify-center text-center text-white">
         <Image
-          src="https://placehold.co/1600x600.png"
+          src="https://picsum.photos/1600/600"
           alt="Modern fashion shoot"
-          layout="fill"
+          fill
           objectFit="cover"
           className="z-0"
           data-ai-hint="youth fashion"
+          priority
         />
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="z-20 p-4">

@@ -1,9 +1,22 @@
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Frequently Asked Questions (FAQ)',
+  description: 'Find answers to common questions about payment methods, return policy, delivery times, sizing, and more at Rong Griho.',
+  alternates: { canonical: '/faq' },
+  openGraph: {
+    title: 'FAQ | Rong Griho',
+    description: 'Find answers to common questions about our products and services.',
+    url: '/faq',
+  },
+};
 
 const faqItems = [
     {

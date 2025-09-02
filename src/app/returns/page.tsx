@@ -1,7 +1,15 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package, RefreshCw, FileText } from 'lucide-react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Return Policy',
+  description: 'Learn about our 7-day return policy. Find out how to easily process a return for your order at Rong Griho.',
+  alternates: { canonical: '/returns' },
+};
 
 export default function ReturnsPage() {
   return (

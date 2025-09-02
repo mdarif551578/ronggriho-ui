@@ -8,7 +8,7 @@ const siteConfig = {
   name: "Rong Griho",
   url: "https://rong-griho.vercel.app", // Replace with your actual domain
   ogImage: "https://rong-griho.vercel.app/og-image.png", // Replace with your actual OG image URL
-  description: "Discover contemporary and traditional Bangladeshi fashion at Rong Griho. Shop for unique, high-quality apparel and accessories.",
+  description: "Discover contemporary and traditional Bangladeshi fashion at Rong Griho. Shop for unique, high-quality apparel and accessories for the modern youth.",
   title: "Rong Griho - Modern Bangladeshi Fashion",
 }
 
@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
+   keywords: ["Rong Griho", "Bangladeshi fashion", "urban desi", "modern apparel", "online shopping Bangladesh"],
+   authors: [{ name: "Rong Griho", url: siteConfig.url }],
+   creator: "Rong Griho",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -47,6 +50,9 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage],
     creator: "@ronggriho", // Replace with your Twitter handle
+  },
+  icons: {
+    icon: "/favicon.ico",
   },
 }
 

@@ -1,15 +1,68 @@
 
-'use client';
-
 import { Suspense } from 'react';
 import ProductsList from './products-list';
 import { Skeleton } from '@/components/ui/skeleton';
+import { clientFirestore } from '@/lib/firebase';
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import type { Product } from '@/lib/types';
+import type { Metadata } from 'next';
 
-export default function ProductsPage() {
+export const metadata: Metadata = {
+  title: 'All Products',
+  description: 'Browse all products available at Rong Griho. Discover the latest in urban desi and global fashion trends, from t-shirts to accessories.',
+  alternates: { canonical: '/products' },
+  openGraph: {
+    title: 'All Products | Rong Griho',
+    description: 'Explore the full collection of modern apparel and accessories at Rong Griho.',
+    url: '/products',
+  },
+};
+
+
+async function getAllProducts() {
+    try {
+        const q = query(collection(clientFirestore, 'products'), orderBy('createdAt', 'desc'), limit(100));
+        const querySnapshot = await getDocs(q);
+        const products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        return products;
+    } catch (error) {
+        console.error("Error fetching all products: ", error);
+        return [];
+    }
+}
+
+export default async function ProductsPage() {
+  const allProducts = await getAllProducts();
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://rong-griho.vercel.app/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Products",
+        "item": "https://rong-griho.vercel.app/products"
+      }
+    ]
+  };
+
   return (
-    <Suspense fallback={<ProductsPageLoading />}>
-      <ProductsList />
-    </Suspense>
+     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Suspense fallback={<ProductsPageLoading />}>
+        <ProductsList allProducts={allProducts} />
+      </Suspense>
+    </>
   );
 }
 

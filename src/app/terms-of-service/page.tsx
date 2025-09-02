@@ -1,6 +1,12 @@
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description: 'Read the terms of service for using the Rong Griho website. Understand your rights and responsibilities.',
+  alternates: { canonical: '/terms-of-service' },
+};
 
 export default function TermsOfServicePage() {
   return (

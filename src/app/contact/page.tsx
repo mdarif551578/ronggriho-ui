@@ -1,9 +1,22 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Get in touch with Rong Griho. Send us a message, find our email, phone number, and address. We are here to help!',
+  alternates: { canonical: '/contact' },
+  openGraph: {
+    title: 'Contact Rong Griho',
+    description: 'Have a question? Contact our support team for assistance.',
+    url: '/contact',
+  },
+};
 
 export default function ContactPage() {
   return (

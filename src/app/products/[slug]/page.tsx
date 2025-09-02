@@ -2,10 +2,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Product } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, ShoppingCart } from 'lucide-react';
 import ProductCard from '@/components/product-card';
 import { clientFirestore } from '@/lib/firebase';
 import { collection, getDocs, query, where, limit } from 'firebase/firestore';
@@ -68,9 +65,10 @@ export async function generateMetadata(
   return {
     title: product.name,
     description: product.description,
+    keywords: product.tags,
      alternates: { canonical: `/products/${product.slug}` },
     openGraph: {
-      title: product.name,
+      title: `${product.name} | Rong Griho`,
       description: product.description,
       url: `/products/${product.slug}`,
       images: [
@@ -103,8 +101,37 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   const relatedProducts = await getRelatedProducts(product);
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://rong-griho.vercel.app/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Products",
+        "item": "https://rong-griho.vercel.app/products"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": product.name,
+        "item": `https://rong-griho.vercel.app/products/${product.slug}`
+      }
+    ]
+  };
+
   return (
     <>
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="container mx-auto px-4 py-8">
         <ProductDetailsClient product={product} />
       </div>

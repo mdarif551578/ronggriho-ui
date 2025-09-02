@@ -40,10 +40,10 @@ export default function Home() {
 
         // Define static modern categories
         const modernCategories = [
-            { name: "Urban Desi", href: "/products?category=Urban+Desi", dataAiHint: "urban fashion", image: "Le-Reve.png" },
-            { name: "Global Threads", href: "/products?category=Global+Threads", dataAiHint: "modern clothing", image: "glb02.jpg" },
-            { name: "T-Shirts", href: "/products?category=T-Shirts", dataAiHint: "t-shirt", image: "tshirts.png" },
-            { name: "Accessories", href: "/products?category=Accessories", dataAiHint: "fashion accessory", image: "accessories.jpg" },
+            { name: "Urban Desi", href: "/products?category=Urban+Desi", dataAiHint: "urban fashion", image: "/Le-Reve.png" },
+            { name: "Global Threads", href: "/products?category=Global+Threads", dataAiHint: "modern clothing", image: "/glb02.jpg" },
+            { name: "T-Shirts", href: "/products?category=T-Shirts", dataAiHint: "t-shirt", image: "/tshirts.png" },
+            { name: "Accessories", href: "/products?category=Accessories", dataAiHint: "fashion accessory", image: "/accessories.jpg" },
         ];
         
         setCategories(modernCategories);
@@ -63,10 +63,11 @@ export default function Home() {
       <section className="relative h-[60vh] md:h-[70vh] w-full flex items-center justify-center text-center text-white">
         <Image
           src="/banner.png"
-          alt="Fashion model"
+          alt="Fashion model wearing Rong Griho apparel"
           fill
           className="z-0 object-cover"
           data-ai-hint="youth fashion banner"
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10" />
         <div className="z-20 p-4">

@@ -250,7 +250,7 @@ export default function CheckoutPage() {
                             <div className="flex items-center">
                                 <RadioGroupItem value="bkash" id="bkash" className="mr-4"/>
                                 <span className="font-semibold">bKash Payment</span>
-                                <Image src="https://placehold.co/80x50.png" data-ai-hint="bKash logo" alt="bKash" width={40} height={25} className="ml-auto" />
+                                <Image src="/bKash_logo.png" data-ai-hint="bKash logo" alt="bKash" width={40} height={25} className="ml-auto" />
                             </div>
                             {paymentMethod === 'bkash' && (
                                 <div className="pl-8 pt-4 border-t mt-4 text-sm text-muted-foreground space-y-4 animate-accordion-down">
@@ -271,7 +271,7 @@ export default function CheckoutPage() {
                             <div className="flex items-center">
                                 <RadioGroupItem value="nagad" id="nagad" className="mr-4"/>
                                 <span className="font-semibold">Nagad Payment</span>
-                                <Image src="https://placehold.co/80x50.png" data-ai-hint="Nagad logo" alt="Nagad" width={40} height={25} className="ml-auto" />
+                                <Image src="/Nagad-Logo.png" data-ai-hint="Nagad logo" alt="Nagad" width={40} height={25} className="ml-auto" />
                             </div>
                             {paymentMethod === 'nagad' && (
                                 <div className="pl-8 pt-4 border-t mt-4 text-sm text-muted-foreground space-y-4 animate-accordion-down">
